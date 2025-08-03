@@ -1,0 +1,175 @@
+"use client"
+
+import { useState, useCallback } from "react"
+import { useDropzone } from "react-dropzone"
+import { Upload, FileText, X } from "lucide-react"
+import { motion, AnimatePresence } from "framer-motion"
+import { DocumentMetadataCard } from "./document-metadata-card"
+
+export function FileUploader({ onUploadSuccess }) {
+  const [files, setFiles] = useState([])
+  const [uploading, setUploading] = useState(false)
+
+  const onDrop = useCallback((acceptedFiles) => {
+    const newFiles = acceptedFiles.map((file) => ({
+      id: Date.now() + Math.random(),
+      file,
+      status: "pending",
+      progress: 0,
+    }))
+
+    setFiles((prev) => [...prev, ...newFiles])
+
+    // Simulate upload process
+    newFiles.forEach((fileObj) => {
+      simulateUpload(fileObj.id)
+    })
+  }, [])
+
+  const simulateUpload = (fileId) => {
+    setUploading(true)
+
+    const interval = setInterval(() => {
+      setFiles((prev) =>
+        prev.map((f) => {
+          if (f.id === fileId) {
+            const newProgress = Math.min(f.progress + Math.random() * 30, 100)
+            return {
+              ...f,
+              progress: newProgress,
+              status: newProgress === 100 ? "completed" : "uploading",
+            }
+          }
+          return f
+        }),
+      )
+    }, 500)
+
+    setTimeout(() => {
+      clearInterval(interval)
+      setFiles((prev) => prev.map((f) => (f.id === fileId ? { ...f, status: "completed", progress: 100 } : f)))
+      setUploading(false)
+
+      // Show success toast
+      window.dispatchEvent(
+        new CustomEvent("show-toast", {
+          detail: { type: "success", message: "File uploaded successfully!" },
+        }),
+      )
+
+      // Trigger confetti effect
+      onUploadSuccess?.()
+    }, 3000)
+  }
+
+  const removeFile = (fileId) => {
+    setFiles((prev) => prev.filter((f) => f.id !== fileId))
+  }
+
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+    onDrop,
+    accept: {
+      "application/pdf": [".pdf"],
+    },
+    maxSize: 10 * 1024 * 1024, // 10MB
+  })
+
+  return (
+    <div className="space-y-6">
+      <motion.div
+        {...getRootProps()}
+        whileHover={{ scale: 1.02 }}
+        whileTap={{ scale: 0.98 }}
+        className={`border-2 border-dashed rounded-2xl p-12 text-center cursor-pointer transition-all ${
+          isDragActive
+            ? "border-lavender-500 bg-lavender-50 dark:bg-lavender-900/20"
+            : "border-gray-300 hover:border-lavender-400 dark:border-gray-600 dark:hover:border-lavender-500"
+        }`}
+      >
+        <input {...getInputProps()} />
+
+        <motion.div animate={{ y: isDragActive ? -10 : 0 }} transition={{ duration: 0.2 }}>
+          <Upload className={`w-16 h-16 mx-auto mb-4 ${isDragActive ? "text-lavender-500" : "text-gray-400"}`} />
+        </motion.div>
+
+        <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
+          {isDragActive ? "Drop your files here" : "Upload PDF Documents"}
+        </h3>
+
+        <p className="text-gray-600 dark:text-gray-300 mb-4">Drag and drop your PDF files here, or click to browse</p>
+
+        <div className="text-sm text-gray-500 dark:text-gray-400">Maximum file size: 10MB • PDF files only</div>
+      </motion.div>
+
+      {/* File List */}
+      <AnimatePresence>
+        {files.length > 0 && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+            className="space-y-3"
+          >
+            {files.map((fileObj) => (
+              <motion.div
+                key={fileObj.id}
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: 20 }}
+                className="flex items-center p-4 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700"
+              >
+                <FileText className="w-8 h-8 text-red-500 mr-3" />
+
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-medium text-gray-900 dark:text-white truncate">{fileObj.file.name}</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400">
+                    {(fileObj.file.size / 1024 / 1024).toFixed(2)} MB
+                  </p>
+
+                  {fileObj.status === "uploading" && (
+                    <div className="mt-2">
+                      <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+                        <motion.div
+                          className="bg-lavender-500 h-2 rounded-full"
+                          initial={{ width: 0 }}
+                          animate={{ width: `${fileObj.progress}%` }}
+                          transition={{ duration: 0.3 }}
+                        />
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                <div className="flex items-center space-x-2">
+                  {fileObj.status === "completed" && <div className="w-2 h-2 bg-green-500 rounded-full" />}
+
+                  <button
+                    onClick={() => removeFile(fileObj.id)}
+                    className="p-1 text-gray-400 hover:text-red-500 transition-colors"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                </div>
+              </motion.div>
+            ))}
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Document Metadata Cards */}
+      {files
+        .filter((f) => f.status === "completed")
+        .map((fileObj) => (
+          <DocumentMetadataCard
+            key={`metadata-${fileObj.id}`}
+            filename={fileObj.file.name}
+            pages={Math.floor(Math.random() * 200) + 10} // Simulated
+            dateCreated={new Date()}
+            fileSize={fileObj.file.size}
+            processingTime={3.2}
+            className="mt-4"
+          />
+        ))}
+    </div>
+  )
+}
