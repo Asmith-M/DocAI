@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect } from "react"
 import { Send, Paperclip, Mic, Square } from "lucide-react"
 
-export function ChatInput({ value, onChange, onSend }) {
+export function ChatInput({ value, onChange, onSend, documentId }) {
   const [inputValue, setInputValue] = useState(value || "")
   const [isRecording, setIsRecording] = useState(false)
   const textareaRef = useRef(null)
@@ -27,6 +27,12 @@ export function ChatInput({ value, onChange, onSend }) {
 
     if (inputValue.trim()) {
       onSend?.(inputValue.trim())
+      // Dispatch a global event so chat container can pick it up without lifting state
+      try {
+        window.dispatchEvent(new CustomEvent('chat-send', { detail: { text: inputValue.trim(), documentId } }))
+      } catch (e) {
+        // noop if CustomEvent not supported in environment
+      }
       setInputValue("")
       onChange?.("")
     }

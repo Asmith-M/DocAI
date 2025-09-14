@@ -1,14 +1,22 @@
 "use client"
 
-import { useState, useCallback } from "react"
+import { useState, useCallback, forwardRef, useImperativeHandle } from "react"
 import { useDropzone } from "react-dropzone"
 import { Upload, FileText, X } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
 import { DocumentMetadataCard } from "./document-metadata-card"
+import { uploadFiles as apiUploadFiles } from "../../lib/api"
 
-export function FileUploader({ onUploadSuccess }) {
+export const FileUploader = forwardRef(({ onUploadSuccess }, ref) => {
   const [files, setFiles] = useState([])
   const [uploading, setUploading] = useState(false)
+
+  useImperativeHandle(ref, () => ({
+    clickInput: () => {
+      const input = document.querySelector('input[type="file"]')
+      input?.click()
+    }
+  }))
 
   const onDrop = useCallback((acceptedFiles) => {
     const newFiles = acceptedFiles.map((file) => ({
@@ -16,50 +24,94 @@ export function FileUploader({ onUploadSuccess }) {
       file,
       status: "pending",
       progress: 0,
+      extractionMethod: null,
+      pageCount: 0,
+      documentId: null,
+      message: "",
     }))
 
     setFiles((prev) => [...prev, ...newFiles])
 
-    // Simulate upload process
-    newFiles.forEach((fileObj) => {
-      simulateUpload(fileObj.id)
-    })
+    // Start real upload process
+    uploadFiles(newFiles)
   }, [])
 
-  const simulateUpload = (fileId) => {
+  const uploadFiles = async (filesToUpload) => {
     setUploading(true)
 
-    const interval = setInterval(() => {
-      setFiles((prev) =>
-        prev.map((f) => {
-          if (f.id === fileId) {
-            const newProgress = Math.min(f.progress + Math.random() * 30, 100)
+    const fileObjects = filesToUpload.map((fileObj) => fileObj.file)
+
+    try {
+      // Update status to uploading before API call
+      setFiles((prevFiles) =>
+        prevFiles.map((fileObj) => {
+          const isUploading = filesToUpload.some((f) => f.id === fileObj.id)
+          if (isUploading) {
             return {
-              ...f,
-              progress: newProgress,
-              status: newProgress === 100 ? "completed" : "uploading",
+              ...fileObj,
+              status: "uploading",
+              progress: 0,
+              message: "",
             }
           }
-          return f
+          return fileObj
         }),
       )
-    }, 500)
 
-    setTimeout(() => {
-      clearInterval(interval)
-      setFiles((prev) => prev.map((f) => (f.id === fileId ? { ...f, status: "completed", progress: 100 } : f)))
+      const data = await apiUploadFiles(fileObjects)
+      console.log("Upload response:", data) // Debug log
+      const uploadedFiles = data.files
+
+      console.log("Uploaded files:", uploadedFiles) // Debug log
+
+      setFiles((prevFiles) =>
+        prevFiles.map((fileObj) => {
+          const uploadedFile = uploadedFiles.find((uf) => uf.filename === fileObj.file.name)
+          console.log("Matching file:", fileObj.file.name, "with uploaded:", uploadedFile) // Debug log
+          if (uploadedFile) {
+            return {
+              ...fileObj,
+              status: uploadedFile.status === "processed" ? "completed" : uploadedFile.status,
+              progress: uploadedFile.status === "processed" ? 100 : fileObj.progress,
+              extractionMethod: uploadedFile.extraction_method,
+              pageCount: uploadedFile.page_count,
+              documentId: uploadedFile.document_id,
+              message: uploadedFile.message || "",
+            }
+          }
+          return fileObj
+        }),
+      )
+
+      // Show success toast for all successfully processed files
+      if (uploadedFiles.some((f) => f.status === "processed")) {
+        onUploadSuccess?.()
+        // Show success toast
+        window.dispatchEvent(
+          new CustomEvent("show-toast", {
+            detail: { type: "success", message: "File uploaded and processed successfully!" },
+          }),
+        )
+      } else if (uploadedFiles.length > 0) {
+        // Show info toast for uploaded files that may need further processing
+        window.dispatchEvent(
+          new CustomEvent("show-toast", {
+            detail: { type: "info", message: "File uploaded. Processing may take a moment." },
+          }),
+        )
+      }
+    } catch (error) {
+      // Update all files to error status with message
+      setFiles((prevFiles) =>
+        prevFiles.map((fileObj) => ({
+          ...fileObj,
+          status: "error",
+          message: error.message,
+        })),
+      )
+    } finally {
       setUploading(false)
-
-      // Show success toast
-      window.dispatchEvent(
-        new CustomEvent("show-toast", {
-          detail: { type: "success", message: "File uploaded successfully!" },
-        }),
-      )
-
-      // Trigger confetti effect
-      onUploadSuccess?.()
-    }, 3000)
+    }
   }
 
   const removeFile = (fileId) => {
@@ -138,6 +190,16 @@ export function FileUploader({ onUploadSuccess }) {
                       </div>
                     </div>
                   )}
+
+                  {fileObj.status === "error" && (
+                    <p className="text-xs text-red-500 mt-2">{fileObj.message}</p>
+                  )}
+
+                  {fileObj.status === "completed" && fileObj.extractionMethod && (
+                    <p className="text-xs text-gray-600 dark:text-gray-400 mt-2">
+                      Extraction Method: {fileObj.extractionMethod}
+                    </p>
+                  )}
                 </div>
 
                 <div className="flex items-center space-x-2">
@@ -163,7 +225,7 @@ export function FileUploader({ onUploadSuccess }) {
           <DocumentMetadataCard
             key={`metadata-${fileObj.id}`}
             filename={fileObj.file.name}
-            pages={Math.floor(Math.random() * 200) + 10} // Simulated
+            pages={fileObj.pageCount}
             dateCreated={new Date()}
             fileSize={fileObj.file.size}
             processingTime={3.2}
@@ -172,4 +234,4 @@ export function FileUploader({ onUploadSuccess }) {
         ))}
     </div>
   )
-}
+})

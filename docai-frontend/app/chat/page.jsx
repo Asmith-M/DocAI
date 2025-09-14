@@ -1,6 +1,7 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
+import { useSearchParams } from "react-router-dom"
 import { Keyboard, Info, History } from "lucide-react"
 import { ChatContainer } from "@/components/chat/chat-container"
 import { ChatInput } from "@/components/chat/chat-input"
@@ -15,6 +16,7 @@ import { PromptTemplates } from "@/components/chat/prompt-templates"
 import { FollowUpChips } from "@/components/chat/follow-up-chips"
 import { ChatEmpty } from "@/components/empty-states/chat-empty"
 import { PageTransition } from "@/components/shared/page-transition"
+import { listFiles, getTables, getChunks } from "@/lib/api"
 
 export default function ChatPage() {
   const [sidebarOpen, setSidebarOpen] = useState(false)
@@ -25,6 +27,68 @@ export default function ChatPage() {
   const [currentQuery, setCurrentQuery] = useState("")
   const [hasMessages, setHasMessages] = useState(false)
   const [chatInput, setChatInput] = useState("")
+  const [searchParams] = useSearchParams()
+
+  // Handle document selection from URL parameter
+  useEffect(() => {
+    const documentId = searchParams.get('documentId')
+    if (documentId) {
+      loadDocumentById(documentId)
+    }
+  }, [searchParams])
+
+  const loadDocumentById = async (documentId) => {
+    try {
+      // Fetch document details from the list
+      const response = await listFiles()
+      const files = response.files || response.documents || response.data || []
+
+      if (!Array.isArray(files)) {
+        throw new Error("Invalid response format from API")
+      }
+
+      const document = files.find(file => file.document_id === documentId || file.documentId === documentId || file.id === documentId)
+
+      if (document) {
+        // Fetch tables and chunks for the selected document
+        const [tablesData, chunksData] = await Promise.all([
+          getTables(documentId),
+          getChunks(documentId),
+        ])
+
+        // Dispatch custom event with document data
+        window.dispatchEvent(
+          new CustomEvent("document-selected", {
+            detail: {
+              document: {
+                id: document.document_id || document.documentId || document.id,
+                name: document.filename || document.name,
+                documentId: document.document_id || document.documentId || document.id,
+                status: document.status === "processed" ? "completed" : document.status,
+              },
+              tables: tablesData.tables || tablesData.data || [],
+              chunks: chunksData.chunks || chunksData.data || [],
+            },
+          }),
+        )
+
+        window.dispatchEvent(
+          new CustomEvent("show-toast", {
+            detail: { type: "success", message: `Loaded ${document.filename || document.name} into chat` },
+          }),
+        )
+      } else {
+        throw new Error(`Document with ID ${documentId} not found`)
+      }
+    } catch (error) {
+      console.error("Failed to load document:", error)
+      window.dispatchEvent(
+        new CustomEvent("show-toast", {
+          detail: { type: "error", message: `Failed to load document: ${error.message}` },
+        }),
+      )
+    }
+  }
 
   const handleSampleQuestion = (question) => {
     setChatInput(question)
@@ -138,7 +202,12 @@ export default function ChatPage() {
                   )}
 
                   <div className="mt-4">
-                    <ChatInput value={chatInput} onChange={setChatInput} onSend={() => setHasMessages(true)} />
+                    <ChatInput
+                      value={chatInput}
+                      onChange={setChatInput}
+                      onSend={() => setHasMessages(true)}
+                      documentId={searchParams.get('documentId')}
+                    />
                   </div>
                 </div>
 

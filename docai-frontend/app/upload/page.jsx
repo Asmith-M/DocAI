@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useRef } from "react"
 import { FileUploader } from "@/components/upload/file-uploader"
 import { FileStatusList } from "@/components/upload/file-status-list"
 import { UploadInstructions } from "@/components/upload/upload-instructions"
@@ -13,6 +13,7 @@ export default function UploadPage() {
   const [showConfetti, setShowConfetti] = useState(false)
   const [confettiTriggered, setConfettiTriggered] = useState(false)
   const [hasFiles, setHasFiles] = useState(false)
+  const fileUploaderRef = useRef(null)
 
   const handleUploadSuccess = () => {
     if (!confettiTriggered) {
@@ -23,8 +24,10 @@ export default function UploadPage() {
   }
 
   const handleUploadClick = () => {
-    // Trigger file upload dialog
-    document.querySelector('input[type="file"]')?.click()
+    // Trigger file upload dialog via ref
+    if (fileUploaderRef.current) {
+      fileUploaderRef.current.clickInput()
+    }
   }
 
   return (
@@ -33,9 +36,15 @@ export default function UploadPage() {
 
         <main className="container mx-auto px-4 py-8 max-w-4xl">
           {!hasFiles ? (
-            <ScrollAnimationWrapper>
-              <UploadEmpty onUploadClick={handleUploadClick} />
-            </ScrollAnimationWrapper>
+            <>
+              <ScrollAnimationWrapper>
+                <UploadEmpty onUploadClick={handleUploadClick} />
+              </ScrollAnimationWrapper>
+              {/* Hidden FileUploader to provide input element */}
+              <div className="hidden">
+                <FileUploader ref={fileUploaderRef} onUploadSuccess={handleUploadSuccess} />
+              </div>
+            </>
           ) : (
             <>
               <ScrollAnimationWrapper>
@@ -49,7 +58,7 @@ export default function UploadPage() {
 
               <div className="grid lg:grid-cols-2 gap-8">
                 <ScrollAnimationWrapper>
-                  <FileUploader onUploadSuccess={handleUploadSuccess} />
+                  <FileUploader ref={fileUploaderRef} onUploadSuccess={handleUploadSuccess} />
                 </ScrollAnimationWrapper>
 
                 <div className="space-y-6">
@@ -57,9 +66,9 @@ export default function UploadPage() {
                     <UploadInstructions />
                   </ScrollAnimationWrapper>
 
-                  <ScrollAnimationWrapper>
-                    <FileStatusList />
-                  </ScrollAnimationWrapper>
+              <ScrollAnimationWrapper>
+                <FileStatusList onRefresh={hasFiles} />
+              </ScrollAnimationWrapper>
                 </div>
               </div>
             </>

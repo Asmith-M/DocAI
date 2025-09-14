@@ -1,32 +1,44 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { CheckCircle, Clock, AlertCircle, MessageSquare } from "lucide-react"
 import { motion } from "framer-motion"
 import { Link } from "react-router-dom"
 import { ARIAButton } from "@/components/shared/aria-button"
+import { listFiles } from "@/lib/api"
 
-export function FileStatusList() {
-  const [files] = useState([
-    {
-      id: 1,
-      name: "Research Paper.pdf",
-      status: "completed",
-      uploadedAt: "2 minutes ago",
-      pages: 24,
-    },
-    {
-      id: 2,
-      name: "User Manual.pdf",
-      status: "processing",
-      uploadedAt: "5 minutes ago",
-      pages: 156,
-    },
-  ])
+export function FileStatusList({ files = [], onRefresh }) {
+  const [uploadedFiles, setUploadedFiles] = useState([])
+  const [loading, setLoading] = useState(true)
 
+  const fetchUploadedFiles = async () => {
+    try {
+      const response = await listFiles()
+      setUploadedFiles(response.documents || [])
+    } catch (error) {
+      console.error("Failed to fetch uploaded files:", error)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    fetchUploadedFiles()
+  }, [])
+
+  // Refresh when onRefresh is called (e.g., after upload)
+  useEffect(() => {
+    if (onRefresh) {
+      fetchUploadedFiles()
+    }
+  }, [onRefresh])
+
+  // Use provided files prop if available, otherwise use fetched files
+  const displayFiles = files.length > 0 ? files : uploadedFiles
   const getStatusIcon = (status) => {
     switch (status) {
       case "completed":
+      case "processed":
         return <CheckCircle className="w-5 h-5 text-green-500" />
       case "processing":
         return <Clock className="w-5 h-5 text-yellow-500 animate-spin" />
@@ -40,6 +52,7 @@ export function FileStatusList() {
   const getStatusText = (status) => {
     switch (status) {
       case "completed":
+      case "processed":
         return "Ready to chat"
       case "processing":
         return "Processing..."
@@ -59,7 +72,7 @@ export function FileStatusList() {
     >
       <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">Recent Uploads</h3>
 
-      {files.length === 0 ? (
+      {displayFiles.length === 0 ? (
         <div className="text-center py-8">
           <div className="w-16 h-16 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center mx-auto mb-4">
             <MessageSquare className="w-8 h-8 text-gray-400" />
@@ -68,9 +81,9 @@ export function FileStatusList() {
         </div>
       ) : (
         <div className="space-y-4">
-          {files.map((file) => (
+          {displayFiles.map((file, index) => (
             <motion.div
-              key={file.id}
+              key={`${file.documentId || file.document_id || file.id || index}-${file.filename || file.name}-${index}`}
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.4 }}
@@ -79,17 +92,20 @@ export function FileStatusList() {
               <div className="flex items-center space-x-3">
                 {getStatusIcon(file.status)}
                 <div>
-                  <h4 className="font-medium text-gray-900 dark:text-white">{file.name}</h4>
+                  <h4 className="font-medium text-gray-900 dark:text-white">{file.filename || file.name}</h4>
                   <p className="text-sm text-gray-500 dark:text-gray-400">
-                    {file.pages} pages • {file.uploadedAt}
+                    {file.pageCount || file.pages} pages • {file.uploadedAt || "Just now"}
                   </p>
+                  {file.extractionMethod && (
+                    <p className="text-xs text-gray-600 dark:text-gray-400">Extraction: {file.extractionMethod}</p>
+                  )}
                 </div>
               </div>
 
               <div className="flex items-center space-x-3">
                 <span className="text-sm text-gray-600 dark:text-gray-300">{getStatusText(file.status)}</span>
-                {file.status === "completed" && (
-                  <Link href="/chat">
+                {(file.status === "completed" || file.status === "processed") && (
+                  <Link to={`/chat?documentId=${file.documentId || file.document_id || file.id}`}>
                     <ARIAButton className="bg-lavender-500 hover:bg-lavender-600 text-white px-4 py-2 text-sm">
                       Chat
                     </ARIAButton>
@@ -101,9 +117,9 @@ export function FileStatusList() {
         </div>
       )}
 
-      {files.some((f) => f.status === "completed") && (
+      {displayFiles.some((f) => f.status === "completed" || f.status === "processed") && (
         <div className="mt-6 pt-4 border-t border-gray-200 dark:border-gray-600">
-          <Link href="/chat">
+          <Link to={`/chat?documentId=${displayFiles.find(f => f.status === "completed" || f.status === "processed")?.documentId || displayFiles.find(f => f.status === "completed" || f.status === "processed")?.document_id || displayFiles.find(f => f.status === "completed" || f.status === "processed")?.id}`}>
             <ARIAButton className="w-full bg-lavender-500 hover:bg-lavender-600 text-white">
               <MessageSquare className="w-4 h-4 mr-2" />
               Start Chatting with Your Documents

@@ -1,56 +1,93 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { motion, AnimatePresence } from "framer-motion"
-import { ChevronLeft, ChevronRight, FileText, Trash2 } from "lucide-react"
+import { ChevronLeft, ChevronRight, FileText, Trash2, Loader2 } from "lucide-react"
 import { DocumentHistoryItem } from "./document-history-item"
 import { ClearHistoryModal } from "./clear-history-modal"
+import { listFiles, getTables, getChunks } from "../../lib/api"
+import { useNavigate } from "react-router-dom"
 
 export function DocumentHistorySidebar({ isOpen, onToggle }) {
   const [showClearModal, setShowClearModal] = useState(false)
-  const [documents] = useState([
-    {
-      id: 1,
-      name: "Research Paper.pdf",
-      uploadDate: "2024-01-15",
-      status: "completed",
-      pages: 24,
-      lastAccessed: "2 hours ago",
-    },
-    {
-      id: 2,
-      name: "User Manual.pdf",
-      uploadDate: "2024-01-14",
-      status: "completed",
-      pages: 156,
-      lastAccessed: "1 day ago",
-    },
-    {
-      id: 3,
-      name: "Technical Specs.pdf",
-      uploadDate: "2024-01-13",
-      status: "processing",
-      pages: 89,
-      lastAccessed: "2 days ago",
-    },
-    {
-      id: 4,
-      name: "Meeting Notes.pdf",
-      uploadDate: "2024-01-12",
-      status: "error",
-      pages: 12,
-      lastAccessed: "3 days ago",
-    },
-  ])
+  const [documents, setDocuments] = useState([])
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState(null)
 
-  const handleDocumentSelect = (document) => {
+  useEffect(() => {
+    if (isOpen) {
+      fetchDocuments()
+    }
+  }, [isOpen])
+
+  const fetchDocuments = async () => {
+    setLoading(true)
+    setError(null)
+    try {
+      const data = await listFiles()
+      const files = data.files || data.documents || data.data || []
+
+      if (!Array.isArray(files)) {
+        throw new Error("Invalid response format from API")
+      }
+
+      const formattedDocuments = files.map((file, index) => ({
+        id: file.document_id || file.documentId || file.id || index + 1,
+        name: file.filename || file.name,
+        uploadDate: file.upload_date ? new Date(file.upload_date).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
+        status: file.status === "processed" ? "completed" : file.status,
+        pages: file.page_count || file.pages || 0,
+        lastAccessed: "Recently",
+        documentId: file.document_id || file.documentId || file.id,
+      }))
+      setDocuments(formattedDocuments)
+    } catch (err) {
+      setError(err.message)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const navigate = useNavigate()
+
+  const handleDocumentSelect = async (document) => {
     console.log("Selected document:", document)
-    // Here you would load the document context into chat
-    window.dispatchEvent(
-      new CustomEvent("show-toast", {
-        detail: { type: "success", message: `Loaded ${document.name} into chat` },
-      }),
-    )
+
+    try {
+      // Fetch tables and chunks for the selected document
+      const [tablesData, chunksData] = await Promise.all([
+        getTables(document.documentId),
+        getChunks(document.documentId),
+      ])
+
+      // Dispatch custom event with document data
+      window.dispatchEvent(
+        new CustomEvent("document-selected", {
+          detail: {
+            document,
+            tables: tablesData.tables || [],
+            chunks: chunksData.chunks || [],
+          },
+        }),
+      )
+
+      window.dispatchEvent(
+        new CustomEvent("show-toast", {
+          detail: { type: "success", message: `Loaded ${document.name} into chat` },
+        }),
+      )
+
+      // Navigate to chat page with selected document id as query param
+      navigate(`/chat?documentId=${document.documentId || document.id}`)
+      onToggle()
+    } catch (error) {
+      console.error("Failed to load document data:", error)
+      window.dispatchEvent(
+        new CustomEvent("show-toast", {
+          detail: { type: "error", message: `Failed to load ${document.name}: ${error.message}` },
+        }),
+      )
+    }
   }
 
   const handleClearHistory = () => {
@@ -91,7 +128,18 @@ export function DocumentHistorySidebar({ isOpen, onToggle }) {
 
               {/* Document List */}
               <div className="flex-1 overflow-y-auto">
-                {documents.length === 0 ? (
+                {loading ? (
+                  <div className="flex flex-col items-center justify-center h-full p-6 text-center">
+                    <Loader2 className="w-8 h-8 text-lavender-500 animate-spin mb-3" />
+                    <p className="text-gray-500 dark:text-gray-400">Loading documents...</p>
+                  </div>
+                ) : error ? (
+                  <div className="flex flex-col items-center justify-center h-full p-6 text-center">
+                    <FileText className="w-12 h-12 text-red-300 dark:text-red-600 mb-3" />
+                    <p className="text-red-500 dark:text-red-400 mb-2">Failed to load documents</p>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">{error}</p>
+                  </div>
+                ) : documents.length === 0 ? (
                   <div className="flex flex-col items-center justify-center h-full p-6 text-center">
                     <FileText className="w-12 h-12 text-gray-300 dark:text-gray-600 mb-3" />
                     <p className="text-gray-500 dark:text-gray-400">No documents in history</p>

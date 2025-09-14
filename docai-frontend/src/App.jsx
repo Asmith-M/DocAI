@@ -1,6 +1,5 @@
 import { Routes, Route } from "react-router-dom"
 
-
 import { Navigation } from "../components/shared/navigation.jsx"
 import { PageTransition } from "../components/shared/page-transition.jsx"
 import { KeyboardShortcutsProvider } from "../components/shared/keyboard-shortcuts-provider.jsx"
@@ -8,12 +7,12 @@ import { ToastWrapper } from "../components/shared/toast-wrapper.jsx"
 import { OfflineBanner } from "../components/shared/offline-banner.jsx"
 import { BackToTopArrow } from "../components/shared/back-to-top-arrow.jsx"
 import { VersionBadge } from "../components/shared/version-badge.jsx"
-
+import { HealthPing } from "../components/shared/health-ping.jsx"
 
 import HomePage from "../app/page.jsx"
 import UploadPage from "../app/upload/page.jsx"
 import ChatPage from "../app/chat/page.jsx"
-import AboutPage from "../app/about/page.jsx" 
+import AboutPage from "../app/about/page.jsx"
 import SettingsPage from "../app/settings/page.jsx"
 import NotFoundPage from "../app/not-found.jsx"
 
@@ -25,6 +24,7 @@ function App() {
       <KeyboardShortcutsProvider>
         <div className="min-h-screen bg-gradient-to-br from-lavender-50 to-white dark:from-gray-900 dark:to-gray-800 transition-colors duration-300">
           <OfflineBanner />
+          <HealthPing />
           <Navigation />
           <main className="relative">
             <PageTransition>
@@ -42,7 +42,7 @@ function App() {
           <BackToTopArrow />
           <VersionBadge />
           <ToastWrapper />
-          
+
         </div>
       </KeyboardShortcutsProvider>
     </ThemeProvider>
