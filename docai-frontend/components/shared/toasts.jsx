@@ -12,7 +12,7 @@ export function Toasts() {
     const handleShowToast = (event) => {
       const { type, message, duration = 5000 } = event.detail
 
-      const id = Date.now()
+      const id = String(Date.now()) + Math.random()
       const newToast = { id, type, message, duration }
 
       setToasts((prev) => [...prev, newToast])

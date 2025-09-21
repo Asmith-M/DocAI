@@ -8,13 +8,19 @@ from chromadb.config import Settings
 from sentence_transformers import SentenceTransformer
 import numpy as np
 from datetime import datetime
+from app.core.config import settings
 
 log = logging.getLogger(__name__)
+
+# Set Hugging Face offline mode
+os.environ['HF_HOME'] = settings.HF_HOME
+os.environ['TRANSFORMERS_OFFLINE'] = settings.TRANSFORMERS_OFFLINE
+os.environ['HF_DATASETS_OFFLINE'] = settings.HF_DATASETS_OFFLINE
 
 class EmbeddingService:
     def __init__(self):
         self.chunks_storage = Path(os.getcwd()) / "app" / "storage" / "chunks"
-        self.chroma_storage = Path(os.getcwd()) / "app" / "storage" / "chroma"
+        self.chroma_storage = Path(settings.CHROMA_PERSIST_DIR)
         self.chroma_storage.mkdir(parents=True, exist_ok=True)
 
         # Initialize ChromaDB client with persistence
@@ -25,11 +31,30 @@ class EmbeddingService:
 
         # Initialize sentence transformer model
         try:
-            self.model = SentenceTransformer('all-MiniLM-L6-v2')
-            log.info("Sentence transformer model loaded successfully")
+            if settings.EMBEDDING_MODEL_PATH:
+                # Use local model path
+                model_path = Path(settings.EMBEDDING_MODEL_PATH)
+                if not model_path.exists():
+                    raise FileNotFoundError(f"Embedding model path not found: {model_path}")
+                self.model = SentenceTransformer(str(model_path))
+                log.info(f"Sentence transformer model loaded from local path: {model_path}")
+            else:
+                # Use default model name (will attempt download if not cached)
+                self.model = SentenceTransformer(settings.EMBEDDING_MODEL_NAME)
+                log.info(f"Sentence transformer model loaded: {settings.EMBEDDING_MODEL_NAME}")
+
+            # Log model dimensions for verification
+            sample_embedding = self.model.encode(["test"], convert_to_numpy=True)
+            log.info(f"Model embedding dimensions: {sample_embedding.shape[1]}")
+
         except Exception as e:
-            log.error(f"Failed to load sentence transformer model: {e}")
-            raise
+            error_msg = f"Failed to load sentence transformer model: {e}"
+            if settings.EMBEDDING_MODEL_PATH:
+                error_msg += f"\nPlease ensure the model files are present at: {settings.EMBEDDING_MODEL_PATH}"
+            else:
+                error_msg += f"\nPlease set EMBEDDING_MODEL_PATH to a local model directory or ensure {settings.EMBEDDING_MODEL_NAME} is cached."
+            log.error(error_msg)
+            raise RuntimeError(error_msg)
 
         # Track embedding status per document
         self.embedding_status = {}

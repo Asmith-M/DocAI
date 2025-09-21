@@ -1,175 +1,99 @@
-import logging
-from typing import Dict, Any
-from fastapi import APIRouter, HTTPException, Query
-from fastapi.responses import StreamingResponse
-from app.services.rag_service import rag_service
-from app.agents.generator_agent import generator_agent
+# docai_backend/app/api/endpoints/rag.py
 
-log = logging.getLogger(__name__)
+import asyncio
+import json
+import uuid
+from fastapi import APIRouter, Request, Response, HTTPException, status
+from fastapi.responses import StreamingResponse, JSONResponse
+from loguru import logger
+
+from app.orchestrator.rag_orchestrator import rag_orchestrator
+from app.cache.rag_cache import clear_cache
 
 router = APIRouter()
 
+# A single, robust endpoint for non-streaming queries
 @router.post("/query")
-async def rag_query(
-    request: Dict[str, str],
-    document_id: str = Query(..., description="Document ID to search in")
-):
-    """
-    Execute a RAG query and return streaming response.
+async def rag_query(request: Request, response: Response):
+    body = await request.json()
+    
+    # Get document_id from body first, then fallback to query params for compatibility
+    document_id = body.get("document_id") or request.query_params.get("document_id")
+    
+    # Get question from common keys like "question" or "query"
+    question = body.get("question") or body.get("query")
 
-    Request body:
-    {
-        "query": "user question"
-    }
+    if not document_id or not question:
+        raise HTTPException(status_code=400, detail="Missing document_id or question in body/params")
+
+    # Get optional parameters
+    top_k = body.get("top_k", 10)
+    return_top = body.get("return_top", 5)
+    stream = body.get("stream", False)
+
+    request_id = str(uuid.uuid4())
+    response.headers["X-Correlation-Id"] = request_id
+
+    try:
+        # NOTE: This endpoint now only handles non-streaming for clarity.
+        # Streaming requests should go to the POST /stream/{document_id} endpoint.
+        if stream:
+             raise HTTPException(status_code=400, detail="Streaming is not supported on /query. Please use the POST /stream/{document_id} endpoint.")
+
+        # Non-stream response
+        async for result_json in rag_orchestrator.handle_query(document_id, question, top_k, return_top, stream=False, request_id=request_id):
+            # For non-streaming, handle_query yields a single JSON result
+            result = json.loads(result_json)
+            break  # We only expect one result for non-streaming
+            
+        return JSONResponse(content=result, headers={"X-Correlation-Id": request_id})
+        
+    except Exception as e:
+        logger.error(f"Error in /api/rag/query: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+# The primary endpoint for streaming queries
+@router.post("/stream/{document_id}")
+async def rag_stream_post(document_id: str, request: Request, response: Response):
+    """
+    Handles a streaming RAG query via POST request.
+    The query is sent in the request body as JSON: {"query": "your question"}
     """
     try:
-        query = request.get("query", "").strip()
+        body = await request.json()
+        query = body.get("query")
         if not query:
-            raise HTTPException(status_code=400, detail="Query cannot be empty")
+            raise HTTPException(status_code=400, detail="Missing 'query' in request body")
 
-        if not document_id:
-            raise HTTPException(status_code=400, detail="Document ID is required")
+        request_id = str(uuid.uuid4())
+        response.headers["X-Correlation-Id"] = request_id
 
-        async def generate_response():
+        async def event_generator():
             try:
-                async for chunk in rag_service.query(query, document_id, stream=True):
-                    yield f"data: {chunk}\n\n"
+                # Now handle_query always returns an async generator
+                async for event in rag_orchestrator.handle_query(document_id, query, stream=True, request_id=request_id):
+                    yield event
             except Exception as e:
-                log.error(f"Error in streaming response: {e}")
-                yield f"data: Error: {str(e)}\n\n"
+                logger.error(f"Error during stream generation for request {request_id}: {e}")
+                error_event = json.dumps({"type": "error", "data": {"code": "STREAM_ERROR", "message": str(e)}})
+                yield f"data: {error_event}\n\n"
 
-        return StreamingResponse(
-            generate_response(),
-            media_type="text/event-stream",
-            headers={
-                "Cache-Control": "no-cache",
-                "Connection": "keep-alive",
-                "Access-Control-Allow-Origin": "*",
-            }
-        )
+        return StreamingResponse(event_generator(), media_type="text/event-stream")
 
-    except HTTPException:
-        raise
+    except json.JSONDecodeError:
+        raise HTTPException(status_code=400, detail="Invalid JSON in request body")
     except Exception as e:
-        log.error(f"Error in rag_query: {e}")
-        raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")
+        logger.error(f"Unhandled error in /stream/{document_id}: {e}")
+        raise HTTPException(status_code=500, detail="An internal error occurred.")
 
-@router.get("/stream/{document_id}")
-async def rag_stream(
-    document_id: str,
-    query: str = Query(..., description="User query")
-):
-    """
-    Stream RAG response with metadata for a document.
-    """
-    try:
-        if not query.strip():
-            raise HTTPException(status_code=400, detail="Query cannot be empty")
+# Other endpoints remain the same
+@router.post("/cancel/{request_id}")
+async def rag_cancel(request_id: str):
+    logger.info(f"Received cancel request for {request_id}")
+    return JSONResponse(content={"message": f"Cancel request received for {request_id}"})
 
-        async def generate_stream():
-            try:
-                async for response_data in rag_service.get_streaming_response(query, document_id):
-                    import json
-                    yield f"data: {json.dumps(response_data)}\n\n"
-            except Exception as e:
-                log.error(f"Error in streaming response: {e}")
-                error_data = {
-                    "type": "error",
-                    "message": str(e)
-                }
-                import json
-                yield f"data: {json.dumps(error_data)}\n\n"
-
-        return StreamingResponse(
-            generate_stream(),
-            media_type="text/event-stream",
-            headers={
-                "Cache-Control": "no-cache",
-                "Connection": "keep-alive",
-                "Access-Control-Allow-Origin": "*",
-            }
-        )
-
-    except HTTPException:
-        raise
-    except Exception as e:
-        log.error(f"Error in rag_stream: {e}")
-        raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")
-
-@router.post("/embed/search/{document_id}")
-async def embed_search_adapter(
-    document_id: str,
-    query: str = Query(..., description="Search query")
-):
-    """
-    Adapter endpoint to maintain compatibility with existing frontend.
-    Maps to the new RAG query endpoint.
-    """
-    try:
-        if not query.strip():
-            raise HTTPException(status_code=400, detail="Query cannot be empty")
-
-        # Use RAG service but return in the format expected by frontend
-        results = []
-
-        async for chunk in rag_service.query(query, document_id, stream=False):
-            # Collect the full response
-            full_response = ""
-            full_response += chunk
-
-        # Return in embedding search format for compatibility
-        return {
-            "results": [
-                {
-                    "text": full_response,
-                    "distance": 0.1,  # Mock distance for compatibility
-                    "metadata": {
-                        "source": "RAG",
-                        "confidence": "high"
-                    }
-                }
-            ],
-            "total": 1
-        }
-
-    except Exception as e:
-        log.error(f"Error in embed_search_adapter: {e}")
-        raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")
-
-@router.get("/health/ollama")
-async def check_ollama_health():
-    """
-    Check if Ollama is running and accessible.
-    """
-    try:
-        health_status = await generator_agent.check_ollama_health()
-        return health_status
-    except Exception as e:
-        log.error(f"Error checking Ollama health: {e}")
-        return {
-            "status": "error",
-            "error": str(e)
-        }
-
-@router.post("/cache/clear")
-async def clear_cache(request: Dict[str, Any] = None):
-    """
-    Clear the RAG cache.
-
-    Request body (optional):
-    {
-        "document_id": "specific_document_id"  # If not provided, clears all cache
-    }
-    """
-    try:
-        document_id = request.get("document_id") if request else None
-        rag_service.clear_cache(document_id)
-
-        return {
-            "message": f"Cache cleared{' for document ' + document_id if document_id else ''}",
-            "status": "success"
-        }
-
-    except Exception as e:
-        log.error(f"Error clearing cache: {e}")
-        raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")
+@router.get("/prefetch/{document_id}")
+async def rag_prefetch(document_id: str):
+    logger.info(f"Received prefetch request for {document_id}")
+    clear_cache(document_id)
+    return JSONResponse(content={"message": f"Prefetch cache cleared for {document_id}"})

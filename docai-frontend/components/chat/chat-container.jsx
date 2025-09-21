@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from "framer-motion"
 import { User, Bot } from "lucide-react"
 import { TypingIndicator } from "./typing-indicator"
 import { VerifiedAnswerCard } from "./verified-answer-card"
-import { ragQuery } from "../../lib/api"
+import { ragQuery, startRagStreamFetch, cancelRagRequest } from "../../lib/api"
 
 export function ChatContainer() {
   const [messages, setMessages] = useState([
@@ -39,7 +39,7 @@ export function ChatContainer() {
       setIsTyping(true)
 
       try {
-        // Call ragStream to get streaming response using EventSource
+        // Call ragStream to get streaming response using fetch
         const documentId = e?.detail?.documentId
         if (!documentId) {
           setMessages((prev) => [...prev, { id: Date.now() + 1, type: 'bot', content: "Error: Document ID is missing.", timestamp: new Date(), confidence: 'low' }])
@@ -47,49 +47,87 @@ export function ChatContainer() {
           return
         }
 
-        const eventSource = new EventSource(`${API_BASE_URL}/rag/stream/${encodeURIComponent(documentId)}?query=${encodeURIComponent(text)}`)
-        eventSourceRef.current = eventSource
+        const response = await startRagStreamFetch(documentId, text)
+        eventSourceRef.current = response
 
         let botMessage = ''
         let messageId = Date.now() + 1
+        let sources = []
 
-        eventSource.onmessage = (event) => {
-          const chunk = event.data
-          if (chunk === '[DONE]') {
-            eventSource.close()
-            eventSourceRef.current = null
-            setIsTyping(false)
-            return
-          }
-          botMessage += chunk
-          setMessages((prev) => {
-            // Replace last bot message or add new
-            const lastMessage = prev[prev.length - 1]
-            if (lastMessage && lastMessage.type === 'bot' && lastMessage.id === messageId) {
-              return [...prev.slice(0, -1), { ...lastMessage, content: botMessage, timestamp: new Date(), confidence: 'medium' }]
-            } else {
-              return [...prev, { id: messageId, type: 'bot', content: botMessage, timestamp: new Date(), confidence: 'medium' }]
+        const reader = response.body.getReader()
+        const decoder = new TextDecoder()
+
+        try {
+          while (true) {
+            const { done, value } = await reader.read()
+            if (done) break
+
+            const chunk = decoder.decode(value, { stream: true })
+            const lines = chunk.split('\n')
+
+            for (const line of lines) {
+              if (line.startsWith('data: ')) {
+                const data = line.slice(6)
+                if (data.trim()) {
+                  try {
+                    const eventData = JSON.parse(data)
+                    switch (eventData.type) {
+                      case 'meta':
+                        // Handle meta event if needed
+                        break
+                      case 'source':
+                        sources.push(eventData.data)
+                        break
+                      case 'token':
+                        botMessage += eventData.data
+                        setMessages((prev) => {
+                          // Replace last bot message or add new
+                          const lastMessage = prev[prev.length - 1]
+                          if (lastMessage && lastMessage.type === 'bot' && lastMessage.id === messageId) {
+                            return [...prev.slice(0, -1), { ...lastMessage, content: botMessage, timestamp: new Date(), confidence: 'medium', sources }]
+                          } else {
+                            return [...prev, { id: messageId, type: 'bot', content: botMessage, timestamp: new Date(), confidence: 'medium', sources }]
+                          }
+                        })
+                        break
+                      case 'done':
+                        setIsTyping(false)
+                        // Update final message with verification result
+                        setMessages((prev) => {
+                          const lastMessage = prev[prev.length - 1]
+                          if (lastMessage && lastMessage.type === 'bot' && lastMessage.id === messageId) {
+                            return [...prev.slice(0, -1), { ...lastMessage, verification_result: eventData.data.verification_result }]
+                          }
+                          return prev
+                        })
+                        return
+                      case 'error':
+                        setIsTyping(false)
+                        setMessages((prev) => [...prev, { id: Date.now() + 1, type: 'bot', content: `Error: ${eventData.data.message}`, timestamp: new Date(), confidence: 'low' }])
+                        return
+                      default:
+                        break
+                    }
+                  } catch (err) {
+                    console.error('Error parsing SSE event:', err)
+                  }
+                }
+              }
             }
-          })
-        }
-
-        eventSource.onerror = (error) => {
-          console.error('EventSource error:', error)
+          }
+        } catch (error) {
+          console.error('Error reading stream:', error)
           setMessages((prev) => [...prev, { id: Date.now() + 1, type: 'bot', content: `Error: Streaming failed`, timestamp: new Date(), confidence: 'low' }])
-          eventSource.close()
-          eventSourceRef.current = null
           setIsTyping(false)
         }
 
-        // Fallback: if no messages received after 5 seconds, close and show error
+        // Fallback: if no messages received after 30 seconds, show timeout error
         setTimeout(() => {
-          if (isTyping && eventSourceRef.current) {
-            eventSourceRef.current.close()
-            eventSourceRef.current = null
+          if (isTyping) {
             setMessages((prev) => [...prev, { id: Date.now() + 1, type: 'bot', content: `Error: Streaming timeout`, timestamp: new Date(), confidence: 'low' }])
             setIsTyping(false)
           }
-        }, 5000)
+        }, 30000)
       } catch (error) {
         setMessages((prev) => [...prev, { id: Date.now() + 1, type: 'bot', content: `Error: ${error.message}`, timestamp: new Date(), confidence: 'low' }])
         setIsTyping(false)
@@ -110,7 +148,7 @@ export function ChatContainer() {
 
   const stopGeneration = () => {
     if (eventSourceRef.current) {
-      eventSourceRef.current.close()
+      // For fetch streaming, we can't directly abort, but we can set a flag to stop processing
       eventSourceRef.current = null
       setIsTyping(false)
       setMessages((prev) => [...prev, { id: Date.now() + 1, type: 'bot', content: "Generation stopped.", timestamp: new Date(), confidence: 'low' }])
@@ -173,6 +211,7 @@ export function ChatContainer() {
                       content={message.content}
                       confidence={message.confidence || "medium"}
                       timestamp={message.timestamp?.toLocaleTimeString()}
+                      verificationResult={message.verification_result}
                       onCopy={() => copyMessage(message.content)}
                       onFeedback={(type) => console.log(`Feedback: ${type} for message ${message.id}`)}
                     />

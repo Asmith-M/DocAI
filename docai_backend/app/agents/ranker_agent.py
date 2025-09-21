@@ -1,3 +1,4 @@
+#docai_backend/app/agents/ranker_agent.py
 import logging
 from typing import List, Dict, Any, Tuple
 from sklearn.feature_extraction.text import TfidfVectorizer
@@ -22,45 +23,59 @@ class RankerAgent:
             max_features=10000
         )
 
-    def get_candidates(self, query: str, document_id: str, n_results: int = 5) -> List[Dict[str, Any]]:
+    async def get_candidates(self, document_id: str, question: str, top_k: int = 10, return_top: int = 5) -> Dict[str, Any]:
         """
         Get top candidate chunks using hybrid ranking approach.
 
         Args:
-            query: User query string
             document_id: Document ID to search in
-            n_results: Number of final candidates to return
+            question: User query string
+            top_k: Number of initial candidates to retrieve
+            return_top: Number of final candidates to return
 
         Returns:
-            List of candidate chunks with scores and metadata
+            Dict containing candidate chunks with scores and metadata
         """
         try:
             # Step 1: Get initial candidates from embedding search (semantic)
-            initial_candidates = embedding_service.search_similar(
-                document_id, query, n_results=self.max_candidates
-            )
+            # Check if search_similar is async or sync
+            if hasattr(embedding_service.search_similar, '__call__'):
+                try:
+                    # Try async first
+                    initial_candidates = await embedding_service.search_similar(
+                        document_id, question, n_results=self.max_candidates
+                    )
+                except TypeError:
+                    # If that fails, try sync
+                    initial_candidates = embedding_service.search_similar(
+                        document_id, question, n_results=self.max_candidates
+                    )
+            else:
+                initial_candidates = embedding_service.search_similar(
+                    document_id, question, n_results=self.max_candidates
+                )
 
             if not initial_candidates.get('results'):
-                log.warning(f"No candidates found for query: {query}")
-                return []
+                log.warning(f"No candidates found for query: {question}")
+                return {"chunks": []}
 
             candidates = initial_candidates['results']
 
             # Step 2: Compute lexical scores (TF-IDF similarity)
-            lexical_scores = self._compute_lexical_scores(query, candidates)
+            lexical_scores = self._compute_lexical_scores(question, candidates)
 
             # Step 3: Combine semantic and lexical scores
             combined_candidates = self._combine_scores(candidates, lexical_scores)
 
             # Step 4: Apply MMR (Maximal Marginal Relevance) for diversity
-            final_candidates = self._apply_mmr(query, combined_candidates, n_results)
+            final_candidates = self._apply_mmr(question, combined_candidates, return_top)
 
-            log.info(f"Selected {len(final_candidates)} candidates for query: {query}")
-            return final_candidates
+            log.info(f"Selected {len(final_candidates)} candidates for query: {question}")
+            return {"chunks": final_candidates}
 
         except Exception as e:
             log.error(f"Error in RankerAgent.get_candidates: {e}")
-            return []
+            return {"chunks": []}
 
     def _compute_lexical_scores(self, query: str, candidates: List[Dict[str, Any]]) -> List[float]:
         """Compute lexical similarity scores using TF-IDF."""

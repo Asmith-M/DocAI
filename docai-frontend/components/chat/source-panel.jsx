@@ -4,35 +4,8 @@ import { useState } from "react"
 import { ChevronDown, ChevronUp, FileText, ExternalLink } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
 
-export function SourcePanel() {
+export function SourcePanel({ sources = [], matchedPhrases = [] }) {
   const [expandedSource, setExpandedSource] = useState(null)
-
-  const sources = [
-    {
-      id: 1,
-      title: "Research Paper.pdf",
-      page: 15,
-      snippet:
-        "The implementation of machine learning algorithms in document processing has shown significant improvements in accuracy and speed...",
-      relevance: 95,
-    },
-    {
-      id: 2,
-      title: "User Manual.pdf",
-      page: 42,
-      snippet:
-        "To configure the system settings, navigate to the administration panel and select the appropriate options from the dropdown menu...",
-      relevance: 87,
-    },
-    {
-      id: 3,
-      title: "Research Paper.pdf",
-      page: 23,
-      snippet:
-        "Natural language processing techniques enable better understanding of document context and semantic meaning...",
-      relevance: 82,
-    },
-  ]
 
   const toggleSource = (sourceId) => {
     setExpandedSource(expandedSource === sourceId ? null : sourceId)

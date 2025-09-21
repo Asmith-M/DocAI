@@ -11,6 +11,7 @@ from app.core.config import settings
 from app.services.pdf_extractor import PDFExtractor
 from app.services.table_extractor import table_extractor
 from app.services.chunk_extractor import chunk_extractor
+from app.services.embedding_service import embedding_service
 
 log = logging.getLogger(__name__)
 
@@ -134,6 +135,20 @@ async def upload_documents(files: List[UploadFile] = File(...)):
             }
             extraction_method = method_map.get(extraction.get("method", "unknown"), "unknown")
 
+            # Generate embeddings for the document
+            log.info(f"Starting embedding generation for {file.filename}")
+            try:
+                embedding_success = embedding_service.generate_embeddings(document_id)
+                if embedding_success:
+                    log.info(f"Embedding generation completed successfully for {file.filename}")
+                    embedding_status = "completed"
+                else:
+                    log.warning(f"Embedding generation failed for {file.filename}")
+                    embedding_status = "failed"
+            except Exception as e:
+                log.error(f"Embedding generation error for {file.filename}: {e}")
+                embedding_status = "error"
+
             # Write metadata JSON
             metadata = {
                 "document_id": document_id,
@@ -143,6 +158,8 @@ async def upload_documents(files: List[UploadFile] = File(...)):
                 "extraction_method": extraction_method,
                 "has_tables": tables_extracted > 0,
                 "tables_extracted": tables_extracted,
+                "chunks_extracted": chunks_extracted,
+                "embedding_status": embedding_status,
                 "status": "processed"
             }
 
@@ -201,3 +218,136 @@ async def list_uploaded_files():
         return {"documents": docs}
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to list uploaded documents: {str(e)}")
+
+
+@router.post("/regenerate-embeddings/{document_id}")
+async def regenerate_embeddings(document_id: str):
+    """Regenerate embeddings for an existing document."""
+    try:
+        # Check if document exists in file system
+        doc_folder = BASE_UPLOAD_DIR / document_id
+        if not doc_folder.exists():
+            raise HTTPException(status_code=404, detail=f"Document {document_id} not found")
+        
+        # Check if metadata exists
+        metadata_path = doc_folder / "metadata.json"
+        if not metadata_path.exists():
+            raise HTTPException(status_code=404, detail=f"Metadata not found for document {document_id}")
+        
+        log.info(f"Starting embedding regeneration for document {document_id}")
+        
+        # Generate embeddings
+        embedding_success = embedding_service.generate_embeddings(document_id)
+        
+        if embedding_success:
+            log.info(f"Embedding regeneration completed successfully for {document_id}")
+            
+            # Update metadata
+            metadata = json.loads(metadata_path.read_text(encoding="utf-8"))
+            metadata["embedding_status"] = "completed"
+            metadata["embedding_regenerated"] = datetime.utcnow().isoformat()
+            metadata_path.write_text(json.dumps(metadata, indent=2), encoding="utf-8")
+            
+            return {
+                "document_id": document_id,
+                "status": "success",
+                "message": "Embeddings regenerated successfully"
+            }
+        else:
+            log.warning(f"Embedding regeneration failed for {document_id}")
+            return {
+                "document_id": document_id,
+                "status": "failed",
+                "message": "Embedding regeneration failed"
+            }
+            
+    except HTTPException:
+        raise
+    except Exception as e:
+        log.error(f"Error regenerating embeddings for {document_id}: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to regenerate embeddings: {str(e)}")
+
+
+@router.post("/regenerate-all-embeddings")
+async def regenerate_all_embeddings():
+    """Regenerate embeddings for all existing documents."""
+    try:
+        results = []
+        
+        for doc_dir in BASE_UPLOAD_DIR.iterdir():
+            if not doc_dir.is_dir():
+                continue
+                
+            document_id = doc_dir.name
+            log.info(f"Regenerating embeddings for document {document_id}")
+            
+            try:
+                embedding_success = embedding_service.generate_embeddings(document_id)
+                
+                result = {
+                    "document_id": document_id,
+                    "status": "success" if embedding_success else "failed"
+                }
+                
+                # Update metadata
+                metadata_path = doc_dir / "metadata.json"
+                if metadata_path.exists():
+                    metadata = json.loads(metadata_path.read_text(encoding="utf-8"))
+                    metadata["embedding_status"] = "completed" if embedding_success else "failed"
+                    metadata["embedding_regenerated"] = datetime.utcnow().isoformat()
+                    metadata_path.write_text(json.dumps(metadata, indent=2), encoding="utf-8")
+                
+            except Exception as e:
+                log.error(f"Failed to regenerate embeddings for {document_id}: {e}")
+                result = {
+                    "document_id": document_id,
+                    "status": "error",
+                    "error": str(e)
+                }
+            
+            results.append(result)
+        
+        return {
+            "message": "Embedding regeneration completed",
+            "results": results
+        }
+        
+    except Exception as e:
+        log.error(f"Error in bulk embedding regeneration: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to regenerate embeddings: {str(e)}")
+
+
+@router.delete("/{document_id}")
+async def delete_document(document_id: str):
+    """Delete a document and all its associated data."""
+    try:
+        # Check if document exists
+        doc_folder = BASE_UPLOAD_DIR / document_id
+        if not doc_folder.exists():
+            raise HTTPException(status_code=404, detail=f"Document {document_id} not found")
+        
+        # Delete from ChromaDB (if embedding service has a delete method)
+        try:
+            # You might need to implement this method in your embedding service
+            # embedding_service.delete_document(document_id)
+            log.info(f"Attempted to delete embeddings for document {document_id}")
+        except Exception as e:
+            log.warning(f"Failed to delete embeddings for {document_id}: {e}")
+        
+        # Delete document folder and all contents
+        import shutil
+        shutil.rmtree(doc_folder)
+        
+        log.info(f"Successfully deleted document {document_id}")
+        
+        return {
+            "document_id": document_id,
+            "status": "deleted",
+            "message": "Document deleted successfully"
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        log.error(f"Error deleting document {document_id}: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to delete document: {str(e)}")

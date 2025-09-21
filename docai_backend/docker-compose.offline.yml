@@ -1,0 +1,79 @@
+version: '3.8'
+
+services:
+  docai-backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: docai-backend
+    ports:
+      - "8000:8000"
+    environment:
+      - HOST=0.0.0.0
+      - PORT=8000
+      - OFFLINE_MODE=true
+      - ENABLE_TELEMETRY=false
+      - OLLAMA_HOST=http://ollama:11434
+      - OLLAMA_MODEL=gemma:2b
+      - OLLAMA_MODEL_LOW_SPEC=gemma:2b
+      - OLLAMA_MODEL_PRODUCTION=mistral:7b-instruct-q4_0
+      - EMBEDDING_MODEL_PATH=/app/models/embedding-model
+      - CHROMA_PERSIST_DIR=/app/chroma_db
+      - TESSERACT_CMD=tesseract
+      - TESSDATA_PREFIX=/usr/share/tesseract-ocr/5/tessdata
+      - HF_HOME=/app/hf_cache
+      - TRANSFORMERS_OFFLINE=1
+      - HF_DATASETS_OFFLINE=1
+    volumes:
+      - ./uploaded_docs:/app/uploaded_docs
+      - ./chroma_db:/app/chroma_db
+      - ./models:/app/models:ro
+      - ./hf_cache:/app/hf_cache
+    depends_on:
+      - ollama
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  ollama:
+    image: ollama/ollama:latest
+    container_name: ollama
+    ports:
+      - "11434:11434"
+    environment:
+      - OLLAMA_HOST=0.0.0.0
+    volumes:
+      - ollama_data:/root/.ollama
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:11434/api/tags"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
+  chroma:
+    image: chromadb/chroma:latest
+    container_name: chroma
+    ports:
+      - "8001:8000"
+    environment:
+      - CHROMA_SERVER_HOST=0.0.0.0
+      - CHROMA_SERVER_HTTP_PORT=8000
+    volumes:
+      - chroma_data:/chroma/chroma
+    restart: unless-stopped
+
+volumes:
+  ollama_data:
+    driver: local
+  chroma_data:
+    driver: local
+
+networks:
+  default:
+    name: docai-network

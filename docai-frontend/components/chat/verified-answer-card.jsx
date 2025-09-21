@@ -4,7 +4,7 @@ import { motion } from "framer-motion"
 import { Bot, Copy, ThumbsUp, ThumbsDown } from "lucide-react"
 import { CitationConfidenceBadge } from "./citation-confidence-badge"
 
-export function VerifiedAnswerCard({ content, confidence = "high", timestamp, onCopy, onFeedback }) {
+export function VerifiedAnswerCard({ content, confidence = "high", timestamp, verificationResult, onCopy, onFeedback }) {
   const handleCopy = () => {
     navigator.clipboard.writeText(content)
     onCopy?.()
@@ -30,7 +30,15 @@ export function VerifiedAnswerCard({ content, confidence = "high", timestamp, on
 
           {/* Confidence Badge */}
           <div className="flex items-center justify-between">
-            <CitationConfidenceBadge confidence={confidence} />
+            <div className="flex items-center space-x-2">
+              <CitationConfidenceBadge confidence={confidence} />
+              {verificationResult && (
+                <div className="text-xs px-2 py-1 rounded-full bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200">
+                  {verificationResult.confidence_level === 'high' ? 'Verified' :
+                   verificationResult.confidence_level === 'medium' ? 'Partially Verified' : 'Unverified'}
+                </div>
+              )}
+            </div>
 
             {/* Message Actions */}
             <div className="flex items-center space-x-2">
@@ -57,6 +65,14 @@ export function VerifiedAnswerCard({ content, confidence = "high", timestamp, on
               </button>
             </div>
           </div>
+
+          {/* Verification Details */}
+          {verificationResult && (
+            <div className="mt-2 text-xs text-gray-500 dark:text-gray-400">
+              Confidence: {(verificationResult.confidence_score * 100).toFixed(0)}% |
+              Hallucination Risk: {verificationResult.hallucination_risk}
+            </div>
+          )}
 
           {/* Timestamp */}
           {timestamp && <div className="text-xs text-gray-500 dark:text-gray-400 mt-2">{timestamp}</div>}

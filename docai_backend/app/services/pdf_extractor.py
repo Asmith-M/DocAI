@@ -2,6 +2,9 @@ from typing import Dict, List
 from pathlib import Path
 import tempfile
 import logging
+import os
+
+from app.core.config import settings
 
 log = logging.getLogger(__name__)
 
@@ -23,6 +26,20 @@ try:
     HAS_EASYOCR = True
 except Exception:
     HAS_EASYOCR = False
+
+# Configure Tesseract for offline mode
+if HAS_PYTESSERACT and settings.TESSERACT_CMD:
+    pytesseract.pytesseract.tesseract_cmd = settings.TESSERACT_CMD
+    log.info(f"Tesseract command set to: {settings.TESSERACT_CMD}")
+
+if settings.TESSDATA_PREFIX:
+    os.environ['TESSDATA_PREFIX'] = settings.TESSDATA_PREFIX
+    log.info(f"TESSDATA_PREFIX set to: {settings.TESSDATA_PREFIX}")
+
+# Configure EasyOCR for offline mode
+if HAS_EASYOCR:
+    os.environ['EASYOCR_MODULE_PATH'] = os.path.join(settings.HF_HOME, 'easyocr')
+    log.info(f"EasyOCR module path set to: {os.environ['EASYOCR_MODULE_PATH']}")
 
 
 class PDFExtractor:

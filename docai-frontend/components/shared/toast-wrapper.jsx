@@ -11,7 +11,7 @@ export function ToastWrapper() {
     // Listen for custom toast events
     const handleToast = (event) => {
       const { type, message, duration = 5000 } = event.detail
-      const id = Date.now()
+      const id = String(Date.now()) + Math.random()
 
       setToasts((prev) => [...prev, { id, type, message, duration }])
 

@@ -2,19 +2,22 @@
 
 import { useState, useEffect } from "react"
 import { motion, AnimatePresence } from "framer-motion"
-import { Brain, Play, CheckCircle, AlertCircle, Loader2, Trash2 } from "lucide-react"
-import { generateEmbeddings, getEmbeddingStatus, deleteEmbeddings } from "../../lib/api"
+import { Brain, Play, CheckCircle, AlertCircle, Loader2, Trash2, Settings } from "lucide-react"
+import { generateEmbeddings, getEmbeddingStatus, deleteEmbeddings, getOfflineStatus } from "../../lib/api"
 
 export function EmbeddingControls({ selectedDocument, onEmbeddingGenerated }) {
   const [isGenerating, setIsGenerating] = useState(false)
   const [status, setStatus] = useState(null)
   const [error, setError] = useState(null)
   const [isPolling, setIsPolling] = useState(false)
+  const [offlineStatus, setOfflineStatus] = useState(null)
+  const [checkingOffline, setCheckingOffline] = useState(false)
 
   useEffect(() => {
     if (selectedDocument) {
       checkEmbeddingStatus()
     }
+    checkOfflineStatus()
   }, [selectedDocument])
 
   const checkEmbeddingStatus = async () => {
@@ -27,6 +30,19 @@ export function EmbeddingControls({ selectedDocument, onEmbeddingGenerated }) {
     } catch (err) {
       setError(err.message)
       setStatus(null)
+    }
+  }
+
+  const checkOfflineStatus = async () => {
+    setCheckingOffline(true)
+    try {
+      const status = await getOfflineStatus()
+      setOfflineStatus(status)
+    } catch (err) {
+      console.warn("Failed to check offline status:", err)
+      setOfflineStatus(null)
+    } finally {
+      setCheckingOffline(false)
     }
   }
 
@@ -191,14 +207,29 @@ export function EmbeddingControls({ selectedDocument, onEmbeddingGenerated }) {
         </div>
       )}
 
+      {/* Offline status warning */}
+      {offlineStatus && !offlineStatus.ready && (
+        <div className="mb-3 p-3 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg">
+          <div className="flex items-center space-x-2 text-sm text-yellow-700 dark:text-yellow-300">
+            <AlertCircle className="w-4 h-4" />
+            <span>Some offline components are not ready. Embedding generation may be limited.</span>
+          </div>
+          <div className="mt-2 text-xs text-yellow-600 dark:text-yellow-400">
+            {!offlineStatus.components?.embedding_service && "• Embedding service not ready"}
+            {!offlineStatus.components?.chroma_persistence && "• Chroma persistence not ready"}
+            {!offlineStatus.components?.ocr_engines && "• OCR engines not ready"}
+          </div>
+        </div>
+      )}
+
       <div className="flex space-x-2">
         <motion.button
           onClick={handleGenerateEmbeddings}
-          disabled={isGenerating || isPolling || status?.status === "processing"}
+          disabled={isGenerating || isPolling || status?.status === "processing" || (offlineStatus && !offlineStatus.ready)}
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
           className={`flex-1 flex items-center justify-center px-4 py-2 text-sm font-medium rounded-lg transition-colors ${
-            isGenerating || isPolling || status?.status === "processing"
+            isGenerating || isPolling || status?.status === "processing" || (offlineStatus && !offlineStatus.ready)
               ? "bg-gray-100 dark:bg-gray-700 text-gray-400 dark:text-gray-500 cursor-not-allowed"
               : "bg-purple-500 hover:bg-purple-600 text-white"
           }`}
@@ -212,6 +243,11 @@ export function EmbeddingControls({ selectedDocument, onEmbeddingGenerated }) {
             <>
               <Loader2 className="w-4 h-4 mr-2 animate-spin" />
               Generating...
+            </>
+          ) : offlineStatus && !offlineStatus.ready ? (
+            <>
+              <Settings className="w-4 h-4 mr-2" />
+              Setup Required
             </>
           ) : (
             <>

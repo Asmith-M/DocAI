@@ -3,7 +3,7 @@
 import { useState } from "react"
 import { FileText, ExternalLink } from "lucide-react"
 
-export function SourceSnippet({ source, highlightedPhrases = [] }) {
+export function SourceSnippet({ source, matchedPhrases = [] }) {
   const [showTooltip, setShowTooltip] = useState(false)
 
   const highlightText = (text, phrases) => {
@@ -46,7 +46,7 @@ export function SourceSnippet({ source, highlightedPhrases = [] }) {
             __html: highlightText(
               source?.text ||
                 "This is a sample source snippet that would contain the relevant text from the document...",
-              highlightedPhrases,
+              matchedPhrases,
             ),
           }}
         />
