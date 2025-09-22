@@ -11,7 +11,8 @@ class GeneratorAgent:
         self.client = get_ollama_client()
         self.temperature = 0.0
         self.model = settings.OLLAMA_MODEL
-        self.semaphore = asyncio.Semaphore(3)  # Limit concurrent generations
+        concurrency_limit = getattr(settings, "GENERATOR_CONCURRENCY_LIMIT", 3)
+        self.semaphore = asyncio.Semaphore(int(concurrency_limit))  # Configurable concurrency limit
 
     async def generate(
         self,
@@ -23,7 +24,15 @@ class GeneratorAgent:
         if not request_id:
             request_id = str(uuid.uuid4())
 
-        prompt = self._build_prompt(question, context_chunks)
+        # Limit context chunks to top N and truncate text to ~300 tokens (approx 1500 chars)
+        max_chunks = int(getattr(settings, "GENERATOR_MAX_CONTEXT_CHUNKS", 5))
+        truncated_chunks = []
+        for chunk in context_chunks[:max_chunks]:
+            text = chunk.get("text", "")
+            truncated_text = text[:1500]  # Approximate truncation
+            truncated_chunks.append({**chunk, "text": truncated_text})
+
+        prompt = self._build_prompt(question, truncated_chunks)
 
         logger.info(f"GeneratorAgent: Starting generation for request_id {request_id}")
 

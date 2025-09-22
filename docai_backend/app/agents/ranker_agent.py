@@ -17,11 +17,9 @@ class RankerAgent:
     def __init__(self, max_candidates: int = 20, final_candidates: int = 5):
         self.max_candidates = max_candidates
         self.final_candidates = final_candidates
-        self.tfidf_vectorizer = TfidfVectorizer(
-            stop_words='english',
-            ngram_range=(1, 2),
-            max_features=10000
-        )
+        self.tfidf_vectorizer = None
+        self.document_tfidf_matrix = {}
+        self.document_candidate_texts = {}
 
     async def get_candidates(self, document_id: str, question: str, top_k: int = 10, return_top: int = 5) -> Dict[str, Any]:
         """
@@ -38,15 +36,12 @@ class RankerAgent:
         """
         try:
             # Step 1: Get initial candidates from embedding search (semantic)
-            # Check if search_similar is async or sync
             if hasattr(embedding_service.search_similar, '__call__'):
                 try:
-                    # Try async first
                     initial_candidates = await embedding_service.search_similar(
                         document_id, question, n_results=self.max_candidates
                     )
                 except TypeError:
-                    # If that fails, try sync
                     initial_candidates = embedding_service.search_similar(
                         document_id, question, n_results=self.max_candidates
                     )
@@ -62,7 +57,7 @@ class RankerAgent:
             candidates = initial_candidates['results']
 
             # Step 2: Compute lexical scores (TF-IDF similarity)
-            lexical_scores = self._compute_lexical_scores(question, candidates)
+            lexical_scores = self._compute_lexical_scores(document_id, question, candidates)
 
             # Step 3: Combine semantic and lexical scores
             combined_candidates = self._combine_scores(candidates, lexical_scores)
@@ -77,8 +72,8 @@ class RankerAgent:
             log.error(f"Error in RankerAgent.get_candidates: {e}")
             return {"chunks": []}
 
-    def _compute_lexical_scores(self, query: str, candidates: List[Dict[str, Any]]) -> List[float]:
-        """Compute lexical similarity scores using TF-IDF."""
+    def _compute_lexical_scores(self, document_id: str, query: str, candidates: List[Dict[str, Any]]) -> List[float]:
+        """Compute lexical similarity scores using pre-fitted TF-IDF."""
         try:
             if not candidates:
                 return []
@@ -86,17 +81,27 @@ class RankerAgent:
             # Extract candidate texts
             candidate_texts = [c.get('text', '') for c in candidates]
 
-            # Add query to corpus for vectorization
-            corpus = [query] + candidate_texts
+            # Check if we have pre-fitted TF-IDF for this document
+            if document_id not in self.document_tfidf_matrix:
+                # Fit TF-IDF on all candidate texts for this document and cache
+                self.tfidf_vectorizer = TfidfVectorizer(
+                    stop_words='english',
+                    ngram_range=(1, 2),
+                    max_features=10000
+                )
+                corpus = candidate_texts
+                tfidf_matrix = self.tfidf_vectorizer.fit_transform(corpus)
+                self.document_tfidf_matrix[document_id] = tfidf_matrix
+                self.document_candidate_texts[document_id] = candidate_texts
+            else:
+                tfidf_matrix = self.document_tfidf_matrix[document_id]
+                candidate_texts = self.document_candidate_texts[document_id]
 
-            # Fit and transform
-            tfidf_matrix = self.tfidf_vectorizer.fit_transform(corpus)
+            # Transform query
+            query_vector = self.tfidf_vectorizer.transform([query])
 
             # Compute cosine similarity between query and candidates
-            query_vector = tfidf_matrix[0]
-            candidate_vectors = tfidf_matrix[1:]
-
-            similarities = cosine_similarity(query_vector, candidate_vectors)[0]
+            similarities = cosine_similarity(query_vector, tfidf_matrix)[0]
 
             return similarities.tolist()
 

@@ -8,7 +8,10 @@ from chromadb.config import Settings
 from sentence_transformers import SentenceTransformer
 import numpy as np
 from datetime import datetime
+from app.core import config
 from app.core.config import settings
+import asyncio
+from concurrent.futures import ThreadPoolExecutor
 
 log = logging.getLogger(__name__)
 
@@ -50,14 +53,20 @@ class EmbeddingService:
         except Exception as e:
             error_msg = f"Failed to load sentence transformer model: {e}"
             if settings.EMBEDDING_MODEL_PATH:
-                error_msg += f"\nPlease ensure the model files are present at: {settings.EMBEDDING_MODEL_PATH}"
+                error_msg += f"\\nPlease ensure the model files are present at: {settings.EMBEDDING_MODEL_PATH}"
             else:
-                error_msg += f"\nPlease set EMBEDDING_MODEL_PATH to a local model directory or ensure {settings.EMBEDDING_MODEL_NAME} is cached."
+                error_msg += f"\\nPlease set EMBEDDING_MODEL_PATH to a local model directory or ensure {settings.EMBEDDING_MODEL_NAME} is cached."
             log.error(error_msg)
             raise RuntimeError(error_msg)
 
         # Track embedding status per document
         self.embedding_status = {}
+
+        # ThreadPoolExecutor for running blocking calls asynchronously
+        self.executor = ThreadPoolExecutor(max_workers=4)
+
+        # Cache for search results: key = (document_id, query), value = results
+        self.search_cache = {}
 
     def _get_collection_name(self, document_id: str) -> str:
         """Generate collection name for document"""
@@ -225,12 +234,19 @@ class EmbeddingService:
             "message": "Embedding generation not started for this document"
         })
 
-    def search_similar(self, document_id: str, query: str, n_results: int = 5) -> Dict[str, Any]:
+    async def search_similar(self, document_id: str, query: str, n_results: int = 5) -> Dict[str, Any]:
         """
-        Search for similar chunks in the document's embedding space.
+        Async search for similar chunks in the document's embedding space.
         Returns top n_results similar chunks with metadata.
+        Uses thread pool to run blocking ChromaDB calls asynchronously.
+        Caches results to reduce repeated queries.
         """
-        try:
+        cache_key = (document_id, query, n_results)
+        if cache_key in self.search_cache:
+            log.info(f"Cache hit for search_similar: {cache_key}")
+            return self.search_cache[cache_key]
+
+        def blocking_search():
             collection = self.chroma_client.get_collection(self._get_collection_name(document_id))
 
             # Generate embedding for query
@@ -242,23 +258,11 @@ class EmbeddingService:
                 n_results=n_results,
                 include=['documents', 'metadatas', 'distances']
             )
+            return results
 
-            # Format results
-            formatted_results = []
-            if results['documents'] and results['documents'][0]:
-                for i, doc in enumerate(results['documents'][0]):
-                    formatted_results.append({
-                        "text": doc,
-                        "metadata": results['metadatas'][0][i] if results['metadatas'] and results['metadatas'][0] else {},
-                        "distance": results['distances'][0][i] if results['distances'] and results['distances'][0] else None
-                    })
-
-            return {
-                "query": query,
-                "results": formatted_results,
-                "total_results": len(formatted_results)
-            }
-
+        loop = asyncio.get_event_loop()
+        try:
+            results = await loop.run_in_executor(self.executor, blocking_search)
         except Exception as e:
             log.error(f"Failed to search similar chunks for document {document_id}: {e}")
             return {
@@ -266,6 +270,27 @@ class EmbeddingService:
                 "results": [],
                 "error": str(e)
             }
+
+        # Format results
+        formatted_results = []
+        if results['documents'] and results['documents'][0]:
+            for i, doc in enumerate(results['documents'][0]):
+                formatted_results.append({
+                    "text": doc,
+                    "metadata": results['metadatas'][0][i] if results['metadatas'] and results['metadatas'][0] else {},
+                    "distance": results['distances'][0][i] if results['distances'] and results['distances'][0] else None
+                })
+
+        result = {
+            "query": query,
+            "results": formatted_results,
+            "total_results": len(formatted_results)
+        }
+
+        # Cache the results
+        self.search_cache[cache_key] = result
+
+        return result
 
     def delete_embeddings(self, document_id: str) -> bool:
         """Delete embeddings for a document"""
