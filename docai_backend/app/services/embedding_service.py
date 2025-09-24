@@ -33,6 +33,7 @@ class EmbeddingService:
         )
 
         # Initialize sentence transformer model
+        self.model = None
         try:
             if settings.EMBEDDING_MODEL_PATH:
                 # Use local model path
@@ -42,22 +43,39 @@ class EmbeddingService:
                 self.model = SentenceTransformer(str(model_path))
                 log.info(f"Sentence transformer model loaded from local path: {model_path}")
             else:
-                # Use default model name (will attempt download if not cached)
-                self.model = SentenceTransformer(settings.EMBEDDING_MODEL_NAME)
-                log.info(f"Sentence transformer model loaded: {settings.EMBEDDING_MODEL_NAME}")
+                # Try to use default model name (will attempt download if not cached)
+                try:
+                    self.model = SentenceTransformer(settings.EMBEDDING_MODEL_NAME)
+                    log.info(f"Sentence transformer model loaded: {settings.EMBEDDING_MODEL_NAME}")
+                except Exception as download_error:
+                    if settings.OFFLINE_MODE:
+                        log.warning(f"Offline mode enabled but embedding model not available: {download_error}")
+                        log.warning("Embedding functionality will be disabled until model is available")
+                        log.warning("To fix this, either:")
+                        log.warning("1. Download the model while online: pip install sentence-transformers && python -c \"from sentence_transformers import SentenceTransformer; SentenceTransformer('all-MiniLM-L6-v2')\"")
+                        log.warning("2. Set EMBEDDING_MODEL_PATH to a local model directory")
+                        log.warning("3. Temporarily set OFFLINE_MODE=false to download the model")
+                        self.model = None
+                    else:
+                        raise download_error
 
-            # Log model dimensions for verification
-            sample_embedding = self.model.encode(["test"], convert_to_numpy=True)
-            log.info(f"Model embedding dimensions: {sample_embedding.shape[1]}")
+            if self.model:
+                # Log model dimensions for verification
+                sample_embedding = self.model.encode(["test"], convert_to_numpy=True)
+                log.info(f"Model embedding dimensions: {sample_embedding.shape[1]}")
 
         except Exception as e:
-            error_msg = f"Failed to load sentence transformer model: {e}"
-            if settings.EMBEDDING_MODEL_PATH:
-                error_msg += f"\\nPlease ensure the model files are present at: {settings.EMBEDDING_MODEL_PATH}"
+            if self.model is None:
+                error_msg = f"Failed to load sentence transformer model: {e}"
+                if settings.EMBEDDING_MODEL_PATH:
+                    error_msg += f"\\nPlease ensure the model files are present at: {settings.EMBEDDING_MODEL_PATH}"
+                else:
+                    error_msg += f"\\nPlease set EMBEDDING_MODEL_PATH to a local model directory or ensure {settings.EMBEDDING_MODEL_NAME} is cached."
+                log.error(error_msg)
+                # Don't raise exception during initialization - allow the service to start without embeddings
+                log.warning("Embedding service will continue without model - embedding functionality will be disabled")
             else:
-                error_msg += f"\\nPlease set EMBEDDING_MODEL_PATH to a local model directory or ensure {settings.EMBEDDING_MODEL_NAME} is cached."
-            log.error(error_msg)
-            raise RuntimeError(error_msg)
+                log.warning(f"Embedding model loading failed but continuing without embeddings: {e}")
 
         # Track embedding status per document
         self.embedding_status = {}
@@ -88,6 +106,8 @@ class EmbeddingService:
 
     def _generate_embeddings(self, texts: List[str]) -> np.ndarray:
         """Generate embeddings for a list of texts"""
+        if self.model is None:
+            raise RuntimeError("Embedding model not available. Please configure EMBEDDING_MODEL_PATH or download the model.")
         try:
             embeddings = self.model.encode(texts, convert_to_numpy=True)
             return embeddings
@@ -234,6 +254,21 @@ class EmbeddingService:
             "message": "Embedding generation not started for this document"
         })
 
+    def ensure_embeddings_exist(self, document_id: str) -> bool:
+        """
+        Ensure embeddings exist for a document. If not, attempt to generate them.
+        Returns True if embeddings are available, False otherwise.
+        """
+        status = self.get_embedding_status(document_id)
+        if status["status"] == "completed":
+            return True
+        elif status["status"] == "processing":
+            log.info(f"Embeddings are currently being processed for document {document_id}")
+            return False
+        else:
+            log.info(f"Embeddings not available for document {document_id}, attempting to generate")
+            return self.generate_embeddings(document_id)
+
     async def search_similar(self, document_id: str, query: str, n_results: int = 5) -> Dict[str, Any]:
         """
         Async search for similar chunks in the document's embedding space.
@@ -247,6 +282,9 @@ class EmbeddingService:
             return self.search_cache[cache_key]
 
         def blocking_search():
+            if self.model is None:
+                raise RuntimeError("Embedding model not available. Cannot perform similarity search.")
+
             collection = self.chroma_client.get_collection(self._get_collection_name(document_id))
 
             # Generate embedding for query

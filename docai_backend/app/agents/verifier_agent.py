@@ -38,6 +38,30 @@ class VerifierAgent:
             Verification results with confidence score and issues
         """
         try:
+            log.info(f"🔍 VerifierAgent: Starting verification")
+            log.info(f"📝 Query: {query}")
+            log.info(f"📄 Answer length: {len(answer)} characters")
+            log.info(f"📊 Context chunks: {len(context_chunks)}")
+
+            # Validate inputs
+            if not query or not answer:
+                log.warning(f"⚠️ VerifierAgent: Empty query or answer provided")
+                return {
+                    'confidence_score': 0.0,
+                    'confidence_level': 'low',
+                    'issues': ['Empty query or answer provided'],
+                    'hallucination_risk': 'high'
+                }
+
+            if not context_chunks:
+                log.warning(f"⚠️ VerifierAgent: No context chunks provided")
+                return {
+                    'confidence_score': 0.0,
+                    'confidence_level': 'low',
+                    'issues': ['No context chunks provided'],
+                    'hallucination_risk': 'high'
+                }
+
             verification_results = {
                 'confidence_score': 0.0,
                 'issues': [],
@@ -47,26 +71,36 @@ class VerifierAgent:
             }
 
             # Check 1: Context coverage
+            log.info(f"🔍 Step 1: Checking context coverage")
             context_coverage = self._check_context_coverage(answer, context_chunks)
             verification_results['context_coverage'] = context_coverage
+            log.info(f"✅ Context coverage: {context_coverage:.2f}")
 
             # Check 2: Fact verification
+            log.info(f"🔍 Step 2: Verifying facts")
             fact_checks = self._verify_facts(answer, context_chunks)
             verification_results['fact_checks'] = fact_checks
+            verified_count = sum(1 for check in fact_checks if check['verified'])
+            log.info(f"✅ Fact checks: {verified_count}/{len(fact_checks)} verified")
 
             # Check 3: Answer relevance
+            log.info(f"🔍 Step 3: Checking relevance")
             relevance_score = self._check_relevance(query, answer)
             verification_results['relevance_score'] = relevance_score
+            log.info(f"✅ Relevance score: {relevance_score:.2f}")
 
             # Check 4: Hallucination detection
+            log.info(f"🔍 Step 4: Detecting hallucinations")
             hallucination_risk = self._detect_hallucinations(answer, context_chunks)
             verification_results['hallucination_risk'] = hallucination_risk
+            log.info(f"✅ Hallucination risk: {hallucination_risk}")
 
             # Calculate overall confidence score
             confidence_score = self._calculate_confidence_score(
                 context_coverage, fact_checks, relevance_score, hallucination_risk
             )
             verification_results['confidence_score'] = confidence_score
+            log.info(f"🎯 Final confidence score: {confidence_score:.2f}")
 
             # Determine confidence level
             if confidence_score >= 0.8:
@@ -76,10 +110,12 @@ class VerifierAgent:
             else:
                 verification_results['confidence_level'] = 'low'
 
+            log.info(f"🏆 Confidence level: {verification_results['confidence_level']}")
             return verification_results
 
         except Exception as e:
-            log.error(f"Error in VerifierAgent.verify_answer: {e}")
+            log.error(f"❌ Error in VerifierAgent.verify_answer: {e}")
+            log.error(f"❌ Error type: {type(e).__name__}")
             return {
                 'confidence_score': 0.0,
                 'confidence_level': 'low',

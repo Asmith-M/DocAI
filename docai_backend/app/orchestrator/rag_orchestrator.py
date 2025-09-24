@@ -37,22 +37,30 @@ class RAGOrchestrator:
         if not request_id:
             request_id = str(uuid.uuid4())
 
-        logger.info(f"Starting RAG query for doc {document_id}, request_id {request_id}")
+        logger.info(f"🚀 Starting RAG query for doc {document_id}, request_id {request_id}")
+        logger.info(f"📝 Question: {question}")
+        logger.info(f"⚙️ Parameters: top_k={top_k}, return_top={return_top}, stream={stream}")
 
         start_time = time.time()
 
         # Step 1: Retrieval - Get candidates from cache or ranker
         retrieval_start = time.time()
+        logger.info(f"🔍 Step 1: Starting retrieval for request_id {request_id}")
+
         cached = get_cached_candidates(document_id, question)
         if cached:
             candidates = cached
-            logger.info(f"Retrieved cached candidates for request_id {request_id}")
+            logger.info(f"✅ Retrieved cached candidates for request_id {request_id}")
+            logger.info(f"📊 Found {len(candidates.get('chunks', []))} cached chunks")
         else:
+            logger.info(f"🔄 No cache found, calling ranker agent for request_id {request_id}")
             candidates = await self.ranker_agent.get_candidates(document_id, question, top_k, return_top)
             set_cached_candidates(document_id, question, candidates)
-            logger.info(f"Ranked candidates for request_id {request_id}")
+            logger.info(f"✅ Ranked candidates for request_id {request_id}")
+            logger.info(f"📊 Ranker returned {len(candidates.get('chunks', []))} chunks")
 
         retrieval_ms = int((time.time() - retrieval_start) * 1000)
+        logger.info(f"⏱️ Retrieval took {retrieval_ms}ms")
 
         if stream:
             # Streaming response - yield multiple events
@@ -60,14 +68,34 @@ class RAGOrchestrator:
                 yield event
         else:
             # Non-streaming response - yield single JSON result
+            logger.info(f"📝 Step 2: Starting generation for request_id {request_id}")
             generation_start = time.time()
             answer = await self.generator_agent.generate(question, candidates["chunks"], stream=False, request_id=request_id)
             generation_ms = int((time.time() - generation_start) * 1000)
+            logger.info(f"✅ Generation completed for request_id {request_id}, took {generation_ms}ms")
+            logger.info(f"📄 Answer length: {len(answer)} characters")
 
             # Step 3: Verification (for non-streaming case)
-            verification_result = verifier_agent.verify_answer(question, answer, candidates["chunks"])
+            logger.info(f"🔍 Step 3: Starting verification for request_id {request_id}")
+            verification_start = time.time()
+
+            # Validate inputs before calling verifier agent
+            if not question or not answer or not candidates.get("chunks"):
+                logger.warning(f"⚠️ Invalid inputs for verification - question: {bool(question)}, answer: {bool(answer)}, chunks: {bool(candidates.get('chunks'))}")
+                verification_result = {
+                    "confidence_score": 0.0,
+                    "verification_status": "failed",
+                    "reason": "Invalid or empty inputs provided"
+                }
+            else:
+                verification_result = verifier_agent.verify_answer(question, answer, candidates["chunks"])
+
+            verification_ms = int((time.time() - verification_start) * 1000)
+            logger.info(f"✅ Verification completed for request_id {request_id}, took {verification_ms}ms")
+            logger.info(f"🎯 Verification confidence: {verification_result.get('confidence_score', 0):.2f}")
+
             total_ms = int((time.time() - start_time) * 1000)
-            logger.info(f"Completed RAG query for request_id {request_id}, total_ms {total_ms}")
+            logger.info(f"🏁 Completed RAG query for request_id {request_id}, total_ms {total_ms}")
 
             result = {
                 "answer": answer,
@@ -76,6 +104,7 @@ class RAGOrchestrator:
                 "timings_ms": {
                     "retrieval": retrieval_ms,
                     "generation": generation_ms,
+                    "verification": verification_ms,
                     "total": total_ms
                 },
                 "model": {
@@ -83,7 +112,7 @@ class RAGOrchestrator:
                     "model": "gemma:2b"
                 }
             }
-            
+
             # Yield the result as a single event
             yield json.dumps(result)
 
@@ -131,8 +160,16 @@ class RAGOrchestrator:
         generation_ms = int((time.time() - generation_start) * 1000)
         total_ms = retrieval_ms + generation_ms
 
-        # Verification with full answer
-        verification_result = verifier_agent.verify_answer(question, full_answer, candidates["chunks"])
+        # Verification with full answer - only if we have valid inputs
+        if not question or not full_answer.strip() or not candidates.get("chunks"):
+            logger.warning(f"⚠️ Invalid inputs for streaming verification - question: {bool(question)}, answer: {bool(full_answer.strip())}, chunks: {bool(candidates.get('chunks'))}")
+            verification_result = {
+                "confidence_score": 0.0,
+                "verification_status": "failed",
+                "reason": "Invalid or empty inputs provided"
+            }
+        else:
+            verification_result = verifier_agent.verify_answer(question, full_answer, candidates["chunks"])
 
         # Emit done event
         done_data = {

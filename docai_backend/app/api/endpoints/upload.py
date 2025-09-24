@@ -24,7 +24,7 @@ BASE_UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
 extractor = PDFExtractor()
 
 
-@router.post("/")
+@router.post("", name="upload_documents")  # Empty string instead of "/" to avoid trailing slash issues
 async def upload_documents(files: List[UploadFile] = File(...)):
     """Accept multiple PDF files, store them and run text extraction pipeline.
 

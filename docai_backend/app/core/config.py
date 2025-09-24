@@ -32,7 +32,10 @@ class Settings:
 
     # Ollama settings
     OLLAMA_HOST: str = os.getenv("OLLAMA_HOST", "http://localhost:11434")
-    OLLAMA_MODEL: str = os.getenv("OLLAMA_MODEL", "gemma:2b")
+    OLLAMA_MODEL: str = os.getenv("OLLAMA_MODEL", "mistral:7b-instruct-q4_0")
+    OLLAMA_MODEL_FALLBACK: str = os.getenv("OLLAMA_MODEL_FALLBACK", "gemma:2b-instruct-q4_0")
+    OLLAMA_CTX: int = int(os.getenv("OLLAMA_CTX", 2048))
+    OLLAMA_NUM_PREDICT: int = int(os.getenv("OLLAMA_NUM_PREDICT", 200))
 
     # Recommended model configurations
     # Low-spec hardware (4GB RAM, 2-4 cores)

@@ -2,7 +2,7 @@ from fastapi import APIRouter
 
 router = APIRouter()
 
-@router.get("/")
+@router.get("", name="health_check")  # Empty string instead of "/" to avoid trailing slash issues
 async def health_check():
     return {
         "status": "success",
@@ -17,7 +17,7 @@ async def health_check():
 @router.get("/ping")
 async def ping():
     return {
-        "status": "success", 
+        "status": "success",
         "message": "OK",
         "data": {}
     }

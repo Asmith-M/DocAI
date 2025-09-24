@@ -110,15 +110,22 @@ class OllamaClient:
 
         loop = asyncio.get_event_loop()
         try:
-            response = await loop.run_in_executor(
-                None,
-                lambda: self.client.generate(
-                    model=self.model,
-                    prompt=prompt,
-                    **kwargs
-                )
+            # Add timeout to prevent hanging
+            response = await asyncio.wait_for(
+                loop.run_in_executor(
+                    None,
+                    lambda: self.client.generate(
+                        model=self.model,
+                        prompt=prompt,
+                        **kwargs
+                    )
+                ),
+                timeout=60.0  # 60 second timeout
             )
             return response.get('response', '')
+        except asyncio.TimeoutError:
+            log.error(f"Async generation timed out after 60s")
+            raise Exception("Generation timed out")
         except Exception as e:
             log.error(f"Async generation failed: {e}")
             raise
@@ -158,10 +165,18 @@ class OllamaClient:
 
             gen = sync_generator()
             while True:
-                chunk = await loop.run_in_executor(None, lambda: next(gen, None))
-                if chunk is None:
+                try:
+                    # Add timeout for each chunk
+                    chunk = await asyncio.wait_for(
+                        loop.run_in_executor(None, lambda: next(gen, None)),
+                        timeout=30.0  # 30 second timeout per chunk
+                    )
+                    if chunk is None:
+                        break
+                    yield chunk
+                except asyncio.TimeoutError:
+                    log.error(f"Streaming chunk timed out after 30s")
                     break
-                yield chunk
 
         except Exception as e:
             log.error(f"Async stream generation failed: {e}")

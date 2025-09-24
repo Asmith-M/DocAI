@@ -35,41 +35,74 @@ class RankerAgent:
             Dict containing candidate chunks with scores and metadata
         """
         try:
-            # Step 1: Get initial candidates from embedding search (semantic)
+            log.info(f"🔍 RankerAgent: Starting candidate retrieval for doc {document_id}")
+            log.info(f"📝 Query: {question}")
+            log.info(f"⚙️ Parameters: top_k={top_k}, return_top={return_top}, max_candidates={self.max_candidates}")
+
+            # Step 1: Ensure embeddings exist for the document
+            log.info(f"🔍 Step 1: Checking embeddings for document {document_id}")
+            embeddings_available = embedding_service.ensure_embeddings_exist(document_id)
+
+            if not embeddings_available:
+                log.warning(f"⚠️ Embeddings not available for document {document_id}, falling back to lexical search")
+                return await self._lexical_fallback(document_id, question, return_top)
+
+            # Step 2: Get initial candidates from embedding search (semantic)
+            log.info(f"🔍 Step 2: Getting initial candidates from embedding service")
             if hasattr(embedding_service.search_similar, '__call__'):
                 try:
                     initial_candidates = await embedding_service.search_similar(
                         document_id, question, n_results=self.max_candidates
                     )
+                    log.info(f"✅ Called async embedding_service.search_similar")
                 except TypeError:
                     initial_candidates = embedding_service.search_similar(
                         document_id, question, n_results=self.max_candidates
                     )
+                    log.info(f"✅ Called sync embedding_service.search_similar")
             else:
                 initial_candidates = embedding_service.search_similar(
                     document_id, question, n_results=self.max_candidates
                 )
+                log.info(f"✅ Called embedding_service.search_similar")
+
+            log.info(f"📊 Initial candidates result type: {type(initial_candidates)}")
+            log.info(f"📊 Initial candidates keys: {initial_candidates.keys() if isinstance(initial_candidates, dict) else 'Not a dict'}")
 
             if not initial_candidates.get('results'):
-                log.warning(f"No candidates found for query: {question}")
+                log.warning(f"⚠️ No candidates found for query: {question}")
                 return {"chunks": []}
 
             candidates = initial_candidates['results']
+            log.info(f"📊 Found {len(candidates)} initial candidates")
 
             # Step 2: Compute lexical scores (TF-IDF similarity)
+            log.info(f"🔍 Step 2: Computing lexical scores (TF-IDF)")
             lexical_scores = self._compute_lexical_scores(document_id, question, candidates)
+            log.info(f"✅ Computed lexical scores: {len(lexical_scores)} scores")
 
             # Step 3: Combine semantic and lexical scores
+            log.info(f"🔍 Step 3: Combining semantic and lexical scores")
             combined_candidates = self._combine_scores(candidates, lexical_scores)
+            log.info(f"✅ Combined {len(combined_candidates)} candidates")
 
             # Step 4: Apply MMR (Maximal Marginal Relevance) for diversity
+            log.info(f"🔍 Step 4: Applying MMR for diversity (lambda=0.5)")
             final_candidates = self._apply_mmr(question, combined_candidates, return_top)
+            log.info(f"✅ Selected {len(final_candidates)} final candidates")
 
-            log.info(f"Selected {len(final_candidates)} candidates for query: {question}")
+            # Log details about final candidates
+            for i, candidate in enumerate(final_candidates):
+                log.info(f"🏆 Final candidate {i+1}: score={candidate.get('combined_score', 0):.3f}, "
+                        f"text_length={len(candidate.get('text', ''))}, "
+                        f"semantic={candidate.get('semantic_score', 0):.3f}, "
+                        f"lexical={candidate.get('lexical_score', 0):.3f}")
+
             return {"chunks": final_candidates}
 
         except Exception as e:
-            log.error(f"Error in RankerAgent.get_candidates: {e}")
+            log.error(f"❌ Error in RankerAgent.get_candidates: {e}")
+            log.error(f"❌ Error type: {type(e).__name__}")
             return {"chunks": []}
 
     def _compute_lexical_scores(self, document_id: str, query: str, candidates: List[Dict[str, Any]]) -> List[float]:
@@ -211,6 +244,74 @@ class RankerAgent:
 
         except Exception:
             return 0.0
+
+    async def _lexical_fallback(self, document_id: str, question: str, n_results: int) -> Dict[str, Any]:
+        """
+        Fallback method when embeddings are not available.
+        Uses pure lexical search (TF-IDF) to find relevant chunks.
+        """
+        try:
+            log.info(f"🔍 RankerAgent: Using lexical fallback for document {document_id}")
+
+            # Load chunks for the document
+            chunks = embedding_service._load_chunks(document_id)
+            if not chunks:
+                log.warning(f"⚠️ No chunks found for document {document_id} in lexical fallback")
+                return {"chunks": []}
+
+            # Extract texts and create candidate list
+            candidates = []
+            for chunk in chunks:
+                text = chunk.get("text", "").strip()
+                if text:  # Only include non-empty chunks
+                    candidates.append({
+                        "text": text,
+                        "metadata": {
+                            "document_id": chunk.get("document_id"),
+                            "page": chunk.get("page"),
+                            "chunk_index": chunk.get("chunk_index"),
+                            "type": chunk.get("type"),
+                            "extraction_method": chunk.get("extraction_method"),
+                            "created_at": chunk.get("created_at")
+                        }
+                    })
+
+            if not candidates:
+                log.warning(f"⚠️ No valid chunks found for document {document_id} in lexical fallback")
+                return {"chunks": []}
+
+            log.info(f"📊 Found {len(candidates)} chunks for lexical search")
+
+            # Compute lexical scores
+            lexical_scores = self._compute_lexical_scores(document_id, question, candidates)
+
+            # Create candidates with scores
+            scored_candidates = []
+            for i, candidate in enumerate(candidates):
+                lexical_score = lexical_scores[i] if i < len(lexical_scores) else 0.0
+                scored_candidates.append({
+                    **candidate,
+                    "combined_score": lexical_score,  # Use lexical score as combined score
+                    "lexical_score": lexical_score,
+                    "semantic_score": 0.0  # No semantic score available
+                })
+
+            # Sort by lexical score and take top n_results
+            scored_candidates.sort(key=lambda x: x['combined_score'], reverse=True)
+            final_candidates = scored_candidates[:n_results]
+
+            log.info(f"✅ Lexical fallback found {len(final_candidates)} candidates")
+
+            # Log details about final candidates
+            for i, candidate in enumerate(final_candidates):
+                log.info(f"🏆 Lexical candidate {i+1}: score={candidate.get('combined_score', 0):.3f}, "
+                        f"text_length={len(candidate.get('text', ''))}")
+
+            return {"chunks": final_candidates}
+
+        except Exception as e:
+            log.error(f"❌ Error in RankerAgent lexical fallback: {e}")
+            return {"chunks": []}
 
 # Global instance
 ranker_agent = RankerAgent()

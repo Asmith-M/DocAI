@@ -9,7 +9,8 @@ import os
 app = FastAPI(
     title="DocAI Backend API",
     description="Backend API for DocAI - Document AI Processing",
-    version="1.0.0"
+    version="1.0.0",
+    redirect_slashes=False  # Prevent automatic redirects for trailing slashes
 )
 
 # Configure CORS
@@ -51,6 +52,14 @@ async def startup_event():
     logger.info(f"Host: {settings.HOST}")
     logger.info(f"Port: {settings.PORT}")
 
+    # Log model configuration
+    logger.info("=== Model Configuration ===")
+    logger.info(f"Primary Model: {settings.OLLAMA_MODEL}")
+    logger.info(f"Fallback Model: {settings.OLLAMA_MODEL_FALLBACK}")
+    logger.info(f"Context Length: {settings.OLLAMA_CTX}")
+    logger.info(f"Max Predictions: {settings.OLLAMA_NUM_PREDICT}")
+    logger.info("==========================")
+
     # Set offline environment variables to prevent external calls
     if settings.OFFLINE_MODE or not settings.ENABLE_TELEMETRY:
         os.environ["HF_HOME"] = settings.HF_HOME
@@ -74,6 +83,7 @@ async def startup_event():
             if health_status.get("healthy"):
                 if health_status.get("model_loaded"):
                     logger.info(f"✓ Ollama model '{settings.OLLAMA_MODEL}' is loaded and ready")
+                    logger.info(f"✓ Fallback model '{settings.OLLAMA_MODEL_FALLBACK}' is available")
                 else:
                     logger.warning(f"⚠ Ollama service is running but model '{settings.OLLAMA_MODEL}' is not loaded")
                     logger.warning(f"Available models: {health_status.get('available_models', [])}")
