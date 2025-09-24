@@ -1,0 +1,37 @@
+[Unit]
+Description=DocAI - AI-Powered Document Analysis System
+After=network.target ollama.service
+Requires=ollama.service
+
+[Service]
+Type=simple
+User=docai
+Group=docai
+WorkingDirectory=/opt/docai
+Environment=PATH=/opt/docai/venv/bin
+Environment=OFFLINE_MODE=true
+Environment=ENABLE_TELEMETRY=false
+ExecStart=/opt/docai/venv/bin/python /opt/docai/main.py
+ExecReload=/bin/kill -HUP $MAINPID
+Restart=always
+RestartSec=10
+
+# Security settings
+NoNewPrivileges=true
+ProtectHome=true
+ProtectSystem=strict
+ReadWritePaths=/opt/docai/uploaded_docs /opt/docai/chroma_db /opt/docai/logs
+PrivateTmp=true
+
+# Resource limits
+LimitNOFILE=65536
+MemoryLimit=4G
+CPUQuota=200%
+
+# Logging
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=docai
+
+[Install]
+WantedBy=multi-user.target
