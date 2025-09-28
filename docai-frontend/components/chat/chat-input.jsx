@@ -1,11 +1,14 @@
 "use client"
 
 import { useState, useRef, useEffect } from "react"
-import { Send, Paperclip, Mic, Square } from "lucide-react"
+import { Send, Paperclip, Mic, Square, Globe, ChevronDown } from "lucide-react"
 
 export function ChatInput({ value, onChange, onSend, documentId }) {
   const [inputValue, setInputValue] = useState(value || "")
   const [isRecording, setIsRecording] = useState(false)
+  const [autoDetect, setAutoDetect] = useState(true)
+  const [selectedLang, setSelectedLang] = useState("Auto")
+  const [showLangDropdown, setShowLangDropdown] = useState(false)
   const textareaRef = useRef(null)
 
   useEffect(() => {
@@ -29,7 +32,9 @@ export function ChatInput({ value, onChange, onSend, documentId }) {
       onSend?.(inputValue.trim())
       // Dispatch a global event so chat container can pick it up without lifting state
       try {
-        window.dispatchEvent(new CustomEvent('chat-send', { detail: { text: inputValue.trim(), documentId } }))
+        const lang = autoDetect ? undefined : selectedLang.split(' ')[1]?.replace(/[()]/g, '') || selectedLang
+        const auto_detect = autoDetect
+        window.dispatchEvent(new CustomEvent('chat-send', { detail: { text: inputValue.trim(), documentId, lang, auto_detect } }))
       } catch (e) {
         // noop if CustomEvent not supported in environment
       }
@@ -97,6 +102,56 @@ export function ChatInput({ value, onChange, onSend, documentId }) {
               rows={1}
               style={{ maxHeight: "120px" }}
             />
+          </div>
+
+          {/* Language Controls */}
+          <div className="flex items-center space-x-2">
+            {/* Auto-detect Toggle */}
+            <button
+              type="button"
+              onClick={() => setAutoDetect(!autoDetect)}
+              className={`p-2 rounded-lg transition-colors ${
+                autoDetect
+                  ? "text-lavender-500 bg-lavender-50 dark:bg-lavender-900"
+                  : "text-gray-400 hover:text-lavender-500 hover:bg-gray-100 dark:hover:bg-gray-700"
+              }`}
+              title={autoDetect ? "Auto-detect language enabled" : "Auto-detect language disabled"}
+            >
+              <Globe className="w-5 h-5" />
+            </button>
+
+            {/* Language Selector */}
+            <div className="relative">
+              <button
+                type="button"
+                onClick={() => setShowLangDropdown(!showLangDropdown)}
+                className="flex items-center space-x-1 px-3 py-2 text-sm bg-gray-100 dark:bg-gray-700 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+                disabled={autoDetect}
+              >
+                <span className={autoDetect ? "text-gray-400" : "text-gray-900 dark:text-white"}>
+                  {selectedLang}
+                </span>
+                <ChevronDown className="w-4 h-4" />
+              </button>
+
+              {showLangDropdown && !autoDetect && (
+                <div className="absolute bottom-full right-0 mb-2 w-32 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg z-10">
+                  {["Auto", "English (en)", "Hindi (hi)", "Marathi (mr)"].map((lang) => (
+                    <button
+                      key={lang}
+                      type="button"
+                      onClick={() => {
+                        setSelectedLang(lang)
+                        setShowLangDropdown(false)
+                      }}
+                      className="w-full px-3 py-2 text-left text-sm hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                    >
+                      {lang}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
 
           {/* Voice Recording Button */}

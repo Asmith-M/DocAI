@@ -39,6 +39,7 @@ export function DocumentHistorySidebar({ isOpen, onToggle }) {
         pages: file.page_count || file.pages || 0,
         lastAccessed: "Recently",
         documentId: file.document_id || file.documentId || file.id,
+        language: file.language || "Unknown",
       }))
       setDocuments(formattedDocuments)
     } catch (err) {

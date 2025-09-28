@@ -54,7 +54,12 @@ export function DocumentHistoryItem({ document, index, onSelect }) {
           </div>
 
           <div className="space-y-1">
-            <p className="text-xs text-gray-500 dark:text-gray-400">{document.pages} pages</p>
+            <div className="flex items-center space-x-2">
+              <p className="text-xs text-gray-500 dark:text-gray-400">{document.pages} pages</p>
+              <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-lavender-100 dark:bg-lavender-900 text-lavender-800 dark:text-lavender-200">
+                {document.language}
+              </span>
+            </div>
             <p className="text-xs text-gray-400 dark:text-gray-500">Last accessed {document.lastAccessed}</p>
           </div>
         </div>

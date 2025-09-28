@@ -47,7 +47,11 @@ export function ChatContainer() {
           return
         }
 
-        const response = await startRagStreamFetch(documentId, text)
+        // Get language settings from ChatInput (assuming they are stored in a global state or passed via event)
+        const lang = e?.detail?.lang
+        const auto_detect = e?.detail?.auto_detect
+
+        const response = await startRagStreamFetch(documentId, text, { lang, auto_detect })
         eventSourceRef.current = response
 
         let botMessage = ''
