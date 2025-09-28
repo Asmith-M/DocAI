@@ -27,7 +27,8 @@ class RAGOrchestrator:
         top_k: int = 10,
         return_top: int = 5,
         stream: bool = False,
-        request_id: str = None
+        request_id: str = None,
+        lang: str = None
     ) -> AsyncGenerator[str, None]:
         """
         This method now always returns an async generator.
@@ -54,7 +55,7 @@ class RAGOrchestrator:
             logger.info(f"📊 Found {len(candidates.get('chunks', []))} cached chunks")
         else:
             logger.info(f"🔄 No cache found, calling ranker agent for request_id {request_id}")
-            candidates = await self.ranker_agent.get_candidates(document_id, question, top_k, return_top)
+            candidates = await self.ranker_agent.get_candidates(document_id, question, top_k, return_top, lang=lang)
             set_cached_candidates(document_id, question, candidates)
             logger.info(f"✅ Ranked candidates for request_id {request_id}")
             logger.info(f"📊 Ranker returned {len(candidates.get('chunks', []))} chunks")

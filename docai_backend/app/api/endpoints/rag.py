@@ -30,6 +30,7 @@ async def rag_query(request: Request, response: Response):
     top_k = body.get("top_k", 10)
     return_top = body.get("return_top", 5)
     stream = body.get("stream", False)
+    lang = body.get("lang")
 
     request_id = str(uuid.uuid4())
     response.headers["X-Correlation-Id"] = request_id
@@ -41,7 +42,7 @@ async def rag_query(request: Request, response: Response):
              raise HTTPException(status_code=400, detail="Streaming is not supported on /query. Please use the POST /stream/{document_id} endpoint.")
 
         # Non-stream response
-        async for result_json in rag_orchestrator.handle_query(document_id, question, top_k, return_top, stream=False, request_id=request_id):
+        async for result_json in rag_orchestrator.handle_query(document_id, question, top_k, return_top, stream=False, request_id=request_id, lang=lang):
             # For non-streaming, handle_query yields a single JSON result
             result = json.loads(result_json)
             break  # We only expect one result for non-streaming
@@ -65,13 +66,16 @@ async def rag_stream_post(document_id: str, request: Request, response: Response
         if not query:
             raise HTTPException(status_code=400, detail="Missing 'query' in request body")
 
+        # Get optional language parameter
+        lang = body.get("lang")
+
         request_id = str(uuid.uuid4())
         response.headers["X-Correlation-Id"] = request_id
 
         async def event_generator():
             try:
                 # Now handle_query always returns an async generator
-                async for event in rag_orchestrator.handle_query(document_id, query, stream=True, request_id=request_id):
+                async for event in rag_orchestrator.handle_query(document_id, query, stream=True, request_id=request_id, lang=lang):
                     yield event
             except Exception as e:
                 logger.error(f"Error during stream generation for request {request_id}: {e}")
