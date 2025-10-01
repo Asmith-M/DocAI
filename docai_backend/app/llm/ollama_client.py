@@ -164,18 +164,29 @@ class OllamaClient:
                     yield chunk.get('response', '')
 
             gen = sync_generator()
+            chunk_count = 0
             while True:
                 try:
-                    # Add timeout for each chunk
+                    # Increased timeout and better error handling
                     chunk = await asyncio.wait_for(
                         loop.run_in_executor(None, lambda: next(gen, None)),
-                        timeout=30.0  # 30 second timeout per chunk
+                        timeout=300.0  # 300 second timeout per chunk
                     )
                     if chunk is None:
+                        log.info(f"Stream completed after {chunk_count} chunks")
                         break
+                    chunk_count += 1
+                    if chunk_count == 1:
+                        log.info(f"First chunk received, streaming started")
                     yield chunk
                 except asyncio.TimeoutError:
-                    log.error(f"Streaming chunk timed out after 30s")
+                    log.error(f"Streaming chunk timed out after 300s (received {chunk_count} chunks)")
+                    if chunk_count == 0:
+                        # If no chunks received, this might be a model loading issue
+                        raise Exception("Model may not be loaded or responding")
+                    break
+                except StopIteration:
+                    log.info(f"Stream completed normally after {chunk_count} chunks")
                     break
 
         except Exception as e:

@@ -205,3 +205,13 @@ cython_debug/
 marimo/_static/
 marimo/_lsp/
 __marimo__/
+
+# Ignore application-generated data and storage
+docai_backend/app/storage/
+
+# Ignore executables and archives
+*.exe
+*.zip
+
+# Ignore specific tool directories
+sqlite-tools-win-x64-3500400/

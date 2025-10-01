@@ -12,6 +12,8 @@ from app.core import config
 from app.core.config import settings
 import asyncio
 from concurrent.futures import ThreadPoolExecutor
+from app.agents.language_detect_agent import language_detect_agent
+from app.agents.translator_agent import translator_agent
 
 log = logging.getLogger(__name__)
 
@@ -178,14 +180,27 @@ class EmbeddingService:
                             log.warning(f"Skipping empty chunk {chunk.get('chunk_index')} for document {document_id}")
                             continue
 
-                        batch_texts.append(text)
+                        # Detect language for chunk
+                        chunk_lang = language_detect_agent.detect_lang(text)
+
+                        # Translate to English if needed
+                        if chunk_lang != 'en' and settings.ENABLE_TRANSLATION:
+                            translated_text = translator_agent.translate(text, chunk_lang, 'en')
+                            log.info(f"Translated chunk {chunk.get('chunk_index')} from {chunk_lang} to en for document {document_id}")
+                        else:
+                            translated_text = text
+
+                        batch_texts.append(translated_text)
                         batch_metadata.append({
                             "document_id": chunk.get("document_id"),
                             "page": chunk.get("page"),
                             "chunk_index": chunk.get("chunk_index"),
                             "type": chunk.get("type"),
                             "extraction_method": chunk.get("extraction_method"),
-                            "created_at": chunk.get("created_at")
+                            "created_at": chunk.get("created_at"),
+                            "lang": chunk_lang,
+                            "original_text": text,
+                            "translated_text": translated_text
                         })
                         batch_ids.append(f"{document_id}_{chunk.get('chunk_index')}")
 
@@ -269,14 +284,15 @@ class EmbeddingService:
             log.info(f"Embeddings not available for document {document_id}, attempting to generate")
             return self.generate_embeddings(document_id)
 
-    async def search_similar(self, document_id: str, query: str, n_results: int = 5) -> Dict[str, Any]:
+    async def search_similar(self, document_id: str, query: str, n_results: int = 5, lang: str = None) -> Dict[str, Any]:
         """
         Async search for similar chunks in the document's embedding space.
         Returns top n_results similar chunks with metadata.
         Uses thread pool to run blocking ChromaDB calls asynchronously.
         Caches results to reduce repeated queries.
+        If lang is specified, filters results to chunks with matching language.
         """
-        cache_key = (document_id, query, n_results)
+        cache_key = (document_id, query, n_results, lang)
         if cache_key in self.search_cache:
             log.info(f"Cache hit for search_similar: {cache_key}")
             return self.search_cache[cache_key]
@@ -290,10 +306,13 @@ class EmbeddingService:
             # Generate embedding for query
             query_embedding = self.model.encode([query], convert_to_numpy=True)[0]
 
+            # Search with higher n_results if filtering by language
+            search_n_results = n_results * 3 if lang else n_results  # Get more results to filter
+
             # Search
             results = collection.query(
                 query_embeddings=[query_embedding.tolist()],
-                n_results=n_results,
+                n_results=search_n_results,
                 include=['documents', 'metadatas', 'distances']
             )
             return results
@@ -309,15 +328,26 @@ class EmbeddingService:
                 "error": str(e)
             }
 
-        # Format results
+        # Format and filter results
         formatted_results = []
         if results['documents'] and results['documents'][0]:
             for i, doc in enumerate(results['documents'][0]):
+                metadata = results['metadatas'][0][i] if results['metadatas'] and results['metadatas'][0] else {}
+                chunk_lang = metadata.get('lang', 'en')
+
+                # Filter by language if specified
+                if lang and chunk_lang != lang:
+                    continue
+
                 formatted_results.append({
                     "text": doc,
-                    "metadata": results['metadatas'][0][i] if results['metadatas'] and results['metadatas'][0] else {},
+                    "metadata": metadata,
                     "distance": results['distances'][0][i] if results['distances'] and results['distances'][0] else None
                 })
+
+                # Stop if we have enough results
+                if len(formatted_results) >= n_results:
+                    break
 
         result = {
             "query": query,

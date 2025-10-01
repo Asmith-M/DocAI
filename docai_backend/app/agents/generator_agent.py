@@ -1,10 +1,12 @@
-#docai_backend/app/agents/generator_agent.py
+# docai_backend/app/agents/generator_agent.py
 import asyncio
 import uuid
 from typing import List, Dict, Any, AsyncGenerator
 from loguru import logger
 from app.llm.ollama_client import get_ollama_client
 from app.core.config import settings
+from enum import Enum, auto
+
 
 class GeneratorAgent:
     def __init__(self):
@@ -33,16 +35,17 @@ class GeneratorAgent:
         logger.info(f"🔄 Stream mode: {stream}")
         logger.info(f"🎯 Current model: {self.current_model}, Using fallback: {self.using_fallback}")
 
-        # Limit context chunks to top N and truncate text to ~300 tokens (approx 1500 chars)
-        max_chunks = int(getattr(settings, "GENERATOR_MAX_CONTEXT_CHUNKS", 5))
+        # Limit context chunks to top N and truncate text (~200 tokens ≈ 1000 chars)
+        max_chunks = int(getattr(settings, "GENERATOR_MAX_CONTEXT_CHUNKS", 3))
         truncated_chunks = []
         for chunk in context_chunks[:max_chunks]:
             text = chunk.get("text", "")
-            truncated_text = text[:1500]  # Approximate truncation
+            truncated_text = text[:1000]  # Approximate truncation
             truncated_chunks.append({**chunk, "text": truncated_text})
 
         logger.info(f"📊 Truncated to {len(truncated_chunks)} chunks")
 
+        # Build prompt (Code 1’s structured style, Code 2’s simple fallback as backup)
         prompt = self._build_prompt(question, truncated_chunks)
         logger.info(f"📝 Prompt length: {len(prompt)} characters")
 
@@ -56,177 +59,238 @@ class GeneratorAgent:
                 return await self._generate_sync_with_fallback(prompt, request_id)
 
     def _build_prompt(self, question: str, context_chunks: List[Dict[str, Any]]) -> str:
-        context_text = "\n\n".join([chunk.get("text", "") for chunk in context_chunks])
-        prompt = f"Context:\n{context_text}\n\nQuestion:\n{question}\n\nAnswer:"
-        return self._truncate_prompt(prompt)
+        """
+        Build a structured prompt (from Code 1), 
+        but fall back to Code 2’s simpler style if context is empty.
+        """
+        if not context_chunks:
+            logger.warning("⚠️ No context chunks provided, using simple fallback prompt")
+            return f"Question:\n{question}\n\nAnswer:"
 
-    def _truncate_prompt(self, prompt: str) -> str:
-        """Truncate prompt to fit within context window."""
-        max_chars = settings.OLLAMA_CTX * 4  # Approximate: 1 token ~ 4 characters
-        if len(prompt) > max_chars:
-            logger.warning(f"Prompt length {len(prompt)} exceeds context window {max_chars}, truncating")
-            truncated_prompt = prompt[:max_chars]
-            # Ensure we don't cut in the middle of a word
-            last_space = truncated_prompt.rfind(" ")
-            if last_space > max_chars * 0.9:
-                truncated_prompt = truncated_prompt[:last_space]
-            logger.info(f"Truncated prompt to {len(truncated_prompt)} characters")
-            return truncated_prompt
-        return prompt
+        # System prompt (from Code 1)
+        system_prompt = """You are a helpful AI assistant. Answer the question based on the provided context. Be concise and accurate."""
+
+        # Truncate each chunk for safety
+        max_chunk_size = int(getattr(settings, "GENERATOR_MAX_CHUNK_SIZE", 800))
+        truncated_chunks = []
+        for chunk in context_chunks:
+            text = chunk.get("text", "")
+            if len(text) > max_chunk_size:
+                truncated_text = text[:max_chunk_size]
+                last_period = truncated_text.rfind('.')
+                if last_period > max_chunk_size * 0.8:
+                    truncated_text = truncated_text[:last_period + 1]
+                text = truncated_text
+            truncated_chunks.append({**chunk, "text": text})
+
+        # Build context section with metadata (Code 1 feature)
+        context_sections = []
+        for i, chunk in enumerate(truncated_chunks):
+            page_info = f"Page {chunk.get('metadata', {}).get('page', 'unknown')}" if chunk.get('metadata', {}).get('page') else ""
+            context_sections.append(f"[Source {i+1}] {page_info}\n{chunk.get('text', '')}")
+
+        context_text = "\n\n".join(context_sections)
+
+        # Final structured prompt
+        prompt = f"""{system_prompt}
+
+Context:
+{context_text}
+
+Question: {question}
+
+Answer:"""
+
+        return self._truncate_prompt(prompt, preserve_system=True)
+
+    def _truncate_prompt(self, prompt: str, preserve_system: bool = False) -> str:
+        """Truncate prompt (Code 1 advanced + Code 2’s safe cutoff)."""
+        max_chars = settings.OLLAMA_CTX * 4  # Approximate: 1 token ~ 4 chars
+
+        if len(prompt) <= max_chars:
+            return prompt
+
+        logger.warning(f"Prompt length {len(prompt)} exceeds context window {max_chars}, truncating")
+
+        if preserve_system:
+            system_end = prompt.find("Context:")
+            question_start = prompt.find("Question:")
+
+            if system_end > 0 and question_start > 0:
+                system_part = prompt[:system_end]
+                question_part = prompt[question_start:]
+
+                available_chars = max_chars - len(system_part) - len(question_part) - 100
+                if available_chars > 500:
+                    context_part = prompt[system_end:question_start]
+                    if len(context_part) > available_chars:
+                        truncated_context = context_part[:available_chars]
+                        last_period = truncated_context.rfind('.')
+                        if last_period > available_chars * 0.7:
+                            truncated_context = truncated_context[:last_period + 1]
+                        truncated_prompt = system_part + truncated_context + "\n\n" + question_part
+                        logger.info(f"Truncated prompt with preserved system to {len(truncated_prompt)} characters")
+                        return truncated_prompt
+
+        # Fallback: simple truncation (Code 2)
+        truncated_prompt = prompt[:max_chars]
+        last_space = truncated_prompt.rfind(" ")
+        if last_space > max_chars * 0.9:
+            truncated_prompt = truncated_prompt[:last_space]
+
+        logger.info(f"Truncated prompt to {len(truncated_prompt)} characters")
+        return truncated_prompt
+
+    # ------------------------
+    # Generation methods (same in both codes)
+    # ------------------------
 
     async def _generate_sync(self, prompt: str, request_id: str) -> str:
         try:
             logger.info(f"🔧 GeneratorAgent: Calling client.generate_async for request_id {request_id}")
             logger.info(f"📝 Prompt length: {len(prompt)} characters")
-
-            # Add timeout to prevent hanging
-            import asyncio
             try:
                 result = await asyncio.wait_for(
                     self.client.generate_async(prompt),
-                    timeout=120.0  # 120 second timeout for better reliability
+                    timeout=300.0
                 )
                 logger.info(f"✅ GeneratorAgent: Completed generation for request_id {request_id}")
-                logger.info(f"📊 Result type: {type(result)}, Result keys: {result.keys() if isinstance(result, dict) else 'Not a dict'}")
-
                 if isinstance(result, dict):
-                    response = result.get('response', '')
-                    logger.info(f"📄 Response length: {len(response)} characters")
-                    return response
-                else:
-                    logger.warning(f"⚠️ Unexpected result type: {type(result)}")
-                    return str(result)
+                    return result.get('response', '')
+                return str(result)
             except asyncio.TimeoutError:
-                logger.error(f"⏰ GeneratorAgent: Generation timed out after 60s for request_id {request_id}")
+                logger.error(f"⏰ Generation timed out after 300s for request_id {request_id}")
                 raise Exception("Generation timed out")
-            except Exception as e:
-                logger.error(f"❌ GeneratorAgent: Error during generation for request_id {request_id}: {e}")
-                logger.error(f"❌ Error type: {type(e).__name__}")
-                raise
-
         except Exception as e:
-            logger.error(f"❌ GeneratorAgent: Error during generation for request_id {request_id}: {e}")
-            logger.error(f"❌ Error type: {type(e).__name__}")
+            logger.error(f"❌ Error during generation for request_id {request_id}: {e}")
             raise
 
     async def _generate_sync_with_fallback(self, prompt: str, request_id: str) -> str:
-        """Generate text with fallback model support."""
         async def operation(prompt: str, request_id: str):
-            # Note: num_ctx and num_predict are not supported by the ollama Python client
-            # These would need to be configured at the Ollama server level
             result = await self.client.generate_async(prompt)
             return result.get('response', '') if isinstance(result, dict) else str(result)
-
         return await self._try_with_fallback(operation, prompt, request_id)
 
     async def _stream_generate(self, prompt: str, request_id: str) -> AsyncGenerator[str, None]:
         try:
-            # Remove temperature parameter as it's not supported by the Ollama client
             async for token in self.client.generate_stream_async(prompt):
                 yield token
-            logger.info(f"GeneratorAgent: Completed streaming generation for request_id {request_id}")
+            logger.info(f"✅ Streaming generation completed for request_id {request_id}")
         except Exception as e:
-            logger.error(f"GeneratorAgent: Error during streaming generation for request_id {request_id}: {e}")
+            logger.error(f"❌ Streaming error for request_id {request_id}: {e}")
             raise
 
+    class FallbackErrorType(Enum):
+        """Enum for categorizing errors that should trigger fallback"""
+        MEMORY = auto()
+        MODEL_UNAVAILABLE = auto()
+        TIMEOUT = auto()
+        CONNECTION = auto()
+        OTHER = auto()
+
+    def _should_fallback(self, error: Exception) -> tuple[bool, FallbackErrorType]:
+        """
+        Determine if an error should trigger fallback to backup model.
+        Returns (should_fallback: bool, error_type: FallbackErrorType)
+        """
+        error_msg = str(error).lower()
+        error_type = type(error).__name__
+
+        # Memory-related errors
+        if any(ind in error_msg for ind in [
+            "out of memory", "cuda out of memory", "insufficient memory",
+            "memory allocation failed", "cannot allocate memory"
+        ]):
+            logger.error(f"Memory error detected: {error_type} - {error_msg}")
+            return True, self.FallbackErrorType.MEMORY
+
+        # Model availability errors
+        if any(ind in error_msg for ind in [
+            "model unavailable", "failed to load", "model not found",
+            "initialization failed"
+        ]):
+            logger.error(f"Model availability error: {error_type} - {error_msg}")
+            return True, self.FallbackErrorType.MODEL_UNAVAILABLE
+
+        # Timeout errors
+        if any(ind in error_msg for ind in ["timeout", "timed out", "deadline exceeded"]):
+            logger.error(f"Timeout error: {error_type} - {error_msg}")
+            return True, self.FallbackErrorType.TIMEOUT
+
+        # Connection/network errors
+        if isinstance(error, (ConnectionError, TimeoutError)) or any(ind in error_msg for ind in [
+            "connection", "network", "unreachable"
+        ]):
+            logger.error(f"Connection error: {error_type} - {error_msg}")
+            return True, self.FallbackErrorType.CONNECTION
+
+        # Any other error types don't trigger fallback
+        logger.warning(f"Non-fallback error encountered: {error_type} - {error_msg}")
+        return False, self.FallbackErrorType.OTHER
+
     async def _stream_generate_with_fallback(self, prompt: str, request_id: str) -> AsyncGenerator[str, None]:
-        """Generate streaming text with fallback model support."""
-        async def operation(prompt: str, request_id: str):
-            # Note: num_ctx and num_predict are not supported by the ollama Python client
-            # These would need to be configured at the Ollama server level
-            try:
-                # Add timeout to prevent hanging
-                async with asyncio.timeout(120.0):  # 120 second timeout for better reliability
+        """Stream tokens from the model with fallback support and comprehensive error handling"""
+        try:
+            logger.info(f"🎯 Starting streaming generation with model '{self.current_model}' for request {request_id}")
+            async for token in self.client.generate_stream_async(prompt):
+                yield token
+            logger.info(f"✅ Streaming completed successfully for request {request_id}")
+
+        except Exception as e:
+            error_type = type(e).__name__
+            error_msg = str(e)
+            logger.error(f"❌ Streaming generation failed for request {request_id}: {error_type} - {error_msg}")
+            
+            should_fallback, fallback_type = self._should_fallback(e)
+            if should_fallback and not self.using_fallback:
+                logger.warning(f"⚠️ Attempting fallback for error type {fallback_type.name}")
+                self._switch_to_fallback_model(request_id, e)
+                
+                try:
+                    logger.info(f"🔄 Starting fallback generation with model '{self.current_model}'")
                     async for token in self.client.generate_stream_async(prompt):
                         yield token
-            except asyncio.TimeoutError:
-                logger.error(f"⏰ GeneratorAgent: Streaming timed out after 120s for request_id {request_id}")
-                raise Exception("Streaming timed out")
-
-        # Use the fallback logic for streaming
-        try:
-            async for token in operation(prompt, request_id):
-                yield token
-        except Exception as e:
-            logger.warning(f"GeneratorAgent: Streaming operation failed with model '{self.current_model}' for request_id {request_id}: {e}")
-
-            # If we're already using fallback, don't try again
-            if self.using_fallback:
-                logger.error(f"GeneratorAgent: Fallback model '{self.current_model}' also failed for streaming request_id {request_id}")
-                raise
-
-            # Check if this is an OOM error and we should switch to fallback
-            if self._is_oom_error(e):
-                logger.warning(f"GeneratorAgent: Detected OOM error for streaming request_id {request_id}, switching to fallback model")
-                self._switch_to_fallback_model(request_id, e)
-
-                # Retry with fallback model
-                try:
-                    async for token in operation(prompt, request_id):
-                        yield token
-                except Exception as fallback_error:
-                    logger.error(f"GeneratorAgent: Fallback model also failed for streaming request_id {request_id}: {fallback_error}")
-                    raise fallback_error
+                    logger.info(f"✅ Fallback streaming completed successfully")
+                
+                except Exception as fallback_e:
+                    fallback_error = f"{type(fallback_e).__name__}: {str(fallback_e)}"
+                    logger.error(f"❌ Fallback generation also failed: {fallback_error}")
+                    raise Exception(f"Both primary and fallback models failed. Primary: {error_msg}, Fallback: {fallback_error}")
+            
             else:
-                # For non-OOM errors, try fallback once
-                self._switch_to_fallback_model(request_id, e)
-                try:
-                    async for token in operation(prompt, request_id):
-                        yield token
-                except Exception as fallback_error:
-                    logger.error(f"GeneratorAgent: Fallback model also failed for streaming request_id {request_id}: {fallback_error}")
-                    raise fallback_error
+                if self.using_fallback:
+                    logger.error(f"❌ Already using fallback model, no more retries available")
+                else:
+                    logger.error(f"❌ Error not eligible for fallback: {error_type}")
+                raise e
 
     def _switch_to_fallback_model(self, request_id: str, error: Exception) -> None:
-        """Switch to fallback model if available and not already using it."""
         if not self.using_fallback and self.fallback_model != self.primary_model:
             self.using_fallback = True
             self.current_model = self.fallback_model
-            logger.warning(f"GeneratorAgent: Switched to fallback model '{self.fallback_model}' for request_id {request_id}")
-            logger.warning(f"GeneratorAgent: Primary model error: {error}")
+            self.client.model = self.fallback_model
+            logger.warning(f"Switched to fallback model '{self.fallback_model}' for request_id {request_id}")
+            logger.warning(f"Primary model error: {error}")
 
     def _is_oom_error(self, error: Exception) -> bool:
-        """Check if the error is likely due to out of memory."""
         error_msg = str(error).lower()
-        oom_indicators = [
-            "out of memory",
-            "memory",
-            "cuda out of memory",
-            "insufficient memory",
-            "memory allocation failed",
-            "cannot allocate memory"
-        ]
-        return any(indicator in error_msg for indicator in oom_indicators)
+        return any(ind in error_msg for ind in [
+            "out of memory", "cuda out of memory", "insufficient memory",
+            "memory allocation failed", "cannot allocate memory"
+        ])
 
     async def _try_with_fallback(self, operation, prompt: str, request_id: str, **kwargs):
-        """Try operation with primary model, fallback to fallback model if needed."""
+        import traceback
+
         try:
-            # Try with current model (primary or fallback)
             return await operation(prompt, request_id, **kwargs)
         except Exception as e:
-            logger.warning(f"GeneratorAgent: Operation failed with model '{self.current_model}' for request_id {request_id}: {e}")
-
-            # If we're already using fallback, don't try again
+            logger.error(f"❌ Sync generation error for request_id {request_id}: {e}\n{traceback.format_exc()}")
             if self.using_fallback:
-                logger.error(f"GeneratorAgent: Fallback model '{self.current_model}' also failed for request_id {request_id}")
+                logger.error(f"❌ Fallback sync generation failed for request_id {request_id}: {e}\n{traceback.format_exc()}")
                 raise
-
-            # Check if this is an OOM error and we should switch to fallback
-            if self._is_oom_error(e):
-                logger.warning(f"GeneratorAgent: Detected OOM error for request_id {request_id}, switching to fallback model")
+            if self._should_fallback(e):
                 self._switch_to_fallback_model(request_id, e)
-
-                # Retry with fallback model
-                try:
-                    return await operation(prompt, request_id, **kwargs)
-                except Exception as fallback_error:
-                    logger.error(f"GeneratorAgent: Fallback model also failed for request_id {request_id}: {fallback_error}")
-                    raise fallback_error
+                return await operation(prompt, request_id, **kwargs)
             else:
-                # For non-OOM errors, try fallback once
-                self._switch_to_fallback_model(request_id, e)
-                try:
-                    return await operation(prompt, request_id, **kwargs)
-                except Exception as fallback_error:
-                    logger.error(f"GeneratorAgent: Fallback model also failed for request_id {request_id}: {fallback_error}")
-                    raise fallback_error
+                raise

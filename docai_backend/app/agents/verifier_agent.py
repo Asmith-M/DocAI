@@ -2,6 +2,8 @@ import logging
 import re
 from typing import List, Dict, Any
 from app.services.embedding_service import embedding_service
+from app.agents.translator_agent import translator_agent
+import asyncio
 
 log = logging.getLogger(__name__)
 
@@ -20,14 +22,15 @@ class VerifierAgent:
             r'\d+(?:\.\d+)?%',  # Percentages
         ]
 
-    def verify_answer(
+    async def verify_answer(
         self,
         query: str,
         answer: str,
-        context_chunks: List[Dict[str, Any]]
+        context_chunks: List[Dict[str, Any]],
+        lang: str = 'en'
     ) -> Dict[str, Any]:
         """
-        Verify the generated answer against the context.
+        Verify the generated answer against the context asynchronously.
 
         Args:
             query: Original user query
@@ -62,6 +65,23 @@ class VerifierAgent:
                     'hallucination_risk': 'high'
                 }
 
+            # Translate to English for verification if needed
+            if lang != 'en':
+                log.info(f"Translating answer and context from {lang} to en for verification")
+                translated_answer = translator_agent.translate(answer, lang, 'en')
+                translated_context = []
+                for chunk in context_chunks:
+                    translated_text = translator_agent.translate(chunk.get('text', ''), lang, 'en')
+                    translated_chunk = dict(chunk)
+                    translated_chunk['text'] = translated_text
+                    translated_context.append(translated_chunk)
+                # Also translate query if it's not in English
+                translated_query = translator_agent.translate(query, lang, 'en')
+            else:
+                translated_answer = answer
+                translated_context = context_chunks
+                translated_query = query
+
             verification_results = {
                 'confidence_score': 0.0,
                 'issues': [],
@@ -72,31 +92,32 @@ class VerifierAgent:
 
             # Check 1: Context coverage
             log.info(f"🔍 Step 1: Checking context coverage")
-            context_coverage = self._check_context_coverage(answer, context_chunks)
+            context_coverage = await asyncio.to_thread(self._check_context_coverage, translated_answer, translated_context)
             verification_results['context_coverage'] = context_coverage
             log.info(f"✅ Context coverage: {context_coverage:.2f}")
 
             # Check 2: Fact verification
             log.info(f"🔍 Step 2: Verifying facts")
-            fact_checks = self._verify_facts(answer, context_chunks)
+            fact_checks = await asyncio.to_thread(self._verify_facts, translated_answer, translated_context)
             verification_results['fact_checks'] = fact_checks
             verified_count = sum(1 for check in fact_checks if check['verified'])
             log.info(f"✅ Fact checks: {verified_count}/{len(fact_checks)} verified")
 
             # Check 3: Answer relevance
             log.info(f"🔍 Step 3: Checking relevance")
-            relevance_score = self._check_relevance(query, answer)
+            relevance_score = await asyncio.to_thread(self._check_relevance, translated_query, translated_answer)
             verification_results['relevance_score'] = relevance_score
             log.info(f"✅ Relevance score: {relevance_score:.2f}")
 
             # Check 4: Hallucination detection
             log.info(f"🔍 Step 4: Detecting hallucinations")
-            hallucination_risk = self._detect_hallucinations(answer, context_chunks)
+            hallucination_risk = await asyncio.to_thread(self._detect_hallucinations, translated_answer, translated_context)
             verification_results['hallucination_risk'] = hallucination_risk
             log.info(f"✅ Hallucination risk: {hallucination_risk}")
 
             # Calculate overall confidence score
-            confidence_score = self._calculate_confidence_score(
+            confidence_score = await asyncio.to_thread(
+                self._calculate_confidence_score,
                 context_coverage, fact_checks, relevance_score, hallucination_risk
             )
             verification_results['confidence_score'] = confidence_score

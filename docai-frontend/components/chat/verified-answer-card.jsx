@@ -4,7 +4,7 @@ import { motion } from "framer-motion"
 import { Bot, Copy, ThumbsUp, ThumbsDown } from "lucide-react"
 import { CitationConfidenceBadge } from "./citation-confidence-badge"
 
-export function VerifiedAnswerCard({ content, confidence = "high", timestamp, verificationResult, onCopy, onFeedback }) {
+export function VerifiedAnswerCard({ content, confidence = "high", timestamp, verificationResult, onCopy, onFeedback, originalLang, translatedLang }) {
   const handleCopy = () => {
     navigator.clipboard.writeText(content)
     onCopy?.()
@@ -65,6 +65,13 @@ export function VerifiedAnswerCard({ content, confidence = "high", timestamp, ve
               </button>
             </div>
           </div>
+
+          {/* Translation Info */}
+          {originalLang && translatedLang && originalLang !== translatedLang && (
+            <div className="mt-2 text-xs px-2 py-1 rounded-full bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200">
+              Translated from {originalLang.toUpperCase()} to {translatedLang.toUpperCase()}
+            </div>
+          )}
 
           {/* Verification Details */}
           {verificationResult && (

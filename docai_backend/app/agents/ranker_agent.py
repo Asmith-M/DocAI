@@ -21,7 +21,7 @@ class RankerAgent:
         self.document_tfidf_matrix = {}
         self.document_candidate_texts = {}
 
-    async def get_candidates(self, document_id: str, question: str, top_k: int = 10, return_top: int = 5) -> Dict[str, Any]:
+    async def get_candidates(self, document_id: str, question: str, top_k: int = 10, return_top: int = 5, lang: str = None) -> Dict[str, Any]:
         """
         Get top candidate chunks using hybrid ranking approach.
 
@@ -52,17 +52,17 @@ class RankerAgent:
             if hasattr(embedding_service.search_similar, '__call__'):
                 try:
                     initial_candidates = await embedding_service.search_similar(
-                        document_id, question, n_results=self.max_candidates
+                        document_id, question, n_results=self.max_candidates, lang=lang
                     )
                     log.info(f"✅ Called async embedding_service.search_similar")
                 except TypeError:
                     initial_candidates = embedding_service.search_similar(
-                        document_id, question, n_results=self.max_candidates
+                        document_id, question, n_results=self.max_candidates, lang=lang
                     )
                     log.info(f"✅ Called sync embedding_service.search_similar")
             else:
                 initial_candidates = embedding_service.search_similar(
-                    document_id, question, n_results=self.max_candidates
+                    document_id, question, n_results=self.max_candidates, lang=lang
                 )
                 log.info(f"✅ Called embedding_service.search_similar")
 

@@ -1,159 +1,303 @@
-"use client"
+"use client";
 
-import { useState, useEffect, useRef } from "react"
-import { motion, AnimatePresence } from "framer-motion"
-import { User, Bot } from "lucide-react"
-import { TypingIndicator } from "./typing-indicator"
-import { VerifiedAnswerCard } from "./verified-answer-card"
-import { ragQuery, startRagStreamFetch, cancelRagRequest } from "../../lib/api"
+import { useState, useEffect, useRef } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { User, Bot } from "lucide-react";
+import { TypingIndicator } from "./typing-indicator";
+import { VerifiedAnswerCard } from "./verified-answer-card";
+import { ragQuery, startRagStreamFetch, cancelRagRequest } from "../../lib/api";
 
 export function ChatContainer() {
   const [messages, setMessages] = useState([
     {
       id: 1,
       type: "bot",
-      content: "Hello! I'm ready to help you with your documents. What would you like to know?",
+      content:
+        "Hello! I'm ready to help you with your documents. What would you like to know?",
       timestamp: new Date(),
       confidence: "high",
     },
-  ])
-  const [isTyping, setIsTyping] = useState(false)
-  const messagesEndRef = useRef(null)
-  const eventSourceRef = useRef(null)
+  ]);
+  const [isTyping, setIsTyping] = useState(false);
+  const messagesEndRef = useRef(null);
+  const eventSourceRef = useRef(null);
 
   const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
-  }
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
 
   useEffect(() => {
-    scrollToBottom()
-  }, [messages, isTyping])
+    scrollToBottom();
+  }, [messages, isTyping]);
 
   // Listen for global chat-send events from ChatInput
   useEffect(() => {
     const handler = async (e) => {
-      const text = e?.detail?.text
-      if (!text) return
+      const text = e?.detail?.text;
+      if (!text) return;
       // Append user message
-      setMessages((prev) => [...prev, { id: Date.now(), type: 'user', content: text, timestamp: new Date() }])
-      setIsTyping(true)
+      setMessages((prev) => [
+        ...prev,
+        { id: Date.now(), type: "user", content: text, timestamp: new Date() },
+      ]);
+      setIsTyping(true);
 
       try {
         // Call ragStream to get streaming response using fetch
-        const documentId = e?.detail?.documentId
+        const documentId = e?.detail?.documentId;
         if (!documentId) {
-          setMessages((prev) => [...prev, { id: Date.now() + 1, type: 'bot', content: "Error: Document ID is missing.", timestamp: new Date(), confidence: 'low' }])
-          setIsTyping(false)
-          return
+          setMessages((prev) => [
+            ...prev,
+            {
+              id: Date.now() + 1,
+              type: "bot",
+              content: "Error: Document ID is missing.",
+              timestamp: new Date(),
+              confidence: "low",
+            },
+          ]);
+          setIsTyping(false);
+          return;
         }
 
-        const response = await startRagStreamFetch(documentId, text)
-        eventSourceRef.current = response
+        // Get language settings from ChatInput (assuming they are stored in a global state or passed via event)
+        const lang = e?.detail?.lang;
+        const auto_detect = e?.detail?.auto_detect;
 
-        let botMessage = ''
-        let messageId = Date.now() + 1
-        let sources = []
+        const response = await startRagStreamFetch(documentId, text, {
+          lang,
+          auto_detect,
+        });
+        eventSourceRef.current = response;
 
-        const reader = response.body.getReader()
-        const decoder = new TextDecoder()
+        let botMessage = "";
+        let messageId = Date.now() + 1;
+        let sources = [];
+
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder();
 
         try {
           while (true) {
-            const { done, value } = await reader.read()
-            if (done) break
+            const { done, value } = await reader.read();
+            if (done) break;
 
-            const chunk = decoder.decode(value, { stream: true })
-            const lines = chunk.split('\n')
+            const chunk = decoder.decode(value, { stream: true });
+            const lines = chunk.split("\n");
 
             for (const line of lines) {
-              if (line.startsWith('data: ')) {
-                const data = line.slice(6)
+              if (line.startsWith("data: ")) {
+                const data = line.slice(6);
                 if (data.trim()) {
                   try {
-                    const eventData = JSON.parse(data)
+                    const eventData = JSON.parse(data);
                     switch (eventData.type) {
-                      case 'meta':
+                      case "meta":
                         // Handle meta event if needed
-                        break
-                      case 'source':
-                        sources.push(eventData.data)
-                        break
-                      case 'token':
-                        botMessage += eventData.data
+                        break;
+                      case "lang-detected":
+                        // Handle language detection event
+                        console.log("Language detected:", eventData.data.lang);
+                        // Optionally show a toast or update UI to indicate detected language
+                        window.dispatchEvent(
+                          new CustomEvent("show-toast", {
+                            detail: {
+                              type: "info",
+                              message: `Language detected: ${eventData.data.lang.toUpperCase()}`,
+                            },
+                          })
+                        );
+                        break;
+                      case "translation":
+                        // Handle translation event
+                        console.log("Translation:", eventData.data);
+                        // Optionally show translation status
+                        if (eventData.data.direction.includes("query-to-en")) {
+                          window.dispatchEvent(
+                            new CustomEvent("show-toast", {
+                              detail: {
+                                type: "info",
+                                message: "Translating query to English...",
+                              },
+                            })
+                          );
+                        } else if (
+                          eventData.data.direction.includes("answer-to-")
+                        ) {
+                          const targetLang =
+                            eventData.data.direction.split("-")[2];
+                          window.dispatchEvent(
+                            new CustomEvent("show-toast", {
+                              detail: {
+                                type: "info",
+                                message: `Translating answer to ${targetLang.toUpperCase()}...`,
+                              },
+                            })
+                          );
+                        }
+                        break;
+                      case "source":
+                        sources.push(eventData.data);
+                        break;
+                      case "token":
+                        botMessage += eventData.data;
                         setMessages((prev) => {
                           // Replace last bot message or add new
-                          const lastMessage = prev[prev.length - 1]
-                          if (lastMessage && lastMessage.type === 'bot' && lastMessage.id === messageId) {
-                            return [...prev.slice(0, -1), { ...lastMessage, content: botMessage, timestamp: new Date(), confidence: 'medium', sources }]
+                          const lastMessage = prev[prev.length - 1];
+                          if (
+                            lastMessage &&
+                            lastMessage.type === "bot" &&
+                            lastMessage.id === messageId
+                          ) {
+                            return [
+                              ...prev.slice(0, -1),
+                              {
+                                ...lastMessage,
+                                content: botMessage,
+                                timestamp: new Date(),
+                                confidence: "medium",
+                                sources,
+                              },
+                            ];
                           } else {
-                            return [...prev, { id: messageId, type: 'bot', content: botMessage, timestamp: new Date(), confidence: 'medium', sources }]
+                            return [
+                              ...prev,
+                              {
+                                id: messageId,
+                                type: "bot",
+                                content: botMessage,
+                                timestamp: new Date(),
+                                confidence: "medium",
+                                sources,
+                              },
+                            ];
                           }
-                        })
-                        break
-                      case 'done':
-                        setIsTyping(false)
+                        });
+                        break;
+                      case "done":
+                        setIsTyping(false);
                         // Update final message with verification result
                         setMessages((prev) => {
-                          const lastMessage = prev[prev.length - 1]
-                          if (lastMessage && lastMessage.type === 'bot' && lastMessage.id === messageId) {
-                            return [...prev.slice(0, -1), { ...lastMessage, verification_result: eventData.data.verification_result }]
+                          const lastMessage = prev[prev.length - 1];
+                          if (
+                            lastMessage &&
+                            lastMessage.type === "bot" &&
+                            lastMessage.id === messageId
+                          ) {
+                            return [
+                              ...prev.slice(0, -1),
+                              {
+                                ...lastMessage,
+                                content:
+                                  eventData.data.answer || lastMessage.content,
+                                verification_result:
+                                  eventData.data.verification_result,
+                                original_lang: eventData.data.original_lang,
+                                translated_lang: eventData.data.translated_lang,
+                              },
+                            ];
                           }
-                          return prev
-                        })
-                        return
-                      case 'error':
-                        setIsTyping(false)
-                        setMessages((prev) => [...prev, { id: Date.now() + 1, type: 'bot', content: `Error: ${eventData.data.message}`, timestamp: new Date(), confidence: 'low' }])
-                        return
+                          return prev;
+                        });
+                        return;
+                      case "error":
+                        setIsTyping(false);
+                        setMessages((prev) => [
+                          ...prev,
+                          {
+                            id: Date.now() + 1,
+                            type: "bot",
+                            content: `Error: ${eventData.data.message}`,
+                            timestamp: new Date(),
+                            confidence: "low",
+                          },
+                        ]);
+                        return;
                       default:
-                        break
+                        break;
                     }
                   } catch (err) {
-                    console.error('Error parsing SSE event:', err)
+                    console.error("Error parsing SSE event:", err);
                   }
                 }
               }
             }
           }
         } catch (error) {
-          console.error('Error reading stream:', error)
-          setMessages((prev) => [...prev, { id: Date.now() + 1, type: 'bot', content: `Error: Streaming failed`, timestamp: new Date(), confidence: 'low' }])
-          setIsTyping(false)
+          console.error("Error reading stream:", error);
+          setMessages((prev) => [
+            ...prev,
+            {
+              id: Date.now() + 1,
+              type: "bot",
+              content: `Error: Streaming failed`,
+              timestamp: new Date(),
+              confidence: "low",
+            },
+          ]);
+          setIsTyping(false);
         }
 
         // Fallback: if no messages received after 30 seconds, show timeout error
         setTimeout(() => {
           if (isTyping) {
-            setMessages((prev) => [...prev, { id: Date.now() + 1, type: 'bot', content: `Error: Streaming timeout`, timestamp: new Date(), confidence: 'low' }])
-            setIsTyping(false)
+            setMessages((prev) => [
+              ...prev,
+              {
+                id: Date.now() + 1,
+                type: "bot",
+                content: `Error: Streaming timeout`,
+                timestamp: new Date(),
+                confidence: "low",
+              },
+            ]);
+            setIsTyping(false);
           }
-        }, 30000)
+        }, 30000);
       } catch (error) {
-        setMessages((prev) => [...prev, { id: Date.now() + 1, type: 'bot', content: `Error: ${error.message}`, timestamp: new Date(), confidence: 'low' }])
-        setIsTyping(false)
+        setMessages((prev) => [
+          ...prev,
+          {
+            id: Date.now() + 1,
+            type: "bot",
+            content: `Error: ${error?.message || error}`,
+            timestamp: new Date(),
+            confidence: "low",
+          },
+        ]);
+        setIsTyping(false);
       }
-    }
-    window.addEventListener('chat-send', handler)
-    return () => window.removeEventListener('chat-send', handler)
-  }, [])
+    };
+    window.addEventListener("chat-send", handler);
+    return () => window.removeEventListener("chat-send", handler);
+  }, []);
 
   const copyMessage = (content) => {
-    navigator.clipboard.writeText(content)
+    navigator.clipboard.writeText(content);
     window.dispatchEvent(
       new CustomEvent("show-toast", {
         detail: { type: "success", message: "Message copied to clipboard!" },
-      }),
-    )
-  }
+      })
+    );
+  };
 
   const stopGeneration = () => {
     if (eventSourceRef.current) {
       // For fetch streaming, we can't directly abort, but we can set a flag to stop processing
-      eventSourceRef.current = null
-      setIsTyping(false)
-      setMessages((prev) => [...prev, { id: Date.now() + 1, type: 'bot', content: "Generation stopped.", timestamp: new Date(), confidence: 'low' }])
+      eventSourceRef.current = null;
+      setIsTyping(false);
+      setMessages((prev) => [
+        ...prev,
+        {
+          id: Date.now() + 1,
+          type: "bot",
+          content: "Generation stopped.",
+          timestamp: new Date(),
+          confidence: "low",
+        },
+      ]);
     }
-  }
+  };
 
   return (
     <div className="flex-1 bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 overflow-hidden">
@@ -162,8 +306,12 @@ export function ChatContainer() {
         <div className="p-4 border-b border-gray-200 dark:border-gray-700">
           <div className="flex items-center justify-between">
             <div>
-              <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Chat with Documents</h2>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Ask questions about your uploaded PDFs</p>
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
+                Chat with Documents
+              </h2>
+              <p className="text-sm text-gray-500 dark:text-gray-400">
+                Ask questions about your uploaded PDFs
+              </p>
             </div>
             {isTyping && (
               <button
@@ -187,7 +335,9 @@ export function ChatContainer() {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -20 }}
                 transition={{ duration: 0.3 }}
-                className={`flex ${message.type === "user" ? "justify-end" : "justify-start"}`}
+                className={`flex ${
+                  message.type === "user" ? "justify-end" : "justify-start"
+                }`}
               >
                 <div
                   className={`flex max-w-[80%] ${
@@ -202,7 +352,11 @@ export function ChatContainer() {
                         : "bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300"
                     }`}
                   >
-                    {message.type === "user" ? <User className="w-4 h-4" /> : <Bot className="w-4 h-4" />}
+                    {message.type === "user" ? (
+                      <User className="w-4 h-4" />
+                    ) : (
+                      <Bot className="w-4 h-4" />
+                    )}
                   </div>
 
                   {/* Message Bubble */}
@@ -212,8 +366,14 @@ export function ChatContainer() {
                       confidence={message.confidence || "medium"}
                       timestamp={message.timestamp?.toLocaleTimeString()}
                       verificationResult={message.verification_result}
+                      originalLang={message.original_lang}
+                      translatedLang={message.translated_lang}
                       onCopy={() => copyMessage(message.content)}
-                      onFeedback={(type) => console.log(`Feedback: ${type} for message ${message.id}`)}
+                      onFeedback={(type) =>
+                        console.log(
+                          `Feedback: ${type} for message ${message.id}`
+                        )
+                      }
                     />
                   ) : (
                     <div
@@ -223,7 +383,9 @@ export function ChatContainer() {
                           : "bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white"
                       }`}
                     >
-                      <p className="text-sm leading-relaxed">{message.content}</p>
+                      <p className="text-sm leading-relaxed">
+                        {message.content}
+                      </p>
                     </div>
                   )}
                 </div>
@@ -238,5 +400,5 @@ export function ChatContainer() {
         </div>
       </div>
     </div>
-  )
+  );
 }

@@ -32,9 +32,9 @@ class Settings:
 
     # Ollama settings
     OLLAMA_HOST: str = os.getenv("OLLAMA_HOST", "http://localhost:11434")
-    OLLAMA_MODEL: str = os.getenv("OLLAMA_MODEL", "mistral:7b-instruct-q4_0")
-    OLLAMA_MODEL_FALLBACK: str = os.getenv("OLLAMA_MODEL_FALLBACK", "gemma:2b-instruct-q4_0")
-    OLLAMA_CTX: int = int(os.getenv("OLLAMA_CTX", 2048))
+    OLLAMA_MODEL: str = os.getenv("OLLAMA_MODEL", "gemma:2b-instruct-q4_0")
+    OLLAMA_MODEL_FALLBACK: str = os.getenv("OLLAMA_MODEL_FALLBACK", "phi-2")
+    OLLAMA_CTX: int = int(os.getenv("OLLAMA_CTX", 4096))
     OLLAMA_NUM_PREDICT: int = int(os.getenv("OLLAMA_NUM_PREDICT", 200))
 
     # Recommended model configurations
@@ -55,6 +55,24 @@ class Settings:
     # Embedding model settings
     EMBEDDING_MODEL_PATH: str = os.getenv("EMBEDDING_MODEL_PATH", "")
     EMBEDDING_MODEL_NAME: str = os.getenv("EMBEDDING_MODEL_NAME", "all-MiniLM-L6-v2")
+
+    # Multilingual embedding model settings
+    MULTILINGUAL_EMBEDDING_MODEL_PATH: str = os.getenv("MULTILINGUAL_EMBEDDING_MODEL_PATH", "")
+    MULTILINGUAL_EMBEDDING_MODEL_NAME: str = os.getenv("MULTILINGUAL_EMBEDDING_MODEL_NAME", "paraphrase-multilingual-mpnet-base-v2")
+
+    # Multilingual settings
+    SUPPORTED_LANGUAGES: str = os.getenv("SUPPORTED_LANGUAGES", "en,hi,mr")
+    ENABLE_TRANSLATION: bool = os.getenv("ENABLE_TRANSLATION", "true").lower() == "true"
+    LANG_DETECT_METHOD: str = os.getenv("LANG_DETECT_METHOD", "langdetect")
+    HF_MULTILINGUAL_CACHE: str = os.getenv("HF_MULTILINGUAL_CACHE", "./app/storage/hf_multilingual_cache")
+
+    # Translation models (Helsinki-NLP opus-mt)
+    TRANSLATION_MODELS: dict = {
+        "hi-en": os.getenv("HI_EN_MODEL", "Helsinki-NLP/opus-mt-hi-en"),
+        "en-hi": os.getenv("EN_HI_MODEL", "Helsinki-NLP/opus-mt-en-hi"),
+        "mr-en": os.getenv("MR_EN_MODEL", "Helsinki-NLP/opus-mt-mr-en"),
+        "en-mr": os.getenv("EN_MR_MODEL", "Helsinki-NLP/opus-mt-en-mr"),
+    }
 
     # Chroma settings
     CHROMA_PERSIST_DIR: str = os.getenv("CHROMA_PERSIST_DIR", "./app/storage/chroma")

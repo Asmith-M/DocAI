@@ -1,5 +1,5 @@
 from fastapi import APIRouter
-from app.api.endpoints import health, upload, tables, chunks, embeddings, rag, admin_chroma_backup, admin_offline_status, admin_model_load, admin_readiness
+from app.api.endpoints import health, upload, tables, chunks, embeddings, rag, language, admin_chroma_backup, admin_offline_status, admin_model_load, admin_readiness
 
 api_router = APIRouter()
 
@@ -10,6 +10,7 @@ api_router.include_router(tables.router, prefix="/tables", tags=["tables"])
 api_router.include_router(chunks.router, prefix="/chunks", tags=["chunks"])
 api_router.include_router(embeddings.router, prefix="/embed", tags=["embeddings"])
 api_router.include_router(rag.router, prefix="/rag", tags=["rag"])
+api_router.include_router(language.router, prefix="/language", tags=["language"])
 api_router.include_router(admin_chroma_backup.router, prefix="/admin/chroma", tags=["admin_chroma"])
 api_router.include_router(admin_offline_status.router, prefix="/admin/offline", tags=["admin_offline"])
 api_router.include_router(admin_model_load.router, prefix="/admin/model", tags=["admin_model"])

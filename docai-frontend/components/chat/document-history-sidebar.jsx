@@ -1,64 +1,73 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
-import { motion, AnimatePresence } from "framer-motion"
-import { ChevronLeft, ChevronRight, FileText, Trash2, Loader2 } from "lucide-react"
-import { DocumentHistoryItem } from "./document-history-item"
-import { ClearHistoryModal } from "./clear-history-modal"
-import { listFiles, getTables, getChunks } from "../../lib/api"
-import { useNavigate } from "react-router-dom"
+import { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import {
+  ChevronLeft,
+  ChevronRight,
+  FileText,
+  Trash2,
+  Loader2,
+} from "lucide-react";
+import { DocumentHistoryItem } from "./document-history-item";
+import { ClearHistoryModal } from "./clear-history-modal";
+import { listFiles, getTables, getChunks } from "../../lib/api";
+import { useNavigate } from "react-router-dom";
 
 export function DocumentHistorySidebar({ isOpen, onToggle }) {
-  const [showClearModal, setShowClearModal] = useState(false)
-  const [documents, setDocuments] = useState([])
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState(null)
+  const [showClearModal, setShowClearModal] = useState(false);
+  const [documents, setDocuments] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     if (isOpen) {
-      fetchDocuments()
+      fetchDocuments();
     }
-  }, [isOpen])
+  }, [isOpen]);
 
   const fetchDocuments = async () => {
-    setLoading(true)
-    setError(null)
+    setLoading(true);
+    setError(null);
     try {
-      const data = await listFiles()
-      const files = data.files || data.documents || data.data || []
+      const data = await listFiles();
+      const files = data.files || data.documents || data.data || [];
 
       if (!Array.isArray(files)) {
-        throw new Error("Invalid response format from API")
+        throw new Error("Invalid response format from API");
       }
 
       const formattedDocuments = files.map((file, index) => ({
         id: file.document_id || file.documentId || file.id || index + 1,
         name: file.filename || file.name,
-        uploadDate: file.upload_date ? new Date(file.upload_date).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
+        uploadDate: file.upload_date
+          ? new Date(file.upload_date).toISOString().split("T")[0]
+          : new Date().toISOString().split("T")[0],
         status: file.status === "processed" ? "completed" : file.status,
         pages: file.page_count || file.pages || 0,
         lastAccessed: "Recently",
         documentId: file.document_id || file.documentId || file.id,
-      }))
-      setDocuments(formattedDocuments)
+        language: file.language || "Unknown",
+      }));
+      setDocuments(formattedDocuments);
     } catch (err) {
-      setError(err.message)
+      setError(err.message);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   const handleDocumentSelect = async (document) => {
-    console.log("Selected document:", document)
+    console.log("Selected document:", document);
 
     try {
       // Fetch tables and chunks for the selected document
       const [tablesData, chunksData] = await Promise.all([
         getTables(document.documentId),
         getChunks(document.documentId),
-      ])
+      ]);
 
       // Dispatch custom event with document data
       window.dispatchEvent(
@@ -68,37 +77,43 @@ export function DocumentHistorySidebar({ isOpen, onToggle }) {
             tables: tablesData.tables || [],
             chunks: chunksData.chunks || [],
           },
-        }),
-      )
+        })
+      );
 
       window.dispatchEvent(
         new CustomEvent("show-toast", {
-          detail: { type: "success", message: `Loaded ${document.name} into chat` },
-        }),
-      )
+          detail: {
+            type: "success",
+            message: `Loaded ${document.name} into chat`,
+          },
+        })
+      );
 
       // Navigate to chat page with selected document id as query param
-      navigate(`/chat?documentId=${document.documentId || document.id}`)
-      onToggle()
+      navigate(`/chat?documentId=${document.documentId || document.id}`);
+      onToggle();
     } catch (error) {
-      console.error("Failed to load document data:", error)
+      console.error("Failed to load document data:", error);
       window.dispatchEvent(
         new CustomEvent("show-toast", {
-          detail: { type: "error", message: `Failed to load ${document.name}: ${error.message}` },
-        }),
-      )
+          detail: {
+            type: "error",
+            message: `Failed to load ${document.name}: ${error.message}`,
+          },
+        })
+      );
     }
-  }
+  };
 
   const handleClearHistory = () => {
-    setShowClearModal(false)
+    setShowClearModal(false);
     // Here you would clear the document history
     window.dispatchEvent(
       new CustomEvent("show-toast", {
         detail: { type: "success", message: "Document history cleared" },
-      }),
-    )
-  }
+      })
+    );
+  };
 
   return (
     <>
@@ -115,7 +130,9 @@ export function DocumentHistorySidebar({ isOpen, onToggle }) {
               {/* Header */}
               <div className="p-4 border-b border-gray-200 dark:border-gray-700">
                 <div className="flex items-center justify-between mb-2">
-                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Document History</h3>
+                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                    Document History
+                  </h3>
                   <button
                     onClick={onToggle}
                     className="p-1 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
@@ -123,7 +140,9 @@ export function DocumentHistorySidebar({ isOpen, onToggle }) {
                     <ChevronLeft className="w-5 h-5" />
                   </button>
                 </div>
-                <p className="text-sm text-gray-500 dark:text-gray-400">Recently accessed documents</p>
+                <p className="text-sm text-gray-500 dark:text-gray-400">
+                  Recently accessed documents
+                </p>
               </div>
 
               {/* Document List */}
@@ -131,18 +150,26 @@ export function DocumentHistorySidebar({ isOpen, onToggle }) {
                 {loading ? (
                   <div className="flex flex-col items-center justify-center h-full p-6 text-center">
                     <Loader2 className="w-8 h-8 text-lavender-500 animate-spin mb-3" />
-                    <p className="text-gray-500 dark:text-gray-400">Loading documents...</p>
+                    <p className="text-gray-500 dark:text-gray-400">
+                      Loading documents...
+                    </p>
                   </div>
                 ) : error ? (
                   <div className="flex flex-col items-center justify-center h-full p-6 text-center">
                     <FileText className="w-12 h-12 text-red-300 dark:text-red-600 mb-3" />
-                    <p className="text-red-500 dark:text-red-400 mb-2">Failed to load documents</p>
-                    <p className="text-sm text-gray-500 dark:text-gray-400">{error}</p>
+                    <p className="text-red-500 dark:text-red-400 mb-2">
+                      Failed to load documents
+                    </p>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">
+                      {error}
+                    </p>
                   </div>
                 ) : documents.length === 0 ? (
                   <div className="flex flex-col items-center justify-center h-full p-6 text-center">
                     <FileText className="w-12 h-12 text-gray-300 dark:text-gray-600 mb-3" />
-                    <p className="text-gray-500 dark:text-gray-400">No documents in history</p>
+                    <p className="text-gray-500 dark:text-gray-400">
+                      No documents in history
+                    </p>
                   </div>
                 ) : (
                   <div className="p-2 space-y-1">
@@ -193,5 +220,5 @@ export function DocumentHistorySidebar({ isOpen, onToggle }) {
         onConfirm={handleClearHistory}
       />
     </>
-  )
+  );
 }
