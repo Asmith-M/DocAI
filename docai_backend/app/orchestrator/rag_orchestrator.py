@@ -13,6 +13,7 @@ from app.agents.translator_agent import translator_agent
 from app.cache.rag_cache import get_cached_candidates, set_cached_candidates, get_cached_answer, set_cached_answer
 from app.services.embedding_service import embedding_service
 from app.core.config import settings
+from app.utils.logger import log_structured
 
 
 class RAGOrchestrator:
@@ -30,6 +31,7 @@ class RAGOrchestrator:
         return_top: int = 5,
         stream: bool = False,
         request_id: str = None,
+        language: str = "en"
     ) -> AsyncGenerator[str, None]:
         """
         Handle a query in English only. Language handling is done by MultilangOrchestrator.
@@ -38,15 +40,17 @@ class RAGOrchestrator:
         if not request_id:
             request_id = str(uuid.uuid4())
 
+        log_structured("QueryReceived", request_id, {"original_query": question, "language": language})
+
         logger.info(f"🚀 Starting RAG query for doc {document_id}, request_id {request_id}")
-        logger.info(f"📝 Processing English query: {question}")
-        logger.info(f"⚙️ Parameters: top_k={top_k}, return_top={return_top}, stream={stream}")
+        logger.info(f"📝 Processing query: {question}")
+        logger.info(f"⚙️ Parameters: top_k={top_k}, return_top={return_top}, stream={stream}, language={language}")
 
         start_time = time.time()
 
         # Step 1: Retrieval from English index
         retrieval_start = time.time()
-        logger.info(f"🔍 Step 1: Starting English retrieval for request_id {request_id}")
+        logger.info(f"🔍 Step 1: Starting retrieval for request_id {request_id}")
 
         cached = get_cached_candidates(document_id, question)
         if cached:
@@ -62,6 +66,12 @@ class RAGOrchestrator:
 
         retrieval_ms = int((time.time() - retrieval_start) * 1000)
         logger.info(f"⏱️ Retrieval took {retrieval_ms}ms")
+
+        log_structured("RAGContext", request_id, {
+            "retrieved_chunks_count": len(candidates.get("chunks", [])),
+            "retrieved_chunks_snippet": [chunk.get("text", "")[:200] for chunk in candidates.get("chunks", [])],
+            "dominant_language": "en"
+        })
 
         # Check for cached answer
         cached_answer = get_cached_answer(document_id, question)
@@ -84,10 +94,19 @@ class RAGOrchestrator:
 
             generation_question = question
 
-            answer = await self.generator_agent.generate(generation_question, translated_chunks, stream=False, request_id=request_id)
+            answer = await self.generator_agent.generate(
+                generation_question,
+                translated_chunks,
+                stream=False,
+                request_id=request_id,
+                language=language
+            )
             generation_ms = int((time.time() - generation_start) * 1000)
             logger.info(f"✅ Generation completed for request_id {request_id}, took {generation_ms}ms")
             logger.info(f"📄 Answer length: {len(answer)} characters")
+
+            log_structured("FinalPrompt", request_id, {"prompt_language": language})
+            log_structured("LLMResponse", request_id, {"response_snippet": answer[:100]})
 
             # Try JSON parsing
             parsed_answer = self._parse_json_response(answer)

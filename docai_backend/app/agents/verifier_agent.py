@@ -68,15 +68,15 @@ class VerifierAgent:
             # Translate to English for verification if needed
             if lang != 'en':
                 log.info(f"Translating answer and context from {lang} to en for verification")
-                translated_answer = translator_agent.translate(answer, lang, 'en')
+                translated_answer = await asyncio.to_thread(translator_agent.translate, answer, lang, 'en')
                 translated_context = []
                 for chunk in context_chunks:
-                    translated_text = translator_agent.translate(chunk.get('text', ''), lang, 'en')
+                    translated_text = await asyncio.to_thread(translator_agent.translate, chunk.get('text', ''), lang, 'en')
                     translated_chunk = dict(chunk)
                     translated_chunk['text'] = translated_text
                     translated_context.append(translated_chunk)
                 # Also translate query if it's not in English
-                translated_query = translator_agent.translate(query, lang, 'en')
+                translated_query = await asyncio.to_thread(translator_agent.translate, query, lang, 'en')
             else:
                 translated_answer = answer
                 translated_context = context_chunks

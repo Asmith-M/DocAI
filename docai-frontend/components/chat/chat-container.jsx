@@ -174,7 +174,7 @@ export function ChatContainer() {
                           }
                         });
                         break;
-                      case "done":
+                      case "complete":
                         setIsTyping(false);
                         // Update final message with verification result
                         setMessages((prev) => {
@@ -223,6 +223,7 @@ export function ChatContainer() {
               }
             }
           }
+          setIsTyping(false);
         } catch (error) {
           console.error("Error reading stream:", error);
           setMessages((prev) => [

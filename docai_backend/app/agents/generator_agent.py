@@ -24,7 +24,8 @@ class GeneratorAgent:
         question: str,
         context_chunks: List[Dict[str, Any]],
         stream: bool = False,
-        request_id: str = None
+        request_id: str = None,
+        language: str = "en"
     ) -> Any:
         if not request_id:
             request_id = str(uuid.uuid4())
@@ -34,6 +35,7 @@ class GeneratorAgent:
         logger.info(f"📊 Context chunks: {len(context_chunks)}")
         logger.info(f"🔄 Stream mode: {stream}")
         logger.info(f"🎯 Current model: {self.current_model}, Using fallback: {self.using_fallback}")
+        logger.info(f"🌐 Language context: {language}")
 
         # Limit context chunks to top N and truncate text (~200 tokens ≈ 1000 chars)
         max_chunks = int(getattr(settings, "GENERATOR_MAX_CONTEXT_CHUNKS", 3))
@@ -45,9 +47,10 @@ class GeneratorAgent:
 
         logger.info(f"📊 Truncated to {len(truncated_chunks)} chunks")
 
-        # Build prompt (Code 1’s structured style, Code 2’s simple fallback as backup)
-        prompt = self._build_prompt(question, truncated_chunks)
+        # Build prompt with language context
+        prompt = self._build_prompt(question, truncated_chunks, language)
         logger.info(f"📝 Prompt length: {len(prompt)} characters")
+        logger.info(f"📝 Final prompt:\n{prompt}")
 
         async with self.semaphore:
             logger.info(f"🔒 Acquired semaphore for request_id {request_id}")
@@ -58,17 +61,20 @@ class GeneratorAgent:
                 logger.info(f"📝 Starting sync generation for request_id {request_id}")
                 return await self._generate_sync_with_fallback(prompt, request_id)
 
-    def _build_prompt(self, question: str, context_chunks: List[Dict[str, Any]]) -> str:
+    def _build_prompt(self, question: str, context_chunks: List[Dict[str, Any]], language: str = "en") -> str:
         """
-        Build a structured prompt (from Code 1), 
-        but fall back to Code 2’s simpler style if context is empty.
+        Build a structured prompt with dynamic system prompt including language instruction.
         """
         if not context_chunks:
             logger.warning("⚠️ No context chunks provided, using simple fallback prompt")
             return f"Question:\n{question}\n\nAnswer:"
 
-        # System prompt (from Code 1)
-        system_prompt = """You are a helpful AI assistant. Answer the question based on the provided context. Be concise and accurate."""
+        # Dynamic system prompt with language instruction
+        system_prompt = (
+            f"You are a helpful AI assistant. Answer the question based on the provided context. "
+            f"Important: The user's query is in {language}. You must provide your final answer in {language} only. "
+            f"Be concise and accurate."
+        )
 
         # Truncate each chunk for safety
         max_chunk_size = int(getattr(settings, "GENERATOR_MAX_CHUNK_SIZE", 800))

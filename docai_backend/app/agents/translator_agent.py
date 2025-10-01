@@ -1,3 +1,4 @@
+import asyncio
 import logging
 from typing import Optional, Dict
 from transformers import pipeline
@@ -66,6 +67,27 @@ class TranslatorAgent:
         except Exception as e:
             log.error(f"Translation failed for {pair}: {e}")
             return text  # Fallback to original
+
+    async def translate_to_english(self, text: str, src_lang: str) -> str:
+        """
+        Async wrapper to translate text to English.
+        """
+        if src_lang == 'en':
+            return text
+        return await asyncio.to_thread(self.translate, text, src_lang, 'en')
+
+    async def translate_from_english(self, text: str, tgt_lang: str) -> str:
+        """
+        Async wrapper to translate text from English to target language.
+        """
+        if tgt_lang == 'en':
+            return text
+        return await asyncio.to_thread(self.translate, text, 'en', tgt_lang)
+
+    def is_translation_available(self, src_lang: str, tgt_lang: str) -> bool:
+        """Check if translation is available for the language pair."""
+        pair = f"{src_lang}-{tgt_lang}"
+        return self.models.get(pair) is not None
 
     def clear_cache(self):
         """Clear translation cache"""

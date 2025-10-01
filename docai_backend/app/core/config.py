@@ -82,7 +82,7 @@ class Settings:
     TESSDATA_PREFIX: str = os.getenv("TESSDATA_PREFIX", "")
 
     # Hugging Face settings
-    HF_HOME: str = os.getenv("HF_HOME", "./app/storage/hf_cache")
+    HF_HOME: str = os.getenv("HF_HOME", r"C:\hf_offline_cache")
     TRANSFORMERS_OFFLINE: str = os.getenv("TRANSFORMERS_OFFLINE", "1")
     HF_DATASETS_OFFLINE: str = os.getenv("HF_DATASETS_OFFLINE", "1")
 
