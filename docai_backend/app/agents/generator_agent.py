@@ -49,7 +49,7 @@ class GeneratorAgent:
         async with self.semaphore:
             logger.info(f" Acquired semaphore for request_id {request_id}")
             if stream:
-                logger.info(f"📡 Starting streaming generation for request_id {request_id}")
+                logger.info(f" Starting streaming generation for request_id {request_id}")
                 return self._stream_generate_with_fallback(prompt, request_id)
             else:
                 logger.info(f" Starting sync generation for request_id {request_id}")
@@ -76,8 +76,8 @@ class GeneratorAgent:
 
     async def _generate_sync(self, prompt: str, request_id: str) -> str:
         try:
-            logger.info(f"🔧 GeneratorAgent: Calling client.generate_async for request_id {request_id}")
-            logger.info(f"📝 Prompt length: {len(prompt)} characters")
+            logger.info(f" GeneratorAgent: Calling client.generate_async for request_id {request_id}")
+            logger.info(f" Prompt length: {len(prompt)} characters")
 
             # Add timeout to prevent hanging
             import asyncio
