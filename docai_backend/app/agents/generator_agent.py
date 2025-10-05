@@ -27,11 +27,11 @@ class GeneratorAgent:
         if not request_id:
             request_id = str(uuid.uuid4())
 
-        logger.info(f"🤖 GeneratorAgent: Starting generation for request_id {request_id}")
-        logger.info(f"📝 Question: {question}")
-        logger.info(f"📊 Context chunks: {len(context_chunks)}")
-        logger.info(f"🔄 Stream mode: {stream}")
-        logger.info(f"🎯 Current model: {self.current_model}, Using fallback: {self.using_fallback}")
+        logger.info(f" GeneratorAgent: Starting generation for request_id {request_id}")
+        logger.info(f" Question: {question}")
+        logger.info(f" Context chunks: {len(context_chunks)}")
+        logger.info(f" Stream mode: {stream}")
+        logger.info(f" Current model: {self.current_model}, Using fallback: {self.using_fallback}")
 
         # Limit context chunks to top N and truncate text to ~300 tokens (approx 1500 chars)
         max_chunks = int(getattr(settings, "GENERATOR_MAX_CONTEXT_CHUNKS", 5))
@@ -41,18 +41,18 @@ class GeneratorAgent:
             truncated_text = text[:1500]  # Approximate truncation
             truncated_chunks.append({**chunk, "text": truncated_text})
 
-        logger.info(f"📊 Truncated to {len(truncated_chunks)} chunks")
+        logger.info(f" Truncated to {len(truncated_chunks)} chunks")
 
         prompt = self._build_prompt(question, truncated_chunks)
-        logger.info(f"📝 Prompt length: {len(prompt)} characters")
+        logger.info(f" Prompt length: {len(prompt)} characters")
 
         async with self.semaphore:
-            logger.info(f"🔒 Acquired semaphore for request_id {request_id}")
+            logger.info(f" Acquired semaphore for request_id {request_id}")
             if stream:
                 logger.info(f"📡 Starting streaming generation for request_id {request_id}")
                 return self._stream_generate_with_fallback(prompt, request_id)
             else:
-                logger.info(f"📝 Starting sync generation for request_id {request_id}")
+                logger.info(f" Starting sync generation for request_id {request_id}")
                 return await self._generate_sync_with_fallback(prompt, request_id)
 
     def _build_prompt(self, question: str, context_chunks: List[Dict[str, Any]]) -> str:
@@ -86,27 +86,27 @@ class GeneratorAgent:
                     self.client.generate_async(prompt),
                     timeout=120.0  # 120 second timeout for better reliability
                 )
-                logger.info(f"✅ GeneratorAgent: Completed generation for request_id {request_id}")
-                logger.info(f"📊 Result type: {type(result)}, Result keys: {result.keys() if isinstance(result, dict) else 'Not a dict'}")
+                logger.info(f" GeneratorAgent: Completed generation for request_id {request_id}")
+                logger.info(f" Result type: {type(result)}, Result keys: {result.keys() if isinstance(result, dict) else 'Not a dict'}")
 
                 if isinstance(result, dict):
                     response = result.get('response', '')
-                    logger.info(f"📄 Response length: {len(response)} characters")
+                    logger.info(f" Response length: {len(response)} characters")
                     return response
                 else:
-                    logger.warning(f"⚠️ Unexpected result type: {type(result)}")
+                    logger.warning(f" Unexpected result type: {type(result)}")
                     return str(result)
             except asyncio.TimeoutError:
-                logger.error(f"⏰ GeneratorAgent: Generation timed out after 60s for request_id {request_id}")
+                logger.error(f" GeneratorAgent: Generation timed out after 60s for request_id {request_id}")
                 raise Exception("Generation timed out")
             except Exception as e:
-                logger.error(f"❌ GeneratorAgent: Error during generation for request_id {request_id}: {e}")
-                logger.error(f"❌ Error type: {type(e).__name__}")
+                logger.error(f" GeneratorAgent: Error during generation for request_id {request_id}: {e}")
+                logger.error(f" Error type: {type(e).__name__}")
                 raise
 
         except Exception as e:
-            logger.error(f"❌ GeneratorAgent: Error during generation for request_id {request_id}: {e}")
-            logger.error(f"❌ Error type: {type(e).__name__}")
+            logger.error(f" GeneratorAgent: Error during generation for request_id {request_id}: {e}")
+            logger.error(f" Error type: {type(e).__name__}")
             raise
 
     async def _generate_sync_with_fallback(self, prompt: str, request_id: str) -> str:
@@ -140,7 +140,7 @@ class GeneratorAgent:
                     async for token in self.client.generate_stream_async(prompt):
                         yield token
             except asyncio.TimeoutError:
-                logger.error(f"⏰ GeneratorAgent: Streaming timed out after 120s for request_id {request_id}")
+                logger.error(f" GeneratorAgent: Streaming timed out after 120s for request_id {request_id}")
                 raise Exception("Streaming timed out")
 
         # Use the fallback logic for streaming
