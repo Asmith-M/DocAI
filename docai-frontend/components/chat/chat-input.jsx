@@ -79,8 +79,8 @@ export function ChatInput({ value, onChange, onSend, documentId }) {
 
   return (
     <form onSubmit={handleSubmit} className="relative">
-      <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-lg">
-        <div className="flex items-end space-x-3 p-4">
+      <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl rounded-2xl border border-gray-200 dark:border-gray-700 shadow-lg">
+        <div className="flex items-end gap-2 p-3">
           {/* Attachment Button */}
           <button
             type="button"
@@ -98,21 +98,21 @@ export function ChatInput({ value, onChange, onSend, documentId }) {
               onChange={handleInputChange}
               onKeyDown={handleKeyDown}
               placeholder="Ask a question about your documents... (Try typing ':about' for a surprise!)"
-              className="w-full resize-none border-0 focus:ring-0 focus:outline-none bg-transparent text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
+              className="w-full resize-none border-0 focus:ring-0 focus:outline-none bg-transparent text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500"
               rows={1}
               style={{ maxHeight: "120px" }}
             />
           </div>
 
           {/* Language Controls */}
-          <div className="flex items-center space-x-2">
+          <div className="flex items-center gap-2">
             {/* Auto-detect Toggle */}
             <button
               type="button"
               onClick={() => setAutoDetect(!autoDetect)}
               className={`p-2 rounded-lg transition-colors ${
                 autoDetect
-                  ? "text-lavender-500 bg-lavender-50 dark:bg-lavender-900"
+                  ? "text-lavender-500 bg-lavender-100 dark:bg-lavender-900/50"
                   : "text-gray-400 hover:text-lavender-500 hover:bg-gray-100 dark:hover:bg-gray-700"
               }`}
               title={autoDetect ? "Auto-detect language enabled" : "Auto-detect language disabled"}
@@ -125,7 +125,7 @@ export function ChatInput({ value, onChange, onSend, documentId }) {
               <button
                 type="button"
                 onClick={() => setShowLangDropdown(!showLangDropdown)}
-                className="flex items-center space-x-1 px-3 py-2 text-sm bg-gray-100 dark:bg-gray-700 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+                className="flex items-center gap-1 px-3 py-2 text-sm bg-gray-100 dark:bg-gray-700 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
                 disabled={autoDetect}
               >
                 <span className={autoDetect ? "text-gray-400" : "text-gray-900 dark:text-white"}>
@@ -135,7 +135,7 @@ export function ChatInput({ value, onChange, onSend, documentId }) {
               </button>
 
               {showLangDropdown && !autoDetect && (
-                <div className="absolute bottom-full right-0 mb-2 w-32 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg z-10">
+                <div className="absolute bottom-full right-0 mb-2 w-32 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 shadow-lg z-10">
                   {["Auto", "English (en)", "Hindi (hi)", "Marathi (mr)"].map((lang) => (
                     <button
                       key={lang}
@@ -144,7 +144,7 @@ export function ChatInput({ value, onChange, onSend, documentId }) {
                         setSelectedLang(lang)
                         setShowLangDropdown(false)
                       }}
-                      className="w-full px-3 py-2 text-left text-sm hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                      className="w-full px-3 py-2 text-left text-sm text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors rounded-lg"
                     >
                       {lang}
                     </button>
@@ -160,7 +160,7 @@ export function ChatInput({ value, onChange, onSend, documentId }) {
             onClick={toggleRecording}
             className={`p-2 rounded-lg transition-colors ${
               isRecording
-                ? "text-red-500 bg-red-50 dark:bg-red-900 hover:bg-red-100 dark:hover:bg-red-800"
+                ? "text-red-500 bg-red-50 dark:bg-red-900/50 hover:bg-red-100 dark:hover:bg-red-900/70"
                 : "text-gray-400 hover:text-lavender-500 hover:bg-gray-100 dark:hover:bg-gray-700"
             }`}
             title={isRecording ? "Stop recording" : "Start voice recording"}
@@ -172,7 +172,7 @@ export function ChatInput({ value, onChange, onSend, documentId }) {
           <button
             type="submit"
             disabled={!inputValue.trim()}
-            className="p-2 bg-lavender-500 text-white rounded-lg hover:bg-lavender-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            className="p-3 bg-gradient-to-r from-lavender-500 to-lavender-600 hover:from-lavender-600 hover:to-lavender-700 text-white rounded-lg disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 hover:scale-105 disabled:hover:scale-100 shadow-sm"
             title="Send message"
           >
             <Send className="w-5 h-5" />

@@ -1,3 +1,4 @@
+//docai-frontend/components/upload/file-status-list.jsx
 "use client"
 
 import { useState, useEffect } from "react"
@@ -68,7 +69,7 @@ export function FileStatusList({ files = [], onRefresh }) {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.6, delay: 0.2 }}
-      className="bg-white dark:bg-gray-800 rounded-2xl p-6 border border-gray-200 dark:border-gray-700"
+      className="bg-white/85 backdrop-blur-lg dark:bg-gray-800/85 rounded-2xl p-6 border border-gray-200 dark:border-gray-700"
     >
       <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">Recent Uploads</h3>
 
@@ -106,7 +107,7 @@ export function FileStatusList({ files = [], onRefresh }) {
                 <span className="text-sm text-gray-600 dark:text-gray-300">{getStatusText(file.status)}</span>
                 {(file.status === "completed" || file.status === "processed") && (
                   <Link to={`/chat?documentId=${file.documentId || file.document_id || file.id}`}>
-                    <ARIAButton className="bg-lavender-500 hover:bg-lavender-600 text-white px-4 py-2 text-sm">
+                    <ARIAButton className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 text-sm">
                       Chat
                     </ARIAButton>
                   </Link>
@@ -120,7 +121,7 @@ export function FileStatusList({ files = [], onRefresh }) {
       {displayFiles.some((f) => f.status === "completed" || f.status === "processed") && (
         <div className="mt-6 pt-4 border-t border-gray-200 dark:border-gray-600">
           <Link to={`/chat?documentId=${displayFiles.find(f => f.status === "completed" || f.status === "processed")?.documentId || displayFiles.find(f => f.status === "completed" || f.status === "processed")?.document_id || displayFiles.find(f => f.status === "completed" || f.status === "processed")?.id}`}>
-            <ARIAButton className="w-full bg-lavender-500 hover:bg-lavender-600 text-white">
+            <ARIAButton className="w-full bg-purple-600 hover:bg-purple-700 text-white">
               <MessageSquare className="w-4 h-4 mr-2" />
               Start Chatting with Your Documents
             </ARIAButton>

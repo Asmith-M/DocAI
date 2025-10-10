@@ -189,7 +189,7 @@ export function EmbeddingControls({ selectedDocument, onEmbeddingGenerated }) {
       <div className="flex items-center justify-between mb-3">
         <div className="flex items-center space-x-2">
           <Brain className="w-5 h-5 text-purple-500" />
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+          <h3 className="section-title">
             Embeddings
           </h3>
         </div>

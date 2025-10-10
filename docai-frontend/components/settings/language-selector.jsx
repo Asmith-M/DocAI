@@ -36,12 +36,12 @@ export function LanguageSelector({ value, onChange }) {
   return (
     <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 border border-gray-200 dark:border-gray-700">
       <div className="flex items-center space-x-3 mb-4">
-        <div className="p-2 bg-lavender-100 dark:bg-lavender-900/30 rounded-lg">
-          <Globe className="w-5 h-5 text-lavender-600 dark:text-lavender-400" />
+        <div className="p-2 bg-purple-100 dark:bg-purple-900/30 rounded-lg">
+          <Globe className="w-5 h-5 text-purple-600 dark:text-purple-400" />
         </div>
         <div>
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Language</h3>
-          <p className="text-sm text-gray-500 dark:text-gray-400">Choose your preferred language</p>
+          <h3 className="section-title">Language</h3>
+          <p className="section-subtitle">Choose your preferred language</p>
         </div>
       </div>
 
@@ -57,8 +57,8 @@ export function LanguageSelector({ value, onChange }) {
               onMouseLeave={() => setHoveredLang(null)}
               className={`w-full p-4 rounded-xl border-2 transition-all relative ${
                 value === lang.code
-                  ? "border-lavender-500 bg-lavender-50 dark:bg-lavender-900/20"
-                  : "border-gray-200 dark:border-gray-600 hover:border-lavender-300 dark:hover:border-lavender-400"
+                  ? "border-purple-500 bg-purple-50 dark:bg-purple-900/20"
+                  : "border-gray-200 dark:border-gray-600 hover:border-purple-300 dark:hover:border-purple-400"
               }`}
               title={lang.tooltip}
             >
@@ -74,7 +74,7 @@ export function LanguageSelector({ value, onChange }) {
                 <motion.div
                   initial={{ scale: 0 }}
                   animate={{ scale: 1 }}
-                  className="absolute top-2 right-2 w-5 h-5 bg-lavender-500 rounded-full flex items-center justify-center"
+                  className="absolute top-2 right-2 w-5 h-5 bg-purple-500 rounded-full flex items-center justify-center"
                 >
                   <Check className="w-3 h-3 text-white" />
                 </motion.div>

@@ -50,7 +50,7 @@ export function KeyboardShortcutsModal({ isOpen, onClose }) {
                 <div className="p-2 bg-lavender-100 dark:bg-lavender-900/30 rounded-lg">
                   <Keyboard className="w-5 h-5 text-lavender-600 dark:text-lavender-400" />
                 </div>
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Keyboard Shortcuts</h3>
+                <h3 className="section-title">Keyboard Shortcuts</h3>
               </div>
               <button
                 onClick={onClose}

@@ -52,10 +52,10 @@ export function VersionBadge({ version = "V1.0", position = "bottom-right" }) {
               <Heart className="w-8 h-8 text-white" />
             </div>
 
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">Built with 💜 by Team DocAI</h2>
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">Built with 💜 by Team Noetic Vault</h2>
 
             <p className="text-gray-600 dark:text-gray-400 mb-4">
-              Thanks for discovering our little secret! We hope you're enjoying DocAI.
+              Thanks for discovering our little secret! We hope you're enjoying Noetic Vault.
             </p>
 
             <div className="text-sm text-lavender-600 dark:text-lavender-400">

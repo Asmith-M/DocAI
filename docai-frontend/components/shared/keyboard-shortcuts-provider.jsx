@@ -19,7 +19,16 @@ export function KeyboardShortcutsProvider({ children }) {
 
   useEffect(() => {
     const handleKeyDown = (event) => {
-      // Don't trigger shortcuts when typing in inputs
+      // Handle Ctrl/Cmd+K globally (even in inputs for search)
+      if ((event.ctrlKey || event.metaKey) && event.key === "k") {
+        event.preventDefault()
+        event.stopPropagation()
+        // Trigger command menu open
+        window.dispatchEvent(new CustomEvent("open-command-menu"))
+        return
+      }
+
+      // Don't trigger other shortcuts when typing in inputs
       if (event.target.tagName === "INPUT" || event.target.tagName === "TEXTAREA") {
         // Only allow Esc to work in inputs
         if (event.key === "Escape") {
@@ -28,18 +37,9 @@ export function KeyboardShortcutsProvider({ children }) {
         return
       }
 
-      // Handle keyboard shortcuts
+      // Handle other keyboard shortcuts
       if (event.ctrlKey || event.metaKey) {
         switch (event.key) {
-          case "k":
-            event.preventDefault()
-            // Clear chat functionality would go here
-            window.dispatchEvent(
-              new CustomEvent("show-toast", {
-                detail: { type: "info", message: "Chat cleared (demo)" },
-              }),
-            )
-            break
           case "/":
             event.preventDefault()
             setShowShortcuts(true)

@@ -9,6 +9,11 @@ export default {
   ],
   theme: {
     extend: {
+      fontFamily: {
+        sans: ['Inter', 'system-ui', 'sans-serif'],
+        display: ['Poppins', 'system-ui', 'sans-serif'],
+        body: ['Inter', 'system-ui', 'sans-serif'],
+      },
       colors: {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
@@ -43,36 +48,42 @@ export default {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
-        // LAVENDER COLOR PALETTE
+        // REFINED LAVENDER COLOR PALETTE - Updated Theme
         lavender: {
-          25: '#FEFCFF',    
-          50: '#FDFCFE',
-          100: '#F9F5FE',
-          200: '#F3ECFD',
-          300: '#EADCFB',
-          400: '#DCC3F8',
-          500: '#C9A1F3',
-          600: '#B57EDC',
-          700: '#A159C5',
-          800: '#893D9E',
-          900: '#6C2A7B',
-          950: '#4D1D57',
+          25: '#FAF9FF',
+          50: '#F5F3FF',
+          100: '#EAEFFE',
+          200: '#DCD8FF',
+          300: '#C9BFFF',
+          400: '#B6A6FF',
+          500: '#F4BFFF',   // Accent/Hover - Updated to bright pinkish lavender
+          600: '#7C6EE0',
+          700: '#5f597c',   // Primary UI Elements - Mid-tone lavender
+          800: '#2d2a3e',   // Main Background - Deep dark lavender
+          900: '#1B1830',
+          text: '#e6e6fa',  // Primary Text & Icons - Light lavender/off-white
         },
       },
       borderRadius: {
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
+        'bento': '1.5rem',
+        'bento-lg': '2rem',
+        'bento-xl': '2.5rem',
       },
       backdropBlur: {
         xs: '2px',
       },
       boxShadow: {
-        'lavender-sm': '0 1px 2px 0 rgba(181, 126, 220, 0.05)',
-        'lavender': '0 1px 3px 0 rgba(181, 126, 220, 0.1), 0 1px 2px 0 rgba(181, 126, 220, 0.06)',
-        'lavender-md': '0 4px 6px -1px rgba(181, 126, 220, 0.1), 0 2px 4px -1px rgba(181, 126, 220, 0.06)',
-        'lavender-lg': '0 10px 15px -3px rgba(181, 126, 220, 0.1), 0 4px 6px -2px rgba(181, 126, 220, 0.05)',
-        'lavender-xl': '0 20px 25px -5px rgba(181, 126, 220, 0.1), 0 10px 10px -5px rgba(181, 126, 220, 0.04)',
+        'lavender-sm': '0 1px 2px 0 rgba(151, 135, 243, 0.05)',
+        'lavender': '0 1px 3px 0 rgba(151, 135, 243, 0.1), 0 1px 2px 0 rgba(151, 135, 243, 0.06)',
+        'lavender-md': '0 4px 6px -1px rgba(151, 135, 243, 0.1), 0 2px 4px -1px rgba(151, 135, 243, 0.06)',
+        'lavender-lg': '0 10px 15px -3px rgba(151, 135, 243, 0.1), 0 4px 6px -2px rgba(151, 135, 243, 0.05)',
+        'lavender-xl': '0 20px 25px -5px rgba(151, 135, 243, 0.1), 0 10px 10px -5px rgba(151, 135, 243, 0.04)',
+        'bento': '0 8px 16px -4px rgba(151, 135, 243, 0.08), 0 4px 8px -2px rgba(151, 135, 243, 0.04)',
+        'bento-lg': '0 16px 32px -8px rgba(151, 135, 243, 0.12), 0 8px 16px -4px rgba(151, 135, 243, 0.06)',
+        'bento-hover': '0 20px 40px -10px rgba(151, 135, 243, 0.15), 0 10px 20px -5px rgba(151, 135, 243, 0.08)',
       },
     },
   },

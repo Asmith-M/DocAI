@@ -16,6 +16,7 @@ import { PromptTemplates } from "@/components/chat/prompt-templates"
 import { FollowUpChips } from "@/components/chat/follow-up-chips"
 import { ChatEmpty } from "@/components/empty-states/chat-empty"
 import { PageTransition } from "@/components/shared/page-transition"
+import PlexusBackground from "@/components/ui/PlexusBackground"
 import { listFiles, getTables, getChunks } from "@/lib/api"
 
 export default function ChatPage() {
@@ -128,80 +129,39 @@ export default function ChatPage() {
 
   return (
     <PageTransition>
-      <div className="min-h-screen bg-gradient-to-br from-lavender-50 via-white to-lavender-100 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
+      <PlexusBackground />
+      <div className="min-h-screen bg-gradient-lavender-soft">
 
-        <main className="container mx-auto px-4 py-4 max-w-7xl h-[calc(100vh-80px)]">
-          <div className="flex h-full space-x-4">
+        <main className="container mx-auto px-4 py-6 max-w-7xl h-[calc(100vh-80px)] flex flex-col">
+          <div className="flex flex-1 gap-6 min-h-0">
             {/* Document Heatmap */}
             <div className="hidden xl:block">
-              <DocHeatmap position="left" onPageClick={handlePageClick} className="w-20" />
+              <DocHeatmap position="left" onPageClick={handlePageClick} className="w-24" />
             </div>
 
             {/* Main Chat Area */}
-            <div className="flex-1 flex flex-col space-y-4">
-              {/* Chat Header with Controls */}
-              <div className="flex items-center justify-between bg-white dark:bg-gray-800 rounded-xl p-4 border border-gray-200 dark:border-gray-700">
-                <div>
-                  <h1 className="text-xl font-semibold text-gray-900 dark:text-white">Chat with Documents</h1>
-                  <p className="text-sm text-gray-500 dark:text-gray-400">Ask questions about your uploaded PDFs</p>
-                </div>
-
-                <div className="flex items-center space-x-2">
-                  <button
-                    onClick={() => setHistorySidebarOpen(!historySidebarOpen)}
-                    className="p-2 text-gray-400 hover:text-lavender-500 transition-colors rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700"
-                    title="Document history"
-                  >
-                    <History className="w-5 h-5" />
-                  </button>
-
-                  <button
-                    onClick={() => setMetadataPanelOpen(!metadataPanelOpen)}
-                    className="p-2 text-gray-400 hover:text-lavender-500 transition-colors rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700"
-                    title="Document metadata"
-                  >
-                    <Info className="w-5 h-5" />
-                  </button>
-
-                  <button
-                    onClick={() => setShowShortcuts(true)}
-                    className="p-2 text-gray-400 hover:text-lavender-500 transition-colors rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700"
-                    title="Keyboard shortcuts (Ctrl + /)"
-                  >
-                    <Keyboard className="w-5 h-5" />
-                  </button>
-                </div>
-              </div>
-
-              {/* Prompt Templates */}
-              <PromptTemplates onTemplateSelect={handleTemplateSelect} />
-
-              {/* Chat Container */}
-              <div className="flex-1 grid lg:grid-cols-4 gap-4">
-                <div className="lg:col-span-3 flex flex-col">
-                  {hasMessages ? (
-                    <>
+            <div className="flex-1 flex flex-col gap-4 min-h-0">
+              {/* Chat Container - Split Layout */}
+              <div className="flex-1 grid lg:grid-cols-5 gap-6 min-h-0">
+                <div className="lg:col-span-3 flex flex-col gap-4 min-h-0 overflow-hidden">
+                  {/* Chat messages area - takes remaining space */}
+                  <div className="flex-1 min-h-0 overflow-hidden">
+                    {hasMessages ? (
                       <ChatContainer onShowAgentTrail={handleShowAgentTrail} />
-
-                      {/* Follow-up Suggestions */}
-                      <div className="mt-4">
-                        <FollowUpChips
-                          suggestions={[
-                            "Tell me more about this topic",
-                            "What are the implications?",
-                            "Can you provide examples?",
-                          ]}
-                          onChipClick={handleFollowUpClick}
-                        />
+                    ) : (
+                      <div className="h-full flex items-center justify-center bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl rounded-2xl border border-gray-200 dark:border-gray-700">
+                        <ChatEmpty onSampleQuestionClick={handleSampleQuestion} />
                       </div>
-                    </>
-                  ) : (
-                    <div className="flex-1 flex items-center justify-center">
-                      <ChatEmpty onSampleQuestionClick={handleSampleQuestion} />
-                    </div>
-                  )}
+                    )}
+                  </div>
 
-                  <div className="mt-4">
+                  {/* Quick Actions - always visible at bottom */}
+                  <div className="flex-shrink-0">
+                    <PromptTemplates onTemplateSelect={handleTemplateSelect} />
+                  </div>
+
+                  {/* Chat Input - always visible at bottom */}
+                  <div className="flex-shrink-0">
                     <ChatInput
                       value={chatInput}
                       onChange={setChatInput}
@@ -211,7 +171,7 @@ export default function ChatPage() {
                   </div>
                 </div>
 
-                <div className="lg:col-span-1">
+                <div className="lg:col-span-2 min-h-0 overflow-hidden">
                   <SourcePanel />
                 </div>
               </div>

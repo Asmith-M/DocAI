@@ -1,3 +1,4 @@
+//docai-frontend/components/upload/document-metadata-card.jsx
 "use client"
 
 import { motion } from "framer-motion"
@@ -27,7 +28,7 @@ export function DocumentMetadataCard({ filename, pages, dateCreated, fileSize, p
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
-      className={`bg-white dark:bg-gray-800 rounded-2xl p-4 border border-gray-200 dark:border-gray-700 shadow-sm ${className}`}
+      className={`bg-white/85 backdrop-blur-lg dark:bg-gray-800/85 rounded-2xl p-4 border border-gray-200 dark:border-gray-700 shadow-sm ${className}`}
     >
       <div className="flex items-center space-x-4">
         {/* File Icon */}
@@ -83,7 +84,7 @@ export function DocumentMetadataCard({ filename, pages, dateCreated, fileSize, p
         </div>
 
         {/* Status Indicator */}
-        <div className="flex flex-col items-center">
+        <div className="flex flex-col items-center flex-shrink-0">
           <motion.div
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}

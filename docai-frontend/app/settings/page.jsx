@@ -12,19 +12,19 @@ export default function SettingsPage() {
 
   return (
     <PageTransition>
-      <div className="min-h-screen bg-gradient-to-br from-lavender-50 via-white to-lavender-100 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
+      <div className="min-h-screen bg-gradient-lavender-soft">
 
-        <main className="container mx-auto px-4 py-8 max-w-4xl">
+        <main className="container mx-auto px-4 py-8 max-w-5xl">
           <ScrollAnimationWrapper>
-            <div className="text-center mb-8">
-              <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">Settings</h1>
-              <p className="text-lg text-gray-600 dark:text-gray-300 mb-8">
-                Customize your DocAI experience with advanced settings
+            <div className="text-center mb-12">
+              <h1 className="text-5xl font-black text-slate-900 dark:text-white mb-4 font-display">Settings</h1>
+              <p className="text-xl text-slate-600 dark:text-slate-400 mb-8">
+                Customize your Noetic Vault experience here.
               </p>
 
               <ARIAButton
                 onClick={() => setShowModal(true)}
-                className="bg-lavender-500 hover:bg-lavender-600 text-white px-8 py-4 text-lg"
+                className="bg-purple-600 hover:bg-purple-700 text-white px-8 py-4 text-lg rounded-bento shadow-bento-lg hover:shadow-bento-hover transition-all duration-300 hover:scale-105"
               >
                 <Settings className="w-5 h-5 mr-2" />
                 Open Settings Panel
@@ -40,16 +40,16 @@ export default function SettingsPage() {
                 { title: "AI Model", desc: "Select your preferred AI model", icon: "🧠" },
                 { title: "Document View", desc: "Choose how to display documents", icon: "📄" },
                 { title: "Profile & Sync", desc: "Manage your profile and sync settings", icon: "👤" },
-                { title: "Usage Stats", desc: "View your DocAI activity", icon: "📊" },
+                { title: "Usage Stats", desc: "View your Noetic Vault activity", icon: "📊" },
               ].map((item, index) => (
                 <div
                   key={index}
-                  className="bg-white dark:bg-gray-800 rounded-2xl p-6 border border-gray-200 dark:border-gray-700 hover:shadow-lg transition-shadow cursor-pointer"
+                  className="backdrop-blur-xl bg-white/60 dark:bg-slate-900/60 border border-purple-300/50 dark:border-purple-500/30 rounded-3xl p-8 hover:scale-105 transition-all duration-300 hover:shadow-2xl hover:shadow-purple-500/20 cursor-pointer"
                   onClick={() => setShowModal(true)}
                 >
-                  <div className="text-3xl mb-3">{item.icon}</div>
-                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">{item.title}</h3>
-                  <p className="text-sm text-gray-600 dark:text-gray-300">{item.desc}</p>
+                  <div className="text-4xl mb-4">{item.icon}</div>
+                  <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2 font-display">{item.title}</h3>
+                  <p className="text-sm text-slate-600 dark:text-slate-400">{item.desc}</p>
                 </div>
               ))}
             </div>

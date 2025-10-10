@@ -123,14 +123,14 @@ export function SettingsModal({ isOpen, onClose }) {
             className="relative bg-white dark:bg-gray-900 rounded-3xl shadow-2xl border border-gray-200 dark:border-gray-700 w-full max-w-4xl max-h-[90vh] overflow-hidden"
           >
             {/* Header */}
-            <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700 bg-gradient-to-r from-lavender-50 to-white dark:from-lavender-900/20 dark:to-gray-900">
+            <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700 bg-gradient-to-r from-purple-50 to-white dark:from-purple-900/20 dark:to-gray-900">
               <div className="flex items-center space-x-3">
-                <div className="p-3 bg-lavender-500 rounded-xl">
+                <div className="p-3 bg-purple-600 rounded-xl">
                   <Settings className="w-6 h-6 text-white" />
                 </div>
                 <div>
                   <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Settings</h2>
-                  <p className="text-sm text-gray-500 dark:text-gray-400">Customize your DocAI experience</p>
+                  <p className="text-sm text-gray-500 dark:text-gray-400">Customize your Noetic Vault experience</p>
                 </div>
               </div>
 
@@ -204,7 +204,7 @@ export function SettingsModal({ isOpen, onClose }) {
                   disabled={!hasChanges}
                   className={`${
                     hasChanges
-                      ? "bg-lavender-500 hover:bg-lavender-600 text-white"
+                      ? "bg-purple-600 hover:bg-purple-700 text-white"
                       : "bg-gray-300 dark:bg-gray-600 text-gray-500 cursor-not-allowed"
                   }`}
                 >

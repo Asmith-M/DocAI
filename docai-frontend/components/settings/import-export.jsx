@@ -20,7 +20,7 @@ export function ImportExport({ settings, onImport }) {
     const url = URL.createObjectURL(blob)
     const a = document.createElement("a")
     a.href = url
-    a.download = `docai-settings-${new Date().toISOString().split("T")[0]}.json`
+    a.download = `Noetic Vault-settings-${new Date().toISOString().split("T")[0]}.json`
     document.body.appendChild(a)
     a.click()
     document.body.removeChild(a)
@@ -88,8 +88,8 @@ export function ImportExport({ settings, onImport }) {
           <FileJson className="w-5 h-5 text-lavender-600 dark:text-lavender-400" />
         </div>
         <div>
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Import & Export</h3>
-          <p className="text-sm text-gray-500 dark:text-gray-400">Backup and restore your settings</p>
+          <h3 className="section-title">Import & Export</h3>
+          <p className="section-subtitle">Backup and restore your settings</p>
         </div>
       </div>
 

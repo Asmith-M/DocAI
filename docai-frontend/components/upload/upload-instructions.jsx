@@ -1,3 +1,4 @@
+//docai-frontend/components/upload/upload-instructions.jsx
 "use client"
 
 import { FileText, Shield, Zap } from "lucide-react"

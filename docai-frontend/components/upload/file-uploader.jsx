@@ -1,3 +1,4 @@
+//docai-frontend/components/upload/file-uploader.jsx
 "use client"
 
 import { useState, useCallback, forwardRef, useImperativeHandle } from "react"
@@ -7,7 +8,7 @@ import { motion, AnimatePresence } from "framer-motion"
 import { DocumentMetadataCard } from "./document-metadata-card"
 import { uploadFiles as apiUploadFiles } from "../../lib/api"
 
-export const FileUploader = forwardRef(({ onUploadSuccess }, ref) => {
+export const FileUploader = forwardRef(({ onUploadSuccess, onProcessingStart, onProcessingComplete }, ref) => {
   const [files, setFiles] = useState([])
   const [uploading, setUploading] = useState(false)
 
@@ -38,6 +39,7 @@ export const FileUploader = forwardRef(({ onUploadSuccess }, ref) => {
 
   const uploadFiles = async (filesToUpload) => {
     setUploading(true)
+    onProcessingStart?.()
 
     const fileObjects = filesToUpload.map((fileObj) => fileObj.file)
 
@@ -58,7 +60,22 @@ export const FileUploader = forwardRef(({ onUploadSuccess }, ref) => {
         }),
       )
 
-      const data = await apiUploadFiles(fileObjects)
+      const onUploadProgress = (progress) => {
+        setFiles((prevFiles) =>
+          prevFiles.map((fileObj) => {
+            const isUploading = filesToUpload.some((f) => f.id === fileObj.id)
+            if (isUploading) {
+              return {
+                ...fileObj,
+                progress: Math.min(progress, 90), // Cap at 90% until processing completes
+              }
+            }
+            return fileObj
+          }),
+        )
+      }
+
+      const data = await apiUploadFiles(fileObjects, onUploadProgress)
       console.log("Upload response:", data) // Debug log
       const uploadedFiles = data.files
 
@@ -86,6 +103,7 @@ export const FileUploader = forwardRef(({ onUploadSuccess }, ref) => {
       // Show success toast for all successfully processed files
       if (uploadedFiles.some((f) => f.status === "processed")) {
         onUploadSuccess?.()
+        onProcessingComplete?.()
         // Show success toast
         window.dispatchEvent(
           new CustomEvent("show-toast", {
@@ -93,6 +111,7 @@ export const FileUploader = forwardRef(({ onUploadSuccess }, ref) => {
           }),
         )
       } else if (uploadedFiles.length > 0) {
+        onProcessingComplete?.()
         // Show info toast for uploaded files that may need further processing
         window.dispatchEvent(
           new CustomEvent("show-toast", {
@@ -101,6 +120,7 @@ export const FileUploader = forwardRef(({ onUploadSuccess }, ref) => {
         )
       }
     } catch (error) {
+      onProcessingComplete?.()
       // Update all files to error status with message
       setFiles((prevFiles) =>
         prevFiles.map((fileObj) => ({
@@ -134,14 +154,14 @@ export const FileUploader = forwardRef(({ onUploadSuccess }, ref) => {
         whileTap={{ scale: 0.98 }}
         className={`border-2 border-dashed rounded-2xl p-12 text-center cursor-pointer transition-all ${
           isDragActive
-            ? "border-lavender-500 bg-lavender-50 dark:bg-lavender-900/20"
-            : "border-gray-300 hover:border-lavender-400 dark:border-gray-600 dark:hover:border-lavender-500"
+            ? "border-purple-500 bg-purple-50 dark:bg-purple-900/20"
+            : "border-purple-300 hover:border-purple-400 dark:border-purple-600 dark:hover:border-purple-500"
         }`}
       >
         <input {...getInputProps()} />
 
         <motion.div animate={{ y: isDragActive ? -10 : 0 }} transition={{ duration: 0.2 }}>
-          <Upload className={`w-16 h-16 mx-auto mb-4 ${isDragActive ? "text-lavender-500" : "text-gray-400"}`} />
+          <Upload className={`w-16 h-16 mx-auto mb-4 ${isDragActive ? "text-purple-500" : "text-purple-400 dark:text-purple-500"}`} />
         </motion.div>
 
         <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
@@ -168,7 +188,7 @@ export const FileUploader = forwardRef(({ onUploadSuccess }, ref) => {
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: 20 }}
-                className="flex items-center p-4 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700"
+              className="flex items-center p-4 bg-white/85 backdrop-blur-lg dark:bg-gray-800/85 rounded-lg border border-gray-200 dark:border-gray-700"
               >
                 <FileText className="w-8 h-8 text-red-500 mr-3" />
 
@@ -182,7 +202,7 @@ export const FileUploader = forwardRef(({ onUploadSuccess }, ref) => {
                     <div className="mt-2">
                       <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
                         <motion.div
-                          className="bg-lavender-500 h-2 rounded-full"
+                          className="bg-purple-600 h-2 rounded-full"
                           initial={{ width: 0 }}
                           animate={{ width: `${fileObj.progress}%` }}
                           transition={{ duration: 0.3 }}

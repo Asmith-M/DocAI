@@ -32,7 +32,7 @@ export function ClearHistoryModal({ isOpen, onClose, onConfirm }) {
                 <div className="p-2 bg-red-100 dark:bg-red-900/30 rounded-lg">
                   <AlertTriangle className="w-5 h-5 text-red-600 dark:text-red-400" />
                 </div>
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Clear History</h3>
+                <h3 className="section-title">Clear History</h3>
               </div>
               <button
                 onClick={onClose}

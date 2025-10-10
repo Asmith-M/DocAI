@@ -1,28 +1,32 @@
-import { Hero } from "@/components/landing/hero"
-import { HowItWorks } from "@/components/landing/how-it-works"
-import { CallToAction } from "@/components/landing/call-to-action"
+import Hero from "@/components/landing/hero"
+import HowItWorks from "@/components/landing/how-it-works"
+import FeatureShowcase from "@/components/landing/FeatureShowcase"
+import CallToAction from "@/components/landing/call-to-action"
 import { ScrollAnimationWrapper } from "@/components/shared/scroll-animation-wrapper"
-import { PageTransition } from "@/components/shared/page-transition"
+import PlexusBackground from "@/components/ui/PlexusBackground"
 
 export default function LandingPage() {
   return (
-    <PageTransition>
-      <div className="min-h-screen bg-gradient-to-br from-lavender-50 via-white to-lavender-100 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
+    <div className="min-h-screen relative overflow-hidden">
+      <PlexusBackground />
 
-        <main className="relative">
-          <ScrollAnimationWrapper>
-            <Hero />
-          </ScrollAnimationWrapper>
+      <main className="relative" style={{ zIndex: 1 }}>
+        <ScrollAnimationWrapper>
+          <Hero />
+        </ScrollAnimationWrapper>
 
-          <ScrollAnimationWrapper>
-            <HowItWorks />
-          </ScrollAnimationWrapper>
+        <ScrollAnimationWrapper>
+          <FeatureShowcase />
+        </ScrollAnimationWrapper>
 
-          <ScrollAnimationWrapper>
-            <CallToAction />
-          </ScrollAnimationWrapper>
-        </main>
-      </div>
-    </PageTransition>
+        <ScrollAnimationWrapper>
+          <HowItWorks />
+        </ScrollAnimationWrapper>
+
+        <ScrollAnimationWrapper>
+          <CallToAction />
+        </ScrollAnimationWrapper>
+      </main>
+    </div>
   )
 }

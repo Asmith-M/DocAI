@@ -81,7 +81,7 @@ export function HistorySidebar({ isOpen, onToggle, onDocumentSelect }) {
       >
         {/* Header */}
         <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
-          <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Document History</h2>
+          <h2 className="section-title">Document History</h2>
           <button
             onClick={onToggle}
             className="text-gray-400 hover:text-gray-600 transition-colors"
@@ -100,7 +100,7 @@ export function HistorySidebar({ isOpen, onToggle, onDocumentSelect }) {
               placeholder="Search documents..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-lavender-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+              className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
             />
           </div>
 
@@ -109,7 +109,7 @@ export function HistorySidebar({ isOpen, onToggle, onDocumentSelect }) {
             <select
               value={filterType}
               onChange={(e) => setFilterType(e.target.value)}
-              className="flex-1 p-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-lavender-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+              className="flex-1 p-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
             >
               <option value="all">All Types</option>
               <option value="contract">Contracts</option>
@@ -131,7 +131,7 @@ export function HistorySidebar({ isOpen, onToggle, onDocumentSelect }) {
               >
                 <div className="flex items-start justify-between mb-2">
                   <div className="flex items-center space-x-2">
-                    <FileText className="w-4 h-4 text-lavender-500 flex-shrink-0" />
+                    <FileText className="w-4 h-4 text-purple-600 dark:text-purple-400 flex-shrink-0" />
                     <h3 className="text-sm font-medium text-gray-900 dark:text-white truncate">{doc.filename}</h3>
                   </div>
                   <span className={`px-2 py-1 text-xs rounded-full ${getTypeColor(doc.type)}`}>{doc.type}</span>

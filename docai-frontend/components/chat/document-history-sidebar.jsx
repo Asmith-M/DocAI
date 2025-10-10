@@ -116,7 +116,7 @@ export function DocumentHistorySidebar({ isOpen, onToggle }) {
               {/* Header */}
               <div className="p-4 border-b border-gray-200 dark:border-gray-700">
                 <div className="flex items-center justify-between mb-2">
-                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Document History</h3>
+                  <h3 className="section-title">Document History</h3>
                   <button
                     onClick={onToggle}
                     className="p-1 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
@@ -131,7 +131,7 @@ export function DocumentHistorySidebar({ isOpen, onToggle }) {
               <div className="flex-1 overflow-y-auto">
                 {loading ? (
                   <div className="flex flex-col items-center justify-center h-full p-6 text-center">
-                    <Loader2 className="w-8 h-8 text-lavender-500 animate-spin mb-3" />
+                    <Loader2 className="w-8 h-8 text-purple-600 dark:text-purple-400 animate-spin mb-3" />
                     <p className="text-gray-500 dark:text-gray-400">Loading documents...</p>
                   </div>
                 ) : error ? (
@@ -181,7 +181,7 @@ export function DocumentHistorySidebar({ isOpen, onToggle }) {
         onClick={onToggle}
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
-        className={`fixed left-4 top-20 z-50 p-3 bg-lavender-500 hover:bg-lavender-600 text-white rounded-full shadow-lg transition-colors ${
+        className={`fixed left-4 top-20 z-50 p-3 bg-purple-600 hover:bg-purple-700 dark:bg-purple-500 dark:hover:bg-purple-600 text-white rounded-full shadow-lg transition-colors ${
           isOpen ? "opacity-0 pointer-events-none" : "opacity-100"
         }`}
       >

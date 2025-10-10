@@ -39,7 +39,7 @@ export function TableDisplay({ tables, isLoading }) {
     <div className="space-y-4">
       <div className="flex items-center space-x-2 mb-4">
         <Table className="w-5 h-5 text-peach-500" />
-        <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+        <h3 className="section-title">
           Tables ({tables.length})
         </h3>
       </div>

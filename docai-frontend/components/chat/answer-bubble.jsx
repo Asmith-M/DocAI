@@ -23,9 +23,9 @@ export function AnswerBubble({ message, onShowAgentTrail }) {
     <div className="flex justify-start mb-6 animate-fade-in-up">
       <div className="max-w-4xl">
         {/* Answer Content */}
-        <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg border border-gray-200 dark:border-gray-700">
+        <div className="bg-white dark:bg-gray-800 rounded-2xl p-4 shadow-lg border border-gray-200 dark:border-gray-700">
           {/* Header with Confidence Badge */}
-          <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center justify-between mb-3">
             <div className="flex items-center space-x-3">
               <div className="w-8 h-8 bg-lavender-500 rounded-full flex items-center justify-center">
                 <span className="text-white text-sm font-semibold">AI</span>
@@ -36,7 +36,7 @@ export function AnswerBubble({ message, onShowAgentTrail }) {
             <button
               onClick={() => onShowAgentTrail?.(message.text)}
               className="flex items-center space-x-2 text-sm text-lavender-600 hover:text-lavender-700 transition-colors"
-              title="See how DocAI got this answer"
+              title="See how Noetic Vault got this answer"
             >
               <Eye className="w-4 h-4" />
               <span>How I got this</span>

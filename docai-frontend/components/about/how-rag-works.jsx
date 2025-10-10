@@ -1,79 +1,64 @@
 "use client"
 
 import { Database, Search, MessageSquare, ArrowRight } from "lucide-react"
-import { motion } from "framer-motion"
+import { ScrollAnimationWrapper } from "@/components/shared/scroll-animation-wrapper"
 
 export function HowRAGWorks() {
   const steps = [
     {
       icon: Database,
       title: "Document Ingestion",
-      description: "Your PDFs are processed and converted into searchable vector embeddings",
-      color: "text-blue-500",
-      bgColor: "bg-blue-100 dark:bg-blue-900/30",
+      description: "Your PDFs are processed and converted into searchable vector embeddings for intelligent analysis",
     },
     {
       icon: Search,
       title: "Intelligent Retrieval",
-      description: "Our AI finds the most relevant sections based on your questions",
-      color: "text-green-500",
-      bgColor: "bg-green-100 dark:bg-green-900/30",
+      description: "Our AI agents find the most relevant sections based on your questions using advanced ranking algorithms",
     },
     {
       icon: MessageSquare,
       title: "Contextual Generation",
-      description: "Advanced language models generate accurate answers using retrieved context",
-      color: "text-lavender-500",
-      bgColor: "bg-lavender-100 dark:bg-lavender-900/30",
+      description: "Advanced language models generate accurate, contextual answers using retrieved document context",
     },
   ]
 
   return (
-    <section className="py-24 px-4 bg-gray-50 dark:bg-gray-800/50">
-      <div className="container mx-auto max-w-6xl">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-          viewport={{ once: true }}
-          className="text-center mb-16"
-        >
-          <h2 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-6">
-            How Multi-Agent RAG Works
-          </h2>
-          <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
-            Retrieval-Augmented Generation (RAG) combines the power of information retrieval with advanced language
-            generation for accurate, contextual responses
-          </p>
-        </motion.div>
+    <section className="py-32 px-4 mb-24 bg-white/85 backdrop-blur-lg dark:bg-slate-900/60 backdrop-blur-lg">
+      <div className="max-w-7xl mx-auto">
+        <ScrollAnimationWrapper>
+          <div className="text-center mb-16">
+            <h2 className="text-5xl md:text-6xl font-black tracking-tight text-slate-900 dark:text-white mb-6">
+              How Multi-Agent RAG Works
+            </h2>
+            <p className="text-xl md:text-2xl text-slate-600 dark:text-slate-400 max-w-3xl mx-auto leading-relaxed font-light">
+              Retrieval-Augmented Generation combines the power of information retrieval with advanced language generation for accurate, contextual responses
+            </p>
+          </div>
+        </ScrollAnimationWrapper>
 
         <div className="grid md:grid-cols-3 gap-8">
-          {steps.map((step, index) => (
-            <motion.div
-              key={index}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: index * 0.2 }}
-              viewport={{ once: true }}
-              className="relative"
-            >
-              <div className="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-lg border border-gray-100 dark:border-gray-700 h-full">
-                <div className={`w-16 h-16 ${step.bgColor} rounded-2xl flex items-center justify-center mb-6`}>
-                  <step.icon className={`w-8 h-8 ${step.color}`} />
-                </div>
+          {steps.map((step, index) => {
+            const Icon = step.icon;
+            return (
+              <div key={index} className="relative">
+                <ScrollAnimationWrapper delay={index * 0.1}>
+                  <div className="group backdrop-blur-xl bg-white/60 dark:bg-slate-900/60 border border-violet-200/50 dark:border-violet-500/30 rounded-3xl p-8 hover:scale-105 transition-all duration-300 hover:shadow-2xl hover:shadow-violet-500/20 h-full flex flex-col items-center text-center">
+                    <Icon className="w-16 h-16 text-violet-600 dark:text-violet-400 mb-6 block mx-auto group-hover:scale-110 transition-transform" />
 
-                <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">{step.title}</h3>
-                <p className="text-gray-600 dark:text-gray-300 leading-relaxed">{step.description}</p>
+                    <h3 className="text-2xl font-black tracking-tight text-slate-900 dark:text-white mb-4">{step.title}</h3>
+                    <p className="text-slate-600 dark:text-slate-400 font-light leading-relaxed">{step.description}</p>
+                  </div>
+                </ScrollAnimationWrapper>
+
+                {/* Arrow connector */}
+                {index < steps.length - 1 && (
+                  <div className="hidden md:block absolute top-1/2 -right-4 transform -translate-y-1/2 z-10">
+                    <ArrowRight className="w-8 h-8 text-violet-400" />
+                  </div>
+                )}
               </div>
-
-              {/* Arrow connector */}
-              {index < steps.length - 1 && (
-                <div className="hidden md:block absolute top-1/2 -right-4 transform -translate-y-1/2">
-                  <ArrowRight className="w-8 h-8 text-lavender-400" />
-                </div>
-              )}
-            </motion.div>
-          ))}
+            );
+          })}
         </div>
       </div>
     </section>

@@ -15,8 +15,8 @@ export function ModelSwitcher({ value, onChange }) {
       icon: Brain,
       latency: 85,
       quality: 95,
-      color: "text-blue-500",
-      bgColor: "bg-blue-100 dark:bg-blue-900/30",
+      color: "text-purple-600 dark:text-purple-400",
+      bgColor: "bg-purple-100 dark:bg-purple-900/30",
     },
     {
       id: "llama-3",
@@ -25,20 +25,20 @@ export function ModelSwitcher({ value, onChange }) {
       icon: Zap,
       latency: 95,
       quality: 80,
-      color: "text-green-500",
-      bgColor: "bg-green-100 dark:bg-green-900/30",
+      color: "text-purple-600 dark:text-purple-400",
+      bgColor: "bg-purple-100 dark:bg-purple-900/30",
     },
   ]
 
   return (
     <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 border border-gray-200 dark:border-gray-700">
       <div className="flex items-center space-x-3 mb-4">
-        <div className="p-2 bg-lavender-100 dark:bg-lavender-900/30 rounded-lg">
-          <Brain className="w-5 h-5 text-lavender-600 dark:text-lavender-400" />
+        <div className="p-2 bg-purple-100 dark:bg-purple-900/30 rounded-lg">
+          <Brain className="w-5 h-5 text-purple-600 dark:text-purple-400" />
         </div>
         <div>
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-white">AI Model</h3>
-          <p className="text-sm text-gray-500 dark:text-gray-400">Choose your preferred AI model</p>
+          <h3 className="section-title">AI Model</h3>
+          <p className="section-subtitle">Choose your preferred AI model</p>
         </div>
       </div>
 
@@ -54,8 +54,8 @@ export function ModelSwitcher({ value, onChange }) {
               onMouseLeave={() => setHoveredModel(null)}
               className={`w-full p-4 rounded-xl border-2 text-left transition-all ${
                 value === model.id
-                  ? "border-lavender-500 bg-lavender-50 dark:bg-lavender-900/20"
-                  : "border-gray-200 dark:border-gray-600 hover:border-lavender-300 dark:hover:border-lavender-400"
+                  ? "border-purple-500 bg-purple-50 dark:bg-purple-900/20"
+                  : "border-gray-200 dark:border-gray-600 hover:border-purple-300 dark:hover:border-purple-400"
               }`}
             >
               <div className="flex items-center justify-between">
@@ -86,7 +86,7 @@ export function ModelSwitcher({ value, onChange }) {
                     <Brain className="w-3 h-3 text-gray-400" />
                     <div className="flex-1 bg-gray-200 dark:bg-gray-700 rounded-full h-1.5">
                       <motion.div
-                        className="bg-lavender-500 h-1.5 rounded-full"
+                        className="bg-purple-500 h-1.5 rounded-full"
                         initial={{ width: 0 }}
                         animate={{ width: `${model.quality}%` }}
                         transition={{ duration: 0.8, delay: 0.4 }}
@@ -101,7 +101,7 @@ export function ModelSwitcher({ value, onChange }) {
                 <motion.div
                   initial={{ scale: 0, opacity: 0 }}
                   animate={{ scale: 1, opacity: 1 }}
-                  className="absolute top-2 right-2 w-3 h-3 bg-lavender-500 rounded-full"
+                  className="absolute top-2 right-2 w-3 h-3 bg-purple-500 rounded-full"
                 />
               )}
             </motion.button>

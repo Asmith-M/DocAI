@@ -38,8 +38,8 @@ export function UsageStats() {
           <BarChart3 className="w-5 h-5 text-lavender-600 dark:text-lavender-400" />
         </div>
         <div>
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Usage Statistics</h3>
-          <p className="text-sm text-gray-500 dark:text-gray-400">Your DocAI activity overview</p>
+          <h3 className="section-title">Usage Statistics</h3>
+          <p className="section-subtitle">Your Noetic Vault activity overview</p>
         </div>
       </div>
 
