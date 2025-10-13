@@ -1,0 +1,157 @@
+{
+  "document_id": "f56c6e4d98964484b148e7fd502b4d69",
+  "page": 44,
+  "table_index": 46,
+  "data": [
+    [
+      "TY.BSc.CS Semester V",
+      "Omkar Madyal",
+      "Roll No : 00"
+    ],
+    [
+      "",
+      "PRACTICAL NO 10",
+      ""
+    ],
+    [
+      "",
+      "Demo of OpenAI/TensorFlow Tools",
+      ""
+    ],
+    [
+      "What is TensorFlow?",
+      "",
+      ""
+    ],
+    [
+      "",
+      "TensorFlow is an open-source deep learning framework developed by Google Brain Team.",
+      ""
+    ],
+    [
+      "",
+      "It is widely used for machine learning (ML) and deep learning (DL) applications.",
+      ""
+    ],
+    [
+      "",
+      "Core concept: Tensor (multi-dimensional data array) + Flow (computations through data flow graphs).",
+      ""
+    ],
+    [
+      "Key Features",
+      "",
+      ""
+    ],
+    [
+      "Ease of Use \u2013 High-level Keras API for quick prototyping.",
+      "",
+      ""
+    ],
+    [
+      "",
+      "Flexibility \u2013 Works for deep learning, reinforcement learning, NLP, computer vision, etc.",
+      ""
+    ],
+    [
+      "",
+      "Cross-Platform \u2013 Runs on CPUs, GPUs, TPUs, and even mobile devices.",
+      ""
+    ],
+    [
+      "Visualization \u2013 TensorBoard helps visualize model performance.",
+      "",
+      ""
+    ],
+    [
+      "Scalability \u2013 Can handle large datasets and distributed training.",
+      "",
+      ""
+    ],
+    [
+      "Applications",
+      "",
+      ""
+    ],
+    [
+      "Computer Vision \u2192 image classification, object detection.",
+      "",
+      ""
+    ],
+    [
+      "",
+      "Natural Language Processing (NLP) \u2192 sentiment analysis, chatbots.",
+      ""
+    ],
+    [
+      "Healthcare \u2192 disease prediction, medical imaging.",
+      "",
+      ""
+    ],
+    [
+      "Finance \u2192 fraud detection, stock prediction.",
+      "",
+      ""
+    ],
+    [
+      "Robotics & IoT \u2192 real-time decision making.",
+      "",
+      ""
+    ],
+    [
+      "What is OpenAI?",
+      "",
+      ""
+    ],
+    [
+      "",
+      "OpenAI is an AI research organization and company focused on building safe, general-purpose artificial",
+      ""
+    ],
+    [
+      "intelligence.",
+      "",
+      ""
+    ],
+    [
+      "",
+      "Famous for GPT (Generative Pretrained Transformer) models \u2192 ChatGPT is based on GPT-4/GPT-5",
+      ""
+    ],
+    [
+      "family.",
+      "",
+      ""
+    ],
+    [
+      "Provides APIs for NLP, vision, reasoning, and multi-modal tasks.",
+      "",
+      ""
+    ],
+    [
+      "Key Features",
+      "",
+      ""
+    ],
+    [
+      "Pretrained Models \u2013 No need for training from scratch.",
+      "",
+      ""
+    ],
+    [
+      "",
+      "Generative AI \u2013 Can generate human-like text, code, and images.",
+      ""
+    ],
+    [
+      "",
+      "Artificial Intelligence",
+      "Page 44 of"
+    ],
+    [
+      "",
+      "",
+      "46"
+    ]
+  ]
+}

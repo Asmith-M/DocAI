@@ -6,11 +6,55 @@ import uuid
 from fastapi import APIRouter, Request, Response, HTTPException, status
 from fastapi.responses import StreamingResponse, JSONResponse
 from loguru import logger
+from typing import List, Dict, Any
 
 from app.orchestrator.rag_orchestrator import rag_orchestrator
 from app.cache.rag_cache import clear_cache
 
 router = APIRouter()
+
+def aggregate_sources(chunks: List[Dict[str, Any]]) -> List[Dict[str, str]]:
+    """
+    Aggregate source metadata from chunks, grouping by filename and consolidating page numbers.
+
+    Args:
+        chunks: List of chunk dictionaries with metadata
+
+    Returns:
+        List of source objects with fileName and pages
+    """
+    from collections import defaultdict
+
+    # Group pages by filename
+    filename_to_pages = defaultdict(set)
+
+    for chunk in chunks:
+        metadata = chunk.get('metadata', {})
+        filename = metadata.get('source', metadata.get('filename', metadata.get('document_id', 'unknown.pdf')))
+        page = metadata.get('page', metadata.get('page_number'))
+
+        if page is not None:
+            try:
+                page_num = int(page)
+                filename_to_pages[filename].add(page_num)
+            except (ValueError, TypeError):
+                continue
+
+    # Convert to sorted lists and format
+    sources = []
+    for filename, pages in filename_to_pages.items():
+        sorted_pages = sorted(pages)
+        if len(sorted_pages) == 1:
+            pages_str = f"Page {sorted_pages[0]}"
+        else:
+            pages_str = f"Pages {', '.join(map(str, sorted_pages))}"
+
+        sources.append({
+            "fileName": filename,
+            "pages": pages_str
+        })
+
+    return sources
 
 # A single, robust endpoint for non-streaming queries
 @router.post("/query")
@@ -101,3 +145,62 @@ async def rag_prefetch(document_id: str):
     logger.info(f"Received prefetch request for {document_id}")
     clear_cache(document_id)
     return JSONResponse(content={"message": f"Prefetch cache cleared for {document_id}"})
+
+# New chat endpoint that returns answer and aggregated sources
+@router.post("/chat")
+async def chat_endpoint(request: Request, response: Response):
+    """
+    Handles a chat query and returns a JSON response with answer and sources.
+    Request body: {"document_id": "doc_id", "query": "question", "lang": "optional"}
+    Response: {"answer": "generated answer", "sources": [{"fileName": "doc.pdf", "pages": "Pages 1, 3"}]}
+    """
+    try:
+        body = await request.json()
+        document_id = body.get("document_id")
+        query = body.get("query")
+        lang = body.get("lang")
+
+        if not document_id or not query:
+            raise HTTPException(status_code=400, detail="Missing document_id or query in request body")
+
+        request_id = str(uuid.uuid4())
+        response.headers["X-Correlation-Id"] = request_id
+
+        logger.info(f"🚀 Starting chat query for doc {document_id}, request_id {request_id}")
+        logger.info(f"📝 Query: {query}")
+
+        # Get candidates from RAG orchestrator
+        candidates = await rag_orchestrator.ranker_agent.get_candidates(document_id, query, return_top=5, lang=lang)
+
+        if not candidates.get("chunks"):
+            # Return empty sources if no chunks found
+            return JSONResponse(content={
+                "answer": "I couldn't find relevant information in the documents to answer your question.",
+                "sources": []
+            }, headers={"X-Correlation-Id": request_id})
+
+        # Generate answer
+        # Note: generator_agent.generate is an async-generator (it yields tokens or a single result).
+        # We must iterate it to collect the (single) non-streaming result instead of awaiting it.
+        answer = None
+        gen = rag_orchestrator.generator_agent.generate(query, candidates["chunks"], stream=False, request_id=request_id)
+        async for item in gen:
+            answer = item
+
+        # Aggregate sources from chunks
+        sources = aggregate_sources(candidates["chunks"])
+
+        logger.info(f"✅ Chat query completed for request_id {request_id}")
+        logger.info(f"📄 Answer length: {len(answer)} characters")
+        logger.info(f"📚 Sources found: {len(sources)}")
+
+        return JSONResponse(content={
+            "answer": answer,
+            "sources": sources
+        }, headers={"X-Correlation-Id": request_id})
+
+    except json.JSONDecodeError:
+        raise HTTPException(status_code=400, detail="Invalid JSON in request body")
+    except Exception as e:
+        logger.error(f"Error in /chat endpoint: {e}")
+        raise HTTPException(status_code=500, detail=str(e))

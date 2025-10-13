@@ -1,0 +1,119 @@
+{
+  "document_id": "f56c6e4d98964484b148e7fd502b4d69",
+  "page": 27,
+  "table_index": 29,
+  "data": [
+    [
+      "TY.BSc.CS Semester V",
+      "Omkar Madyal"
+    ],
+    [
+      "print(\"Standard Deviation: {:.2f}%\".format(cv_scores.std() * 100))",
+      ""
+    ],
+    [
+      "# ================================",
+      ""
+    ],
+    [
+      "# Step 6: Hyperparameter Tuning",
+      ""
+    ],
+    [
+      "# ================================",
+      ""
+    ],
+    [
+      "# Define values of C to try",
+      ""
+    ],
+    [
+      "param_grid = {'C': np.arange(1, 20)} # Regularization parameter",
+      ""
+    ],
+    [
+      "# GridSearch with 8-fold CV",
+      ""
+    ],
+    [
+      "grid_search = GridSearchCV(SVC(kernel='linear'), param_grid, cv=8)",
+      ""
+    ],
+    [
+      "start_time = time.time()",
+      ""
+    ],
+    [
+      "grid_search.fit(X_train, y_train)",
+      ""
+    ],
+    [
+      "elapsed_time = time.time() - start_time",
+      ""
+    ],
+    [
+      "print(\"\\nGrid Search completed in {:.2f} seconds\".format(elapsed_time))",
+      ""
+    ],
+    [
+      "print(\"Best Parameters:\", grid_search.best_params_)",
+      ""
+    ],
+    [
+      "print(\"Best CV Score: {:.2f}%\".format(grid_search.best_score_ * 100))",
+      ""
+    ],
+    [
+      "# ================================",
+      ""
+    ],
+    [
+      "# Step 7: Final Model Evaluation",
+      ""
+    ],
+    [
+      "# ================================",
+      ""
+    ],
+    [
+      "# Train final model using best parameters",
+      ""
+    ],
+    [
+      "final_model = SVC(kernel='linear', C=grid_search.best_params_['C'])",
+      ""
+    ],
+    [
+      "final_model.fit(X_train, y_train)",
+      ""
+    ],
+    [
+      "# Predict and evaluate again",
+      ""
+    ],
+    [
+      "final_pred = final_model.predict(X_test)",
+      ""
+    ],
+    [
+      "final_cm = confusion_matrix(y_test, final_pred)",
+      ""
+    ],
+    [
+      "print(\"\\nFinal Confusion Matrix:\\n\", final_cm)",
+      ""
+    ],
+    [
+      "print(\"Final Accuracy: {:.2f}%\".format(accuracy_score(y_test, final_pred) * 100))",
+      ""
+    ],
+    [
+      "print(\"Final Classification Report:\\n\", classification_report(y_test, final_pred))",
+      ""
+    ],
+    [
+      "Output :",
+      ""
+    ]
+  ]
+}

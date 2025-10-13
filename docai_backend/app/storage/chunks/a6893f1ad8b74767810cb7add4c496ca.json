@@ -1,0 +1,20 @@
+[
+  {
+    "document_id": "a6893f1ad8b74767810cb7add4c496ca",
+    "page": 1,
+    "chunk_index": 1,
+    "type": "text",
+    "extraction_method": "pymupdf",
+    "text": "Nov 2019 - Serco Business Non- Disclosure Agreement Serco Business Name: Phillip Abraham Lexel systems Ltd 72 Paul Matthews Rd Albany Auckland 0632 I hereby confirm that I am aware of and agree to be bound by the following agreement for use of Serco\u2019s corporate intranet https://my.serco.com/welcome: 1. I will treat as confidential any of Serco\u2019s proprietary information or that of a third party that is stored on \u201cmy.serco.com\u201d by Serco and gained by me during the course of this engagement and agree not to disclose this information to any third party and not to use any of this information for any reasons other than those required by Serco. I acknowledge that Serco retains the proprietary rights to any of its information disclosed to me. 2. I shall for the duration of this work hold the assembled materials or data compiled in a secure manner in either paper and/or electronic format and agree to return immediately any such materials or data on the conclusion or termination of this engagement or at any time at the request of Serco, confirming in writing that I have not knowingly retained any materials or data. 3. I accept that this agreement applies both during and after the period of my involvement in this work and that such information may include but is not limited to: a. Technical secrets, research works, technical processes, formulae, inventions and patents; b. Transactions, finances, commercial or business affairs of Serco; and c. Operational processes, procedures and methodologies. It is mutually agreed that this undertaking shall not affect my right to make use of general knowledge and skills which I acquire in carrying out this work for Serco. 4. I confirm I have received a copy of Serco Acceptable Use Policy Standard (SMS GS-BC1: Acceptable Use) and agree to be bound by its requirements. 5. For the purpose of this agreement, \u201cSerco\u201d means Serco Group Plc, its subsidiary Companies and Divisions. Signed: Name: Date: Phillip Abraham (Lexel Systems Ltd) 12/08/2025",
+    "created_at": "2025-10-13T07:44:58.794981"
+  },
+  {
+    "document_id": "a6893f1ad8b74767810cb7add4c496ca",
+    "page": 1,
+    "chunk_index": 2,
+    "type": "table",
+    "extraction_method": "camelot/tabula",
+    "text": "N\name: \n \nPhillip Abraham\nLexel systems Ltd\n72 Paul Matthews Rd\nAlbany\nAuckland\n0632\nI\n hereby confirm that I am aware of and agree to be bound by the following agreement for use of\nSerco\u2019s corporate intranet https://my.serco.com/welcome:\n1. \nI will treat as confidential any of Serco\u2019s proprietary information or that of a third party that is\nstored on \u201cmy.serco.com\u201d by Serco and gained by me during the course of this engagement and\nagree not to disclose this information to any third party and not to use any of this information for\nany reasons other than those required by Serco. I acknowledge that Serco retains the proprietary\nrights to any of its information disclosed to me.\n2. \nI shall for the duration of this work hold the assembled materials or data compiled in a secure\nmanner in either paper and/or electronic format and agree to return immediately any such\nmaterials or data on the conclusion or termination of this engagement or at any time at the request\nof Serco, confirming in writing that I have not knowingly retained any materials or data.\n3. \nI accept that this agreement applies both during and after the period of my involvement in this\nwork and that such information may include but is not limited to:",
+    "created_at": "2025-10-13T07:44:58.815871"
+  }
+]

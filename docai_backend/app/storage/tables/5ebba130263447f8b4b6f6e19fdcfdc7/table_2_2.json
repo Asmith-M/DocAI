@@ -1,0 +1,77 @@
+{
+  "document_id": "5ebba130263447f8b4b6f6e19fdcfdc7",
+  "page": 2,
+  "table_index": 2,
+  "data": [
+    [
+      "",
+      "with strict compliance regulations such as GDPR, HIPAA, or those bound by corporate",
+      ""
+    ],
+    [
+      "NDAs.",
+      "",
+      ""
+    ],
+    [
+      "Evaluating  the  reliability  of  responses,  the  project  integrates  a  multi-agent  verification",
+      "",
+      ""
+    ],
+    [
+      "",
+      "mechanism within the RAG pipeline. Multiple agents assess the retrieved content, verify",
+      ""
+    ],
+    [
+      "",
+      "the factual integrity, and cross-check the generated output before it is presented to the user.",
+      ""
+    ],
+    [
+      "",
+      "This  minimizes  hallucinations  and  maintains  high  consistency  with  the  original  source",
+      ""
+    ],
+    [
+      "material,  significantly",
+      "improving \nthe \ntrustworthiness  and  accuracy  of",
+      "the  system\u2019s"
+    ],
+    [
+      "answers.",
+      "",
+      ""
+    ],
+    [
+      "Finally, to create a scalable and future-ready architecture, the project is built in a modular",
+      "",
+      ""
+    ],
+    [
+      "",
+      "manner,  allowing  seamless  integration  with  workflow  tools  such  as  n8n.  This  design",
+      ""
+    ],
+    [
+      "",
+      "ensures easy adaptability across various domains, including human resources, healthcare,",
+      ""
+    ],
+    [
+      "education,  and",
+      "legal  document  analysis.  By  combining  offline  privacy,",
+      "semantic"
+    ],
+    [
+      "",
+      "understanding, and multi-agent validation, DocAI is positioned as a modern, intelligent,",
+      ""
+    ],
+    [
+      "and reliable solution for document intelligence in the enterprise ecosystem.",
+      "",
+      ""
+    ]
+  ]
+}

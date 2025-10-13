@@ -1,0 +1,37 @@
+{
+  "document_id": "f56c6e4d98964484b148e7fd502b4d69",
+  "page": 12,
+  "table_index": 12,
+  "data": [
+    [
+      "TY.BSc.CS Semester V"
+    ],
+    [
+      "print(\"Omkar Madyal\")"
+    ],
+    [
+      "import queue as Q"
+    ],
+    [
+      "from RMP import dict_gn, dict_hn"
+    ],
+    [
+      "start = 'Arad'"
+    ],
+    [
+      "goal = 'Bucharest'"
+    ],
+    [
+      "result = ''"
+    ],
+    [
+      "# Function to calculate f(n) = g(n) + h(n)"
+    ],
+    [
+      "def get_fn(citystr):"
+    ],
+    [
+      "cities = citystr.split(\",\")"
+    ]
+  ]
+}

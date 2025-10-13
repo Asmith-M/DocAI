@@ -1,0 +1,75 @@
+{
+  "document_id": "f56c6e4d98964484b148e7fd502b4d69",
+  "page": 31,
+  "table_index": 33,
+  "data": [
+    [
+      "TY.BSc.CS Semester V",
+      "Omkar Madyal"
+    ],
+    [
+      "dataframe = pd.read_csv(url, names=names)",
+      ""
+    ],
+    [
+      "# Separate into input and output",
+      ""
+    ],
+    [
+      "array = dataframe.values",
+      ""
+    ],
+    [
+      "X = array[:, 0:8]",
+      ""
+    ],
+    [
+      "Y = array[:, 8]",
+      ""
+    ],
+    [
+      "# Parameters",
+      ""
+    ],
+    [
+      "seed = 7",
+      ""
+    ],
+    [
+      "num_trees = 30",
+      ""
+    ],
+    [
+      "# Define kfold cross-validation",
+      ""
+    ],
+    [
+      "kfold = model_selection.KFold(n_splits=10, shuffle=True, random_state=seed)",
+      ""
+    ],
+    [
+      "# Define model",
+      ""
+    ],
+    [
+      "model = AdaBoostClassifier(n_estimators=num_trees, random_state=seed)",
+      ""
+    ],
+    [
+      "# Evaluate model",
+      ""
+    ],
+    [
+      "results = model_selection.cross_val_score(model, X, Y, cv=kfold)",
+      ""
+    ],
+    [
+      "print(\"Accuracy:\", results.mean())",
+      ""
+    ],
+    [
+      "Output",
+      ""
+    ]
+  ]
+}

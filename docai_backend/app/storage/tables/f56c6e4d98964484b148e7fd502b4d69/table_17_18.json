@@ -1,0 +1,34 @@
+{
+  "document_id": "f56c6e4d98964484b148e7fd502b4d69",
+  "page": 17,
+  "table_index": 18,
+  "data": [
+    [
+      "# 8. Plot the decision tree structure"
+    ],
+    [
+      "plt.figure(figsize=(12, 8))"
+    ],
+    [
+      "plot_tree("
+    ],
+    [
+      "clf,"
+    ],
+    [
+      "feature_names=X.columns,"
+    ],
+    [
+      "class_names=['No', 'Yes'],"
+    ],
+    [
+      "filled=True,"
+    ],
+    [
+      "rounded=True,"
+    ],
+    [
+      "fontsize=10"
+    ]
+  ]
+}

@@ -1,0 +1,61 @@
+{
+  "document_id": "f56c6e4d98964484b148e7fd502b4d69",
+  "page": 4,
+  "table_index": 4,
+  "data": [
+    [
+      "TY.BSc.CS Semester V\nOmkar Madyal\nRoll No : 00"
+    ],
+    [
+      "Implement the Iterative Depth First Search algorithm to solve the same problem"
+    ],
+    [
+      "Iterative Depth-First Search (DFS) is a graph or tree traversal algorithm that explores as far as possible along each"
+    ],
+    [
+      "branch before backtracking, but instead of using recursion, it uses an explicit stack data structure to manage traversal"
+    ],
+    [
+      "order. This makes the algorithm iterative in nature, as it avoids relying on the system's call stack."
+    ],
+    [
+      "In traditional DFS, recursion is commonly used to move deeper into the structure, which implicitly makes use of the"
+    ],
+    [
+      "call stack to remember the previous states. However, recursion can lead to problems such as stack overflow in deep or"
+    ],
+    [
+      "large graphs. The iterative approach solves this problem by replacing the function call stack with a user-defined stack"
+    ],
+    [
+      "data structure, which gives more control and safety during traversal."
+    ],
+    [
+      "The algorithm starts by pushing the starting node onto the stack. While the stack is not empty, the algorithm pops the"
+    ],
+    [
+      "top node, processes it, and then pushes all\nits unvisited neighbors onto the stack. To prevent visiting the same node"
+    ],
+    [
+      "multiple times (especially in graphs), a visited set or array is maintained."
+    ],
+    [
+      "the last neighbor added to the stack is processed first.\nSince the stack operates in Last-In-First-Out (LIFO) order,"
+    ],
+    [
+      "This behavior enables\nthe algorithm to dive deep into the structure before returning to explore other branches \u2014"
+    ],
+    [
+      "which is the essence of depth-first search."
+    ],
+    [
+      "it is\nIn the case of trees, where there are no cycles, maintaining a visited array is usually unnecessary. But\nin graphs,"
+    ],
+    [
+      "essential to avoid infinite loops caused by cycles or repeated nodes."
+    ],
+    [
+      "Working Steps of Iterative DFS:"
+    ]
+  ]
+}

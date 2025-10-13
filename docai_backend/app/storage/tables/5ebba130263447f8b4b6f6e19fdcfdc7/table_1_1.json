@@ -1,0 +1,187 @@
+{
+  "document_id": "5ebba130263447f8b4b6f6e19fdcfdc7",
+  "page": 1,
+  "table_index": 1,
+  "data": [
+    [
+      "1.1 Background",
+      "",
+      ""
+    ],
+    [
+      "",
+      "DocAI is designed to address the growing need for intelligent, secure, and context-aware",
+      ""
+    ],
+    [
+      "",
+      "document retrieval systems. In today\u2019s digital era, information is one of the most valuable",
+      ""
+    ],
+    [
+      "",
+      "assets  for  organizations,",
+      "institutions,  and  businesses.  Whether \nit \nis  a  multinational"
+    ],
+    [
+      "",
+      "enterprise  or  a  small  educational  institution,  the  ability  to  store,  manage,  and  retrieve",
+      ""
+    ],
+    [
+      "",
+      "knowledge effectively impacts decision-making, operational efficiency, and compliance.",
+      ""
+    ],
+    [
+      "",
+      "It  is  important  to  remember  that  documentation\u2014ranging  from  policy  guides,  training",
+      ""
+    ],
+    [
+      "",
+      "manuals,  SOPs,  compliance  policies,  to  research  reports\u2014represents  the  institutional",
+      ""
+    ],
+    [
+      "",
+      "memory  of  an  organization.  Yet,  due  to  the  size  and  complexity  of  such  documents,",
+      ""
+    ],
+    [
+      "",
+      "retrieval becomes a major challenge. Traditional methods like keyword search (Ctrl+F),",
+      ""
+    ],
+    [
+      "",
+      "indexes,  and  bookmarks  are  still  common  but  operate  on  a  lexical  basis,  depending  on",
+      ""
+    ],
+    [
+      "",
+      "exact word matches, which often leads to irrelevant or missed information.",
+      ""
+    ],
+    [
+      "To  understand",
+      "this  problem  more  deeply,  consider",
+      "that  corporate  HR \nteams, \nlegal"
+    ],
+    [
+      "",
+      "professionals, or academic administrators regularly need to answer complex, multilayered",
+      ""
+    ],
+    [
+      "",
+      "questions.  For  example,  an  HR  query  may  require  going  through  hundreds  of  pages  of",
+      ""
+    ],
+    [
+      "",
+      "policy documents, while legal professionals might need to cross-reference internal SOPs,",
+      ""
+    ],
+    [
+      "",
+      "legal  codes,  and  case  law.  In  these  cases,  keyword  search  often  fails  to  grasp  the  intent",
+      ""
+    ],
+    [
+      "",
+      "behind  a  question.  The  emergence  of  Natural  Language  Processing  (NLP)  and  Large",
+      ""
+    ],
+    [
+      "Language  Models",
+      "(LLMs)  has",
+      "transformed \nthis \nlandscape  by  enabling  systems \nto"
+    ],
+    [
+      "",
+      "understand semantic meaning. This allows users to ask questions in natural language and",
+      ""
+    ],
+    [
+      "",
+      "receive answers that are contextually appropriate, shifting from manual, inefficient methods",
+      ""
+    ],
+    [
+      "",
+      "to  AI-powered  question-answering  systems  that  summarize,  explain,  or  extract  salient",
+      ""
+    ],
+    [
+      "",
+      "points from large volumes of text.",
+      ""
+    ],
+    [
+      "",
+      "To apply these advances, this project implements Retrieval-Augmented Generation (RAG)",
+      ""
+    ],
+    [
+      "",
+      "to  accurately  respond  to  queries  from  internal  PDF  documents.  The  system  begins  by",
+      ""
+    ],
+    [
+      "",
+      "preprocessing  documents  and  breaking  them  into  semantically  coherent  chunks.  These",
+      ""
+    ],
+    [
+      "",
+      "chunks are then  embedded using a sentence transformer model,  allowing the system  to",
+      ""
+    ],
+    [
+      "",
+      "numerically capture their meaning. The resulting vector embeddings are stored in a local",
+      ""
+    ],
+    [
+      "",
+      "vector database, which enables rapid and efficient retrieval of relevant information. This",
+      ""
+    ],
+    [
+      "approach  ensures",
+      "that",
+      "the  system  remains  fully  offline,  aligning  with  privacy-first"
+    ],
+    [
+      "",
+      "principles and avoiding the use of external cloud services.",
+      ""
+    ],
+    [
+      "",
+      "Analyzing  the  process  further,  when  a  user  submits  a  question,  the  system  performs  a",
+      ""
+    ],
+    [
+      "",
+      "similarity search within the vector database to identify the most contextually relevant text",
+      ""
+    ],
+    [
+      "",
+      "chunks. These are then passed to a locally hosted large language model, which uses them",
+      ""
+    ],
+    [
+      "",
+      "as context to generate a grounded, precise answer. By using a local vector database and",
+      ""
+    ],
+    [
+      "",
+      "on-premise inference, the system addresses concerns of data privacy, especially for sectors",
+      ""
+    ]
+  ]
+}

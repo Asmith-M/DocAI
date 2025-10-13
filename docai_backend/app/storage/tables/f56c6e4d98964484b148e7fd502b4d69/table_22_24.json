@@ -1,0 +1,42 @@
+{
+  "document_id": "f56c6e4d98964484b148e7fd502b4d69",
+  "page": 22,
+  "table_index": 24,
+  "data": [
+    [
+      "TY.BSc.CS Semester V",
+      "Omkar Madyal",
+      "Roll No : 00"
+    ],
+    [
+      "",
+      "print(\"Considering New Situation:\", user_input_one, user_input_two, user_input_three)",
+      ""
+    ],
+    [
+      "print(\"New Output data:\")",
+      "",
+      ""
+    ],
+    [
+      "",
+      "print(neural_network.think(np.array([user_input_one, user_input_two, user_input_three])))",
+      ""
+    ],
+    [
+      "Output :",
+      "",
+      ""
+    ],
+    [
+      "",
+      "Artificial Intelligence",
+      "Page 22 of"
+    ],
+    [
+      "",
+      "",
+      "46"
+    ]
+  ]
+}

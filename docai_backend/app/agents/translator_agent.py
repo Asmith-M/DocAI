@@ -3,6 +3,14 @@ from typing import Optional, Dict
 from transformers import pipeline
 from app.core.config import settings
 
+# Check if transformers is available
+try:
+    # Test transformers availability
+    pipeline("translation", model="Helsinki-NLP/opus-mt-en-fr")
+    logging.getLogger(__name__).info("Transformers library initialized successfully")
+except Exception as e:
+    logging.getLogger(__name__).warning(f"Transformers library not available: {e}")
+
 log = logging.getLogger(__name__)
 
 class TranslatorAgent:

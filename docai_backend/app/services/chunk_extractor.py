@@ -36,6 +36,9 @@ class ChunkExtractor:
         chunks = []
         chunk_index = 0
 
+        # Ensure tables folder exists
+        tables_folder.mkdir(parents=True, exist_ok=True)
+
         # Process text pages
         if pages_folder.exists():
             for page_file in sorted(pages_folder.glob("page_*.txt")):

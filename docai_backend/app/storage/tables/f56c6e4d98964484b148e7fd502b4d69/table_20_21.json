@@ -1,0 +1,25 @@
+{
+  "document_id": "f56c6e4d98964484b148e7fd502b4d69",
+  "page": 20,
+  "table_index": 21,
+  "data": [
+    [
+      "Relation to FF-BPNN:"
+    ],
+    [
+      "In a decision tree, Gini Impurity helps split data to make pure subsets."
+    ],
+    [
+      "In FF-BPNN, although we do not explicitly calculate Gini, the loss function (e.g., Cross-Entropy) plays a"
+    ],
+    [
+      "similar role of ensuring correct class separation."
+    ],
+    [
+      "You can combine them in hybrid models: first split data with decision tree (Gini), then use FF-BPNN for"
+    ],
+    [
+      "final classification."
+    ]
+  ]
+}

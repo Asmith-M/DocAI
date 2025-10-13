@@ -1,0 +1,28 @@
+{
+  "document_id": "f56c6e4d98964484b148e7fd502b4d69",
+  "page": 7,
+  "table_index": 7,
+  "data": [
+    [
+      "Iterative DFS does not guarantee the shortest path as it may find a deeper path first."
+    ],
+    [
+      "BFS is preferred for shortest path problems."
+    ],
+    [
+      "While BFS and Iterative DFS have\nsimilar\ntime complexity,\ntheir performance and efficiency vary based on the"
+    ],
+    [
+      "problem context. BFS is better suited for level-based exploration and shortest-path problems, whereas Iterative DFS is"
+    ],
+    [
+      "ideal for deep exploration, structural analysis, and solving puzzles or backtracking-based problems. Understanding the"
+    ],
+    [
+      "nature of\nthe input data and the specific requirements of\nthe problem is essential\nin choosing the most appropriate"
+    ],
+    [
+      "traversal method."
+    ]
+  ]
+}

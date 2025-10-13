@@ -1,0 +1,39 @@
+{
+  "document_id": "f56c6e4d98964484b148e7fd502b4d69",
+  "page": 5,
+  "table_index": 5,
+  "data": [
+    [
+      "TY.BSc.CS Semester V",
+      "Omkar Madyal"
+    ],
+    [
+      "",
+      "Can be easier to debug and modify compared to recursive implementations."
+    ],
+    [
+      "Applications:",
+      ""
+    ],
+    [
+      "Solving mazes and puzzles",
+      ""
+    ],
+    [
+      "Detecting cycles in a graph",
+      ""
+    ],
+    [
+      "Topological sorting in directed acyclic graphs (DAGs)",
+      ""
+    ],
+    [
+      "Finding connected components in a graph",
+      ""
+    ],
+    [
+      "Pathfinding and backtracking problems",
+      ""
+    ]
+  ]
+}

@@ -1,0 +1,46 @@
+{
+  "document_id": "5ebba130263447f8b4b6f6e19fdcfdc7",
+  "page": 6,
+  "table_index": 6,
+  "data": [
+    [
+      "SURVEY OF TECHNOLOGIES"
+    ],
+    [
+      "DocAI  \u2013  Offline  Multi-Agent  RAG  Pipeline  for  Internal  Document  Intelligence  is"
+    ],
+    [
+      "designed to process and query large internal documents, including HR manuals, policy"
+    ],
+    [
+      "documents, and SOPs, entirely offline. The system identifies the need for secure, fast, and"
+    ],
+    [
+      "accurate document retrieval while preserving data privacy. It applies retrieval-augmented"
+    ],
+    [
+      "generation  techniques  to  enhance  efficiency  and  relevance  in  responses.  A  thorough"
+    ],
+    [
+      "survey of modern web, backend, AI, and storage technologies was conducted to evaluate"
+    ],
+    [
+      "their  suitability  for  speed,  modularity,  and  offline  capability.  This  analysis  involved"
+    ],
+    [
+      "comparing frameworks and tools to determine the most effective options. The resulting"
+    ],
+    [
+      "tech stack was chosen to ensure scalability, maintainability, and high performance in real-"
+    ],
+    [
+      "world use."
+    ],
+    [
+      "2.1 Frontend  Technologies"
+    ],
+    [
+      "Before finalizing the frontend stack for DocAI, multiple modern frameworks and"
+    ]
+  ]
+}

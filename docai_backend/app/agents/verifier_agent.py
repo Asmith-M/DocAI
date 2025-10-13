@@ -3,6 +3,14 @@ import re
 from typing import List, Dict, Any
 from app.services.embedding_service import embedding_service
 
+# Ensure embedding service is available
+try:
+    # Test embedding service availability
+    embedding_service.get_embedding_status("test")
+    logging.getLogger(__name__).info("Embedding service initialized successfully")
+except Exception as e:
+    logging.getLogger(__name__).warning(f"Embedding service not available: {e}")
+
 log = logging.getLogger(__name__)
 
 class VerifierAgent:

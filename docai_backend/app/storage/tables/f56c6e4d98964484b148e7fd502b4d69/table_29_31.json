@@ -1,0 +1,57 @@
+{
+  "document_id": "f56c6e4d98964484b148e7fd502b4d69",
+  "page": 29,
+  "table_index": 31,
+  "data": [
+    [
+      "TY.BSc.CS Semester V",
+      "Omkar Madyal",
+      "Roll No : 00"
+    ],
+    [
+      "Initially, all training samples are assigned equal weights:",
+      "",
+      ""
+    ],
+    [
+      "wi=1/ N where N is the number of samples.",
+      "",
+      ""
+    ],
+    [
+      "Step 2: Train a Weak Learner",
+      "",
+      ""
+    ],
+    [
+      "A weak learner is trained on the weighted dataset.",
+      "",
+      ""
+    ],
+    [
+      "",
+      "Commonly used weak learner: Decision Stump (a one-level decision tree).",
+      ""
+    ],
+    [
+      "Step 3: Calculate Error",
+      "",
+      ""
+    ],
+    [
+      "Weighted error is calculated as:",
+      "",
+      ""
+    ],
+    [
+      "",
+      "Artificial Intelligence",
+      "Page 29 of"
+    ],
+    [
+      "",
+      "",
+      "46"
+    ]
+  ]
+}

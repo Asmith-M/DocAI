@@ -1,0 +1,63 @@
+{
+  "document_id": "5ebba130263447f8b4b6f6e19fdcfdc7",
+  "page": 7,
+  "table_index": 11,
+  "data": [
+    [
+      "accuracy, and smooth integration with the backend. The chosen tools had to function",
+      ""
+    ],
+    [
+      "without an internet connection, support semantic search, and allow easy deployment",
+      ""
+    ],
+    [
+      "on typical hardware.",
+      ""
+    ],
+    [
+      "\u2022",
+      "Ollama: Utilize to run the language model locally without internet"
+    ],
+    [
+      "",
+      "connectivity."
+    ],
+    [
+      "",
+      "\u2022  Mistral 7B: Adopt for balancing quality and speed on standard systems."
+    ],
+    [
+      "\u2022",
+      "Sentence-Transformers: Implement to generate embeddings locally for"
+    ],
+    [
+      "",
+      "semantic search."
+    ],
+    [
+      "\u2022",
+      "all-MiniLM-L6-v2: Apply as the embedding model to produce fast, 384-"
+    ],
+    [
+      "",
+      "dimensional vectors."
+    ],
+    [
+      "\u2022",
+      "ChromaDB (with persist_directory): Store and retrieve chunk embeddings"
+    ],
+    [
+      "",
+      "with metadata in a local vector store."
+    ],
+    [
+      "\u2022",
+      "LangChain (core/light use): Construct a simple RAG chain (prompts +"
+    ],
+    [
+      "",
+      "retrieval) without heavy agent frameworks."
+    ]
+  ]
+}

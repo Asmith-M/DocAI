@@ -1,0 +1,43 @@
+{
+  "document_id": "f56c6e4d98964484b148e7fd502b4d69",
+  "page": 36,
+  "table_index": 38,
+  "data": [
+    [
+      "PRACTICAL NO 8"
+    ],
+    [
+      "Implement\nthe K-NN Algorithm for classification or regression"
+    ],
+    [
+      "is\na\nfor\nand\nK-Nearest Neighbors\n(KNN)\nsupervised machine\nlearning\nalgorithm used\nclassification"
+    ],
+    [
+      "regression.It is a lazy learner (no explicit training phase). Instead, it memorizes the dataset and makes predictions"
+    ],
+    [
+      "based on the nearest neighbors at query time.It\nis a non-parametric algorithm, meaning it makes no assumptions"
+    ],
+    [
+      "about the underlying data distribution."
+    ],
+    [
+      "Basic Idea"
+    ],
+    [
+      "To classify a new data point, the algorithm:"
+    ],
+    [
+      "Finds the K nearest data points in the training set (using distance measures like Euclidean distance)."
+    ],
+    [
+      "Looks at the labels of those K neighbors."
+    ],
+    [
+      "Assigns the label that is most frequent among them (majority voting)."
+    ],
+    [
+      "For regression, it takes the average (or weighted average) of the K neighbors\u2019 values."
+    ]
+  ]
+}

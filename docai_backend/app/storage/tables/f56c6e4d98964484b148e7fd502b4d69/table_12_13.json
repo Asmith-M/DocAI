@@ -1,0 +1,31 @@
+{
+  "document_id": "f56c6e4d98964484b148e7fd502b4d69",
+  "page": 12,
+  "table_index": 13,
+  "data": [
+    [
+      "# Function to calculate f(n) = g(n) + h(n)"
+    ],
+    [
+      "def get_fn(citystr):"
+    ],
+    [
+      "cities = citystr.split(\",\")"
+    ],
+    [
+      "gn = 0"
+    ],
+    [
+      "for ctr in range(0, len(cities) - 1):"
+    ],
+    [
+      "gn += dict_gn[cities[ctr]][cities[ctr + 1]]"
+    ],
+    [
+      "hn = dict_hn[cities[-1]] # heuristic from last city"
+    ],
+    [
+      "return hn + gn"
+    ]
+  ]
+}

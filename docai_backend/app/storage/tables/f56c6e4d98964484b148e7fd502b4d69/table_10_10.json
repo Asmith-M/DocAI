@@ -1,0 +1,132 @@
+{
+  "document_id": "f56c6e4d98964484b148e7fd502b4d69",
+  "page": 10,
+  "table_index": 10,
+  "data": [
+    [
+      "TY.BSc.CS Semester V",
+      "Omkar Madyal",
+      "Roll No : 00"
+    ],
+    [
+      "return hn + gn",
+      "",
+      ""
+    ],
+    [
+      "# Function to expand the next city in the queue",
+      "",
+      ""
+    ],
+    [
+      "def expand(cityq):",
+      "",
+      ""
+    ],
+    [
+      "global result",
+      "",
+      ""
+    ],
+    [
+      "if cityq.empty():",
+      "",
+      ""
+    ],
+    [
+      "return",
+      "",
+      ""
+    ],
+    [
+      "tot, citystr, thiscity = cityq.get()",
+      "",
+      ""
+    ],
+    [
+      "if thiscity == goal:",
+      "",
+      ""
+    ],
+    [
+      "result = citystr + \" :: \" + str(tot)",
+      "",
+      ""
+    ],
+    [
+      "return",
+      "",
+      ""
+    ],
+    [
+      "for cty in dict_gn[thiscity]:",
+      "",
+      ""
+    ],
+    [
+      "cityq.put((get_fn(citystr + \",\" + cty), citystr + \",\" + cty, cty))",
+      "",
+      ""
+    ],
+    [
+      "expand(cityq)",
+      "",
+      ""
+    ],
+    [
+      "# Main function",
+      "",
+      ""
+    ],
+    [
+      "def main():",
+      "",
+      ""
+    ],
+    [
+      "cityq = Q.PriorityQueue()",
+      "",
+      ""
+    ],
+    [
+      "cityq.put((get_fn(start), start, start))",
+      "",
+      ""
+    ],
+    [
+      "expand(cityq)",
+      "",
+      ""
+    ],
+    [
+      "print(\"The A* path with the total is:\")",
+      "",
+      ""
+    ],
+    [
+      "print(result)",
+      "",
+      ""
+    ],
+    [
+      "main()",
+      "",
+      ""
+    ],
+    [
+      "Output :",
+      "",
+      ""
+    ],
+    [
+      "",
+      "Artificial Intelligence",
+      "Page 10 of"
+    ],
+    [
+      "",
+      "",
+      "46"
+    ]
+  ]
+}

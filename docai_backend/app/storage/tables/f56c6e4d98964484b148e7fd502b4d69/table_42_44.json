@@ -1,0 +1,47 @@
+{
+  "document_id": "f56c6e4d98964484b148e7fd502b4d69",
+  "page": 42,
+  "table_index": 44,
+  "data": [
+    [
+      "TY.BSc.CS Semester V",
+      "Omkar Madyal"
+    ],
+    [
+      "import plotly.express as px",
+      ""
+    ],
+    [
+      "from apyori import apriori",
+      ""
+    ],
+    [
+      "df=pd.read_csv('Groceries_dataset.csv')",
+      ""
+    ],
+    [
+      "df.head()",
+      ""
+    ],
+    [
+      "df.isnull().any()",
+      ""
+    ],
+    [
+      "all_products=df['itemDescription'].unique()",
+      ""
+    ],
+    [
+      "print(\"Total Products :{}\".format(len(all_products)))",
+      ""
+    ],
+    [
+      "def distribution_plot(x,y,name=None,xaxis=None,yaxis=None):",
+      ""
+    ],
+    [
+      "fig=go.Figure([go.Bar(x=x,y=y)])",
+      ""
+    ]
+  ]
+}

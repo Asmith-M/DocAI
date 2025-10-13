@@ -71,7 +71,12 @@ class RAGOrchestrator:
             # Non-streaming response - yield single JSON result
             logger.info(f"📝 Step 2: Starting generation for request_id {request_id}")
             generation_start = time.time()
-            answer = await self.generator_agent.generate(question, candidates["chunks"], stream=False, request_id=request_id)
+            # generator_agent.generate is implemented as an async generator. For non-streaming mode
+            # it yields a single result which we need to collect by iterating the generator.
+            answer = None
+            gen = self.generator_agent.generate(question, candidates["chunks"], stream=False, request_id=request_id)
+            async for item in gen:
+                answer = item
             generation_ms = int((time.time() - generation_start) * 1000)
             logger.info(f"✅ Generation completed for request_id {request_id}, took {generation_ms}ms")
             logger.info(f"📄 Answer length: {len(answer)} characters")
@@ -135,28 +140,13 @@ class RAGOrchestrator:
         # Stream tokens and accumulate full answer
         generation_start = time.time()
         full_answer = ""
-        
-        # Get the generator result
-        generator_result = await self.generator_agent.generate(question, candidates["chunks"], stream=True, request_id=request_id)
-        
-        # Check if it's an async generator
-        if hasattr(generator_result, '__aiter__'):
-            # It's an async generator, iterate over it
-            async for token in generator_result:
-                full_answer += token
-                # Properly escape the token for JSON
-                escaped_token = json.dumps(token)
-                yield f'data: {{"type":"token","data":{escaped_token}}}\n\n'
-        else:
-            # It's a single result, treat as one token
-            if isinstance(generator_result, str):
-                full_answer = generator_result
-                escaped_token = json.dumps(generator_result)
-                yield f'data: {{"type":"token","data":{escaped_token}}}\n\n'
-            else:
-                full_answer = str(generator_result)
-                escaped_token = json.dumps(str(generator_result))
-                yield f'data: {{"type":"token","data":{escaped_token}}}\n\n'
+
+        # Stream tokens from the generator agent
+        async for token in self.generator_agent.generate(question, candidates["chunks"], stream=True, request_id=request_id):
+            full_answer += token
+            # Properly escape the token for JSON
+            escaped_token = json.dumps(token)
+            yield f'data: {{"type":"token","data":{escaped_token}}}\n\n'
 
         generation_ms = int((time.time() - generation_start) * 1000)
         total_ms = retrieval_ms + generation_ms

@@ -1,0 +1,59 @@
+{
+  "document_id": "5ebba130263447f8b4b6f6e19fdcfdc7",
+  "page": 7,
+  "table_index": 8,
+  "data": [
+    [
+      "optimize  data  flows,  enabling  the  system  to  deliver  accurate  and  efficient  query",
+      ""
+    ],
+    [
+      "responses in an offline environment.",
+      ""
+    ],
+    [
+      "\u2022",
+      "Core Backend (Python 3.10+) \u2014 Primary backend language with a rich ecosystem"
+    ],
+    [
+      "",
+      "for AI/NLP and rapid prototyping."
+    ],
+    [
+      "\u2022",
+      "FastAPI \u2014 High-performance Python web framework to expose REST endpoints"
+    ],
+    [
+      "",
+      "for document upload, indexing, and question answering."
+    ],
+    [
+      "\u2022",
+      "Uvicorn  (uvicorn[standard])  \u2014  ASGI  server  that  runs  the  FastAPI  app  with"
+    ],
+    [
+      "",
+      "efficient async I/O."
+    ],
+    [
+      "\u2022",
+      "Pydantic  v2  \u2014  Data  validation  and  typed  request/response  schemas  for  clean,"
+    ],
+    [
+      "",
+      "reliable APIs."
+    ],
+    [
+      "\u2022",
+      "python-dotenv \u2014 Loads configuration (paths, model names) from a .env file to"
+    ],
+    [
+      "",
+      "keep code organized."
+    ],
+    [
+      "\u2022",
+      "(Optional) loguru \u2014 Structured logging for easier debugging and error tracing."
+    ]
+  ]
+}

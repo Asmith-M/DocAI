@@ -1,0 +1,848 @@
+[
+  {
+    "document_id": "f56c6e4d98964484b148e7fd502b4d69",
+    "page": 1,
+    "chunk_index": 1,
+    "type": "text",
+    "extraction_method": "pymupdf",
+    "text": "INDEX SR. NO AIM Date of Experiment Date of Submission 1 Breadth First Search & Iterative Depth First Search . 19/06/2025 05/07/2025 2 A* Search and Recursive Best-First Search 28/06/2025 24/07/2025 3 Decision Tree Learning 17/07/2025 24/07/2025 4 Feed Forward Backpropagation Neural Network 24/07/2025 07/08/2025 5 Support Vector Machines (SVM) 31/07/2025 07/08/2025 6 Adaboost Ensemble Learning 07/08/2025 21/08/2025 7 Naive Bayes' Classifier 14/08/2025 21/08/2025 8 K-Nearest Neighbors (K-NN) 21/08/2025 25/09/2025 9 Association Rule Mining 11/09/2025 25/09/2025 10 Demo of OpenAI/TensorFlow Tools 18/09/2025 25/09/2025",
+    "created_at": "2025-10-13T08:02:43.941616"
+  },
+  {
+    "document_id": "f56c6e4d98964484b148e7fd502b4d69",
+    "page": 10,
+    "chunk_index": 2,
+    "type": "text",
+    "extraction_method": "pymupdf",
+    "text": "TY.BSc.CS Semester V Omkar Madyal Roll No : 00 Artificial Intelligence Page 10 of return hn + gn # Function to expand the next city in the queue def expand(cityq): global result if cityq.empty(): return tot, citystr, thiscity = cityq.get() if thiscity == goal: result = citystr + \" :: \" + str(tot) return for cty in dict_gn[thiscity]: cityq.put((get_fn(citystr + \",\" + cty), citystr + \",\" + cty, cty)) expand(cityq) # Main function def main(): cityq = Q.PriorityQueue() cityq.put((get_fn(start), start, start)) expand(cityq) print(\"The A* path with the total is:\") print(result) main() Output :",
+    "created_at": "2025-10-13T08:02:43.965816"
+  },
+  {
+    "document_id": "f56c6e4d98964484b148e7fd502b4d69",
+    "page": 11,
+    "chunk_index": 3,
+    "type": "text",
+    "extraction_method": "pymupdf",
+    "text": "TY.BSc.CS Semester V Omkar Madyal Roll No : 00 Artificial Intelligence Page 11 of",
+    "created_at": "2025-10-13T08:02:43.979019"
+  },
+  {
+    "document_id": "f56c6e4d98964484b148e7fd502b4d69",
+    "page": 12,
+    "chunk_index": 4,
+    "type": "text",
+    "extraction_method": "pymupdf",
+    "text": "TY.BSc.CS Semester V Omkar Madyal Roll No : 00 Artificial Intelligence Page 12 of Implement the Recursive Best-First Search algorithm for the same problem print(\"Omkar Madyal\") import queue as Q from RMP import dict_gn, dict_hn start = 'Arad' goal = 'Bucharest' result = '' # Function to calculate f(n) = g(n) + h(n) def get_fn(citystr): cities = citystr.split(\",\") gn = 0 for ctr in range(0, len(cities) - 1): gn += dict_gn[cities[ctr]][cities[ctr + 1]] hn = dict_hn[cities[-1]] # heuristic from last city return hn + gn # Function to print queue contents def printout(cityq): for i in range(cityq.qsize()): print(cityq.queue[i]) # Expand the current city def expand(cityq): global result tot, citystr, thiscity = cityq.get() nexttot = 999 if not cityq.empty(): nexttot, nextcitystr, nextthiscity = cityq.queue[0] if thiscity == goal and tot < nexttot: result = citystr + \" :: \" + str(tot) return print(\"Expanded city:\", thiscity) print(\"Second best f(n):\", nexttot) tempq = Q.PriorityQueue() for cty in dict_gn[thiscity]: tempq.put((get_fn(citystr + ',' + cty), citystr + ',' + cty, cty)) for ctr in range(1, 3): # Pick top 2 from tempq if not tempq.empty(): ctrtot, ctrcitystr, ctrthiscity = tempq.get() if ctrtot < nexttot: cityq.put((ctrtot, ctrcitystr, ctrthiscity)) else: cityq.put((ctrtot, citystr, thiscity))",
+    "created_at": "2025-10-13T08:02:43.999555"
+  },
+  {
+    "document_id": "f56c6e4d98964484b148e7fd502b4d69",
+    "page": 13,
+    "chunk_index": 5,
+    "type": "text",
+    "extraction_method": "pymupdf",
+    "text": "TY.BSc.CS Semester V Omkar Madyal Roll No : 00 Artificial Intelligence Page 13 of break printout(cityq) expand(cityq) # Main function def main(): cityq = Q.PriorityQueue() thiscity = start cityq.put((999, \"NA\", \"NA\")) cityq.put((get_fn(start), start, thiscity)) expand(cityq) print(\"\\nFinal Result Path and Cost:\") print(result) main() Output :",
+    "created_at": "2025-10-13T08:02:44.014886"
+  },
+  {
+    "document_id": "f56c6e4d98964484b148e7fd502b4d69",
+    "page": 14,
+    "chunk_index": 6,
+    "type": "text",
+    "extraction_method": "pymupdf",
+    "text": "TY.BSc.CS Semester V Omkar Madyal Roll No : 00 Artificial Intelligence Page 14 of PRACTICAL NO 3 Decision Tree Learning Implement the decision tree learning algorithm to build a decision tree for a given dataset. Evaluate the accuracy and efficiency on the test data set 1. Introduction A Decision Tree is a supervised machine learning algorithm used for both classification and regression tasks. It works by splitting the dataset into smaller subsets based on feature values, eventually resulting in a tree-like structure of decisions. 2. Structure of a Decision Tree Root Node: Represents the entire dataset and the first decision. Decision Nodes: Internal nodes where the dataset is split based on a feature condition. Leaf Nodes (Terminal Nodes): Represent the final output (class label for classification or value for regression). Branches: Arrows that connect nodes, representing the outcome of a decision. 3. Working Principle Select the best feature to split the dataset using a criterion (e.g., Gini Index, Entropy, Information Gain). Split the dataset into subsets based on the chosen feature. Repeat the process recursively for each subset until: All records in a node belong to the same class, or There are no remaining features, or The maximum depth is reached. Assign the majority class (or mean value in regression) to the leaf node.",
+    "created_at": "2025-10-13T08:02:44.030117"
+  },
+  {
+    "document_id": "f56c6e4d98964484b148e7fd502b4d69",
+    "page": 15,
+    "chunk_index": 7,
+    "type": "text",
+    "extraction_method": "pymupdf",
+    "text": "TY.BSc.CS Semester V Omkar Madyal Roll No : 00 Artificial Intelligence Page 15 of 4. Splitting Criteria For Classification Trees Entropy & Information Gain Entropy measures impurity: 5. Advantages Easy to understand and visualize. Handles both numerical and categorical data. Requires little data preprocessing. Can model non-linear relationships. 6. Disadvantages Prone to overfitting (can be solved with pruning). Small changes in data can result in a different tree (unstable). Greedy nature may not produce the globally optimal tree. 7. Pruning Pruning is the process of removing branches that have little importance to reduce overfitting. Types: Pre-Pruning: Stop growing the tree early. Post-Pruning: Grow the full tree, then remove unnecessary branches.",
+    "created_at": "2025-10-13T08:02:44.044654"
+  },
+  {
+    "document_id": "f56c6e4d98964484b148e7fd502b4d69",
+    "page": 16,
+    "chunk_index": 8,
+    "type": "text",
+    "extraction_method": "pymupdf",
+    "text": "TY.BSc.CS Semester V Omkar Madyal Roll No : 00 Artificial Intelligence Page 16 of 8. Real-World Applications Medical Diagnosis \u2013 predicting disease based on symptoms. Finance \u2013 credit risk assessment. Marketing \u2013 customer segmentation. Manufacturing \u2013 defect detection Code : print(\"Omkar Madyal\") import pandas as pd from sklearn.model_selection import train_test_split from sklearn.tree import DecisionTreeClassifier, export_text, plot_tree from sklearn.metrics import accuracy_score import matplotlib.pyplot as plt import time # 1. Load the dataset from an online Gist (PlayTennis.csv) url = \"https://gist.githubusercontent.com/DiogoRibeiro7/c6590d0cf119e87c39e31c21a9c0f3a8/raw/PlayTennis.csv\" data = pd.read_csv(url) # 2. Preprocess: one-hot encode categorical features, encode target X = pd.get_dummies(data.drop(columns=['Play Tennis'])) y = data['Play Tennis'].map({'Yes': 1, 'No': 0}) # 3. Split data into train and test sets X_train, X_test, y_train, y_test = train_test_split( X, y, test_size=0.3, random_state=42 ) # 4. Train the Decision Tree classifier (using entropy / ID3-style splitting) start_train = time.time() clf = DecisionTreeClassifier(criterion='entropy') clf.fit(X_train, y_train) train_time = time.time() - start_train # 5. Predict on test set and measure prediction time start_pred = time.time() y_pred = clf.predict(X_test) pred_time = time.time() - start_pred # 6. Evaluate accuracy accuracy = accuracy_score(y_test, y_pred) # 7. Display decision rules and timing metrics print(\"Learned Decision Tree Rules:\\n\") print(export_text(clf, feature_names=list(X.columns))) print(f\"\\nAccuracy: {accuracy:.2f}\") print(f\"Training Time: {train_time:.6f} seconds\")",
+    "created_at": "2025-10-13T08:02:44.066592"
+  },
+  {
+    "document_id": "f56c6e4d98964484b148e7fd502b4d69",
+    "page": 17,
+    "chunk_index": 9,
+    "type": "text",
+    "extraction_method": "pymupdf",
+    "text": "TY.BSc.CS Semester V Omkar Madyal Roll No : 00 Artificial Intelligence Page 17 of print(f\"Prediction Time: {pred_time:.6f} seconds\") # 8. Plot the decision tree structure plt.figure(figsize=(12, 8)) plot_tree( clf, feature_names=X.columns, class_names=['No', 'Yes'], filled=True, rounded=True, fontsize=10 ) plt.title(\"Decision Tree for Play Tennis Dataset\") plt.show()",
+    "created_at": "2025-10-13T08:02:44.081089"
+  },
+  {
+    "document_id": "f56c6e4d98964484b148e7fd502b4d69",
+    "page": 18,
+    "chunk_index": 10,
+    "type": "text",
+    "extraction_method": "pymupdf",
+    "text": "TY.BSc.CS Semester V Omkar Madyal Roll No : 00 Artificial Intelligence Page 18 of PRACTICAL NO 4 Feed Forward Back propagation Neural Network \u25cf Implement the Feed Forward Back propagation algorithm to train a neural network \u25cf Use a given dataset to train the neural network for a specific task",
+    "created_at": "2025-10-13T08:02:44.096967"
+  },
+  {
+    "document_id": "f56c6e4d98964484b148e7fd502b4d69",
+    "page": 19,
+    "chunk_index": 11,
+    "type": "text",
+    "extraction_method": "pymupdf",
+    "text": "TY.BSc.CS Semester V Omkar Madyal Roll No : 00 Artificial Intelligence Page 19 of",
+    "created_at": "2025-10-13T08:02:44.110752"
+  },
+  {
+    "document_id": "f56c6e4d98964484b148e7fd502b4d69",
+    "page": 2,
+    "chunk_index": 12,
+    "type": "text",
+    "extraction_method": "pymupdf",
+    "text": "TY.BSc.CS Semester V Omkar Madyal Roll No : 00 Artificial Intelligence Page 2 of PRACTICAL NO 1 Breadth First Search & Iterative Depth First Search Implement the Breadth First Search algorithm to solve a given problem Breadth-First Search (BFS) is a fundamental algorithm used to traverse a tree in a level-wise manner. In this method, nodes are visited one level at a time, starting from the root node, then moving on to all nodes at the next level, and so on until every node in the tree has been visited. The traversal begins at the root node, which is the topmost node in the tree. From the root, the algorithm first visits all immediate child nodes. Once all nodes at the current level are processed, the traversal continues to the nodes at the next level. This process continues level by level until all nodes have been visited. BFS is implemented using a queue data structure, which follows the First-In-First-Out (FIFO) principle. At the beginning of the traversal, the root node is inserted into the queue. Then, in a loop, the node at the front of the queue is removed (dequeued), processed, and its children are added (enqueued) to the end of the queue. This ensures that nodes are processed in the exact order they appear level by level in the tree. One of the key benefits of BFS in trees is that it does not require tracking visited nodes, because in a tree, each node is unique and there are no repeated connections or cycles. This makes BFS implementation in trees simpler and more efficient compared to other structures. The time complexity of BFS in a tree is O(n), where n is the number of nodes in the tree. This is because each node is visited exactly once. The space complexity is also O(n) in the worst case, especially when the tree is wide and a large number of nodes need to be stored in the queue at the same time (for example, all nodes at the bottom level). BFS is particularly useful when solving problems that involve: \uf06c Visiting nodes in level order \uf06c Finding the minimum number of steps from the root to a particular node \uf06c Determining the height or depth of a tree \uf06c Collecting or printing nodes grouped by level Applications of BFS File System Browsers (Windows Explorer, macOS Finder) Operating systems organize files and directories in a tree-like structure, where each folder is a node, and subfolders or files are its children. When displaying the contents of a folder, BFS can be used to traverse level by level, such as",
+    "created_at": "2025-10-13T08:02:44.128048"
+  },
+  {
+    "document_id": "f56c6e4d98964484b148e7fd502b4d69",
+    "page": 20,
+    "chunk_index": 13,
+    "type": "text",
+    "extraction_method": "pymupdf",
+    "text": "TY.BSc.CS Semester V Omkar Madyal Roll No : 00 Artificial Intelligence Page 20 of Relation to FF-BPNN: In a decision tree, Gini Impurity helps split data to make pure subsets. In FF-BPNN, although we do not explicitly calculate Gini, the loss function (e.g., Cross-Entropy) plays a similar role of ensuring correct class separation. You can combine them in hybrid models: first split data with decision tree (Gini), then use FF-BPNN for final classification. 6. Advantages Can approximate any non-linear function. Works well for large and complex datasets. Learns internal feature representation. 7. Limitations Requires large amounts of data for training. Prone to overfitting. Hyperparameter tuning is critical. 8. Applications Image recognition Speech processing Financial prediction Medical diagnosis Code : print(\"Omkar Madyal\") import numpy as np class NeuralNetwork: def __init__(self): np.random.seed(1) # For reproducibility # Randomly initialize weights with mean 0 self.synaptic_weights = 2 * np.random.random((3, 1)) - 1 def sigmoid(self, x): \"\"\"Sigmoid activation function\"\"\" return 1 / (1 + np.exp(-x))",
+    "created_at": "2025-10-13T08:02:44.145969"
+  },
+  {
+    "document_id": "f56c6e4d98964484b148e7fd502b4d69",
+    "page": 21,
+    "chunk_index": 14,
+    "type": "text",
+    "extraction_method": "pymupdf",
+    "text": "TY.BSc.CS Semester V Omkar Madyal Roll No : 00 Artificial Intelligence Page 21 of def sigmoid_derivative(self, x): \"\"\"Derivative of sigmoid function\"\"\" return x * (1 - x) def train(self, training_inputs, training_outputs, training_iterations): \"\"\"Train the neural network using backpropagation\"\"\" for iteration in range(training_iterations): # Forward pass output = self.think(training_inputs) # Calculate the error error = training_outputs - output # Backpropagation adjustments = np.dot(training_inputs.T, error * self.sigmoid_derivative(output)) # Adjust weights self.synaptic_weights += adjustments def think(self, inputs): \"\"\"Pass inputs through the network\"\"\" inputs = inputs.astype(float) output = self.sigmoid(np.dot(inputs, self.synaptic_weights)) return output if __name__ == \"__main__\": # Initializing the neuron class neural_network = NeuralNetwork() print(\"Beginning Randomly Generated Weights:\") print(neural_network.synaptic_weights) # Training data: 4 examples, 3 input values each, 1 output value training_inputs = np.array([ [0, 0, 1], [1, 1, 1], [1, 0, 1], [0, 1, 1] ]) training_outputs = np.array([[0, 1, 1, 0]]).T # Training the neural network neural_network.train(training_inputs, training_outputs, 15000) print(\"Ending Weights After Training:\") print(neural_network.synaptic_weights) # Testing with new input user_input_one = float(input(\"User Input One: \")) user_input_two = float(input(\"User Input Two: \")) user_input_three = float(input(\"User Input Three: \"))",
+    "created_at": "2025-10-13T08:02:44.163049"
+  },
+  {
+    "document_id": "f56c6e4d98964484b148e7fd502b4d69",
+    "page": 22,
+    "chunk_index": 15,
+    "type": "text",
+    "extraction_method": "pymupdf",
+    "text": "TY.BSc.CS Semester V Omkar Madyal Roll No : 00 Artificial Intelligence Page 22 of print(\"Considering New Situation:\", user_input_one, user_input_two, user_input_three) print(\"New Output data:\") print(neural_network.think(np.array([user_input_one, user_input_two, user_input_three]))) Output :",
+    "created_at": "2025-10-13T08:02:44.176762"
+  },
+  {
+    "document_id": "f56c6e4d98964484b148e7fd502b4d69",
+    "page": 23,
+    "chunk_index": 16,
+    "type": "text",
+    "extraction_method": "pymupdf",
+    "text": "TY.BSc.CS Semester V Omkar Madyal Roll No : 00 Artificial Intelligence Page 23 of PRACTICAL NO 5 Support Vector Machines (SVM) Implement the SVM algorithm for binary classification. Train a SVM Model using the given dataset. Evaluate the performance on test data and analyze the results",
+    "created_at": "2025-10-13T08:02:44.191194"
+  },
+  {
+    "document_id": "f56c6e4d98964484b148e7fd502b4d69",
+    "page": 24,
+    "chunk_index": 17,
+    "type": "text",
+    "extraction_method": "pymupdf",
+    "text": "TY.BSc.CS Semester V Omkar Madyal Roll No : 00 Artificial Intelligence Page 24 of",
+    "created_at": "2025-10-13T08:02:44.206377"
+  },
+  {
+    "document_id": "f56c6e4d98964484b148e7fd502b4d69",
+    "page": 25,
+    "chunk_index": 18,
+    "type": "text",
+    "extraction_method": "pymupdf",
+    "text": "TY.BSc.CS Semester V Omkar Madyal Roll No : 00 Artificial Intelligence Page 25 of Code: print(\"Omkar Madyal\") # Import required libraries from warnings import filterwarnings filterwarnings(\"ignore\") import pandas as pd import numpy as np import matplotlib.pyplot as plt import seaborn as sns from sklearn.model_selection import cross_val_score, GridSearchCV from sklearn.svm import SVC from sklearn.metrics import confusion_matrix, accuracy_score, classification_report import time # ================================ # Step 1: Load the Dataset Online # ================================ # URL of the dataset hosted on GitHub url = \"https://raw.githubusercontent.com/jbrownlee/Datasets/master/pima-indians-diabetes.data.csv\" # Define column names manually (since dataset has no header row) column_names = ['Pregnancies', 'Glucose', 'BloodPressure', 'SkinThickness', 'Insulin', 'BMI', 'DiabetesPedigreeFunction', 'Age', 'Outcome'] # Load the dataset df = pd.read_csv(url, names=column_names) # Show first few rows print(\"First 5 rows of the dataset:\") print(df.head())",
+    "created_at": "2025-10-13T08:02:44.229326"
+  },
+  {
+    "document_id": "f56c6e4d98964484b148e7fd502b4d69",
+    "page": 26,
+    "chunk_index": 19,
+    "type": "text",
+    "extraction_method": "pymupdf",
+    "text": "TY.BSc.CS Semester V Omkar Madyal Roll No : 00 Artificial Intelligence Page 26 of # Dataset shape and stats print(\"\\nDataset shape:\", df.shape) print(\"\\nStatistical Summary:\") print(df.describe()) # ========================== # Step 2: Prepare the Data # ========================== # Features and target X = df.drop(\"Outcome\", axis=1) # Independent variables y = df[\"Outcome\"] # Target variable # Manual train-test split (600 train + 168 test) X_train = X.iloc[:600] X_test = X.iloc[600:] y_train = y.iloc[:600] y_test = y.iloc[600:] print(\"\\nTraining set shape:\", X_train.shape) print(\"Test set shape:\", X_test.shape) # ================================ # Step 3: Train SVM with Linear Kernel # ================================ model = SVC(kernel='linear') # Linear SVM model.fit(X_train, y_train) # Train the model # ============================ # Step 4: Predictions & Metrics # ============================ y_pred = model.predict(X_test) # Confusion matrix cm = confusion_matrix(y_test, y_pred) print(\"\\nConfusion Matrix:\\n\", cm) # Accuracy accuracy = accuracy_score(y_test, y_pred) print(\"\\nAccuracy:\", accuracy) # Classification report print(\"\\nClassification Report:\\n\", classification_report(y_test, y_pred)) # ================================ # Step 5: Cross-Validation # ================================ # 10-fold cross-validation on training set cv_scores = cross_val_score(model, X_train, y_train, cv=10) print(\"\\nCross-Validation Accuracy: {:.2f}%\".format(cv_scores.mean() * 100))",
+    "created_at": "2025-10-13T08:02:44.247238"
+  },
+  {
+    "document_id": "f56c6e4d98964484b148e7fd502b4d69",
+    "page": 27,
+    "chunk_index": 20,
+    "type": "text",
+    "extraction_method": "pymupdf",
+    "text": "TY.BSc.CS Semester V Omkar Madyal Roll No : 00 Artificial Intelligence Page 27 of print(\"Standard Deviation: {:.2f}%\".format(cv_scores.std() * 100)) # ================================ # Step 6: Hyperparameter Tuning # ================================ # Define values of C to try param_grid = {'C': np.arange(1, 20)} # Regularization parameter # GridSearch with 8-fold CV grid_search = GridSearchCV(SVC(kernel='linear'), param_grid, cv=8) start_time = time.time() grid_search.fit(X_train, y_train) elapsed_time = time.time() - start_time print(\"\\nGrid Search completed in {:.2f} seconds\".format(elapsed_time)) print(\"Best Parameters:\", grid_search.best_params_) print(\"Best CV Score: {:.2f}%\".format(grid_search.best_score_ * 100)) # ================================ # Step 7: Final Model Evaluation # ================================ # Train final model using best parameters final_model = SVC(kernel='linear', C=grid_search.best_params_['C']) final_model.fit(X_train, y_train) # Predict and evaluate again final_pred = final_model.predict(X_test) final_cm = confusion_matrix(y_test, final_pred) print(\"\\nFinal Confusion Matrix:\\n\", final_cm) print(\"Final Accuracy: {:.2f}%\".format(accuracy_score(y_test, final_pred) * 100)) print(\"Final Classification Report:\\n\", classification_report(y_test, final_pred)) Output :",
+    "created_at": "2025-10-13T08:02:44.263168"
+  },
+  {
+    "document_id": "f56c6e4d98964484b148e7fd502b4d69",
+    "page": 28,
+    "chunk_index": 21,
+    "type": "text",
+    "extraction_method": "pymupdf",
+    "text": "TY.BSc.CS Semester V Omkar Madyal Roll No : 00 Artificial Intelligence Page 28 of PRACTICAL NO 6 Adaboost Ensemble Learning \u25cfImplement the Adaboost algorithm to create an ensemble of weak classifiers. \u25cfTrain the ensemble model on a given dataset and evaluate its performance \u25cfCompare the results with individual weak classifiers 1. Introduction AdaBoost, short for Adaptive Boosting, is a powerful ensemble learning technique introduced by Yoav Freund and Robert Schapire in 1996. It is one of the first boosting algorithms that gained popularity due to its simplicity and effectiveness. AdaBoost combines multiple weak learners (usually decision stumps) to form a strong learner with high predictive accuracy. 2. Concept of Ensemble Learning Ensemble learning is based on the principle that combining the predictions of multiple models can result in better performance than any individual model. There are three main types of ensemble methods: Bagging (Bootstrap Aggregating) \u2013 e.g., Random Forest Boosting \u2013 e.g., AdaBoost, Gradient Boosting, XGBoost Stacking \u2013 combining predictions of different model types AdaBoost falls under the Boosting category, where weak learners are trained sequentially, and each new learner focuses more on the mistakes made by the previous ones. 3. Idea Behind AdaBoost The idea of AdaBoost is to: Train multiple weak learners one after another. Assign weights to each training sample. In each iteration, increase the weight of misclassified samples so that the next model pays more attention to them. Combine all weak learners using a weighted majority vote (for classification) or weighted average (for regression). 4. Working of AdaBoost (Step-by-Step) Let\u2019s assume we are solving a binary classification problem. Step 1: Initialize Weights",
+    "created_at": "2025-10-13T08:02:44.278952"
+  },
+  {
+    "document_id": "f56c6e4d98964484b148e7fd502b4d69",
+    "page": 29,
+    "chunk_index": 22,
+    "type": "text",
+    "extraction_method": "pymupdf",
+    "text": "TY.BSc.CS Semester V Omkar Madyal Roll No : 00 Artificial Intelligence Page 29 of Initially, all training samples are assigned equal weights: wi=1/ N where N is the number of samples. Step 2: Train a Weak Learner A weak learner is trained on the weighted dataset. Commonly used weak learner: Decision Stump (a one-level decision tree). Step 3: Calculate Error Weighted error is calculated as:",
+    "created_at": "2025-10-13T08:02:44.296496"
+  },
+  {
+    "document_id": "f56c6e4d98964484b148e7fd502b4d69",
+    "page": 3,
+    "chunk_index": 23,
+    "type": "text",
+    "extraction_method": "pymupdf",
+    "text": "TY.BSc.CS Semester V Omkar Madyal Roll No : 00 Artificial Intelligence Page 3 of showing all folders at a given level before going deeper into subfolders. This approach helps efficiently organize and display file hierarchies. Auto-suggestion and Predictive Text (Search Engines, Keyboards) Auto-complete features (like Google Search or smartphone keyboards) often use prefix trees (tries) to store words. BFS helps in generating suggestions, by traversing the tree level by level and collecting all words that start with a given prefix, sorted by proximity and frequency. Code : # Step 1: Define the graph using adjacency list (dictionary) graph = { 'A': ['B', 'C'], 'B': ['D', 'E'], 'C': ['F'], 'D': [], 'E': ['F'], 'F': [] } # Step 2: BFS function using a normal Python list def bfs(start_node): visited = set() # To keep track of visited nodes queue = [start_node] # Queue using list print(\"BFS Traversal Order:\") while queue: node = queue.pop(0) # Remove the first element (FIFO) if node not in visited: print(node, end=' ') visited.add(node) # Add unvisited neighbours to queue for neighbor in graph[node]: if neighbor not in visited: queue.append(neighbor) # Step 3: Call BFS function bfs('A') Output :",
+    "created_at": "2025-10-13T08:02:44.319953"
+  },
+  {
+    "document_id": "f56c6e4d98964484b148e7fd502b4d69",
+    "page": 30,
+    "chunk_index": 24,
+    "type": "text",
+    "extraction_method": "pymupdf",
+    "text": "TY.BSc.CS Semester V Omkar Madyal Roll No : 00 Artificial Intelligence Page 30 of 5. Key Characteristics Adaptive: Focuses more on difficult samples by adjusting weights. Sequential: Each weak learner depends on the outcome of the previous one. Weighted Voting: Not all learners contribute equally; stronger learners have more influence. 6. Advantages Simple to implement. Often more accurate than a single model. Less prone to overfitting compared to other methods if weak learners are simple. Works well with both classification and regression. 7. Limitations Sensitive to noisy data and outliers (as weights of misclassified samples increase). Computationally slower than bagging methods for large datasets. Weak learners must perform slightly better than random guessing; otherwise, boosting can fail. 8. Applications Spam email classification Fraud detection in banking Medical diagnosis prediction Face detection in computer vision Sentiment analysis Code: print(\"Omkar Madyal\") import pandas as pd from sklearn import model_selection from sklearn.ensemble import AdaBoostClassifier # Correct dataset URL url = \"https://raw.githubusercontent.com/jbrownlee/Datasets/master/pima-indians-diabetes.data.csv\" # Column names names = ['preg', 'plas', 'pres', 'skin', 'test', 'mass', 'pedi', 'age', 'class'] # Load dataset",
+    "created_at": "2025-10-13T08:02:44.339441"
+  },
+  {
+    "document_id": "f56c6e4d98964484b148e7fd502b4d69",
+    "page": 31,
+    "chunk_index": 25,
+    "type": "text",
+    "extraction_method": "pymupdf",
+    "text": "TY.BSc.CS Semester V Omkar Madyal Roll No : 00 Artificial Intelligence Page 31 of dataframe = pd.read_csv(url, names=names) # Separate into input and output array = dataframe.values X = array[:, 0:8] Y = array[:, 8] # Parameters seed = 7 num_trees = 30 # Define kfold cross-validation kfold = model_selection.KFold(n_splits=10, shuffle=True, random_state=seed) # Define model model = AdaBoostClassifier(n_estimators=num_trees, random_state=seed) # Evaluate model results = model_selection.cross_val_score(model, X, Y, cv=kfold) print(\"Accuracy:\", results.mean()) Output",
+    "created_at": "2025-10-13T08:02:44.355428"
+  },
+  {
+    "document_id": "f56c6e4d98964484b148e7fd502b4d69",
+    "page": 32,
+    "chunk_index": 26,
+    "type": "text",
+    "extraction_method": "pymupdf",
+    "text": "TY.BSc.CS Semester V Omkar Madyal Roll No : 00 Artificial Intelligence Page 32 of PRACTICAL NO 7 Naive Bayes' Classifier \uf06c Implement the Naive Bayes algorithm for classification \uf06c Trin a Naive Bayes' model using a given dataset and calculate class probabilities \uf06c Evaluate the accuracy of the model on test data and analyze the results Na\u00efve Bayes Classifier is a probabilistic machine learning algorithm based on Bayes\u2019 Theorem.It is called \u201cna\u00efve\u201d because it assumes that all features (symptoms, words, attributes, etc.) are independent of each other, which is rarely true in real life but works surprisingly well. Commonly used for: Text classification (spam detection, sentiment analysis) Medical diagnosis (symptom \u2192disease) Document categorization",
+    "created_at": "2025-10-13T08:02:44.369888"
+  },
+  {
+    "document_id": "f56c6e4d98964484b148e7fd502b4d69",
+    "page": 33,
+    "chunk_index": 27,
+    "type": "text",
+    "extraction_method": "pymupdf",
+    "text": "TY.BSc.CS Semester V Omkar Madyal Roll No : 00 Artificial Intelligence Page 33 of Types of Na\u00efve Bayes Classifiers Gaussian Na\u00efve Bayes Assumes features are continuous and follow a Gaussian (Normal) distribution. Example: Medical test results, height/weight data. Multinomial Na\u00efve Bayes Works with discrete count data (word frequencies in documents). Example: Text classification, spam filtering. Categorical/Bernoulli Na\u00efve Bayes Works with binary/categorical features (yes/no, 0/1). Example: Symptom present or not Code: print('Omkar Madyal') import pandas as pd import matplotlib.pyplot as plt from sklearn.model_selection import train_test_split from sklearn.naive_bayes import MultinomialNB, CategoricalNB, GaussianNB from sklearn.metrics import accuracy_score, classification_report, confusion_matrix import seaborn as sns from sklearn.preprocessing import LabelEncoder # Load dataset from URL (symptoms vs disease dataset) url = \"https://raw.githubusercontent.com/plotly/datasets/master/diabetes.csv\" df = pd.read_csv(url, on_bad_lines=\"skip\", engine=\"python\") print(\"Dataset preview:\") print(df.head()) # For this dataset, target column = \"Outcome\" X = df.drop(columns=[\"Outcome\"]) y = df[\"Outcome\"] # Encode target if needed if y.dtype == \"object\": y = LabelEncoder().fit_transform(y) # Train-test split X_train, X_test, y_train, y_test = train_test_split( X, y, test_size=0.2, random_state=42, stratify=y ) # Try different Naive Bayes classifiers",
+    "created_at": "2025-10-13T08:02:44.386803"
+  },
+  {
+    "document_id": "f56c6e4d98964484b148e7fd502b4d69",
+    "page": 34,
+    "chunk_index": 28,
+    "type": "text",
+    "extraction_method": "pymupdf",
+    "text": "TY.BSc.CS Semester V Omkar Madyal Roll No : 00 Artificial Intelligence Page 34 of models = { \"GaussianNB\": GaussianNB(), \"MultinomialNB\": MultinomialNB(), \"CategoricalNB\": CategoricalNB() } for name, model in models.items(): try: model.fit(X_train, y_train) y_pred = model.predict(X_test) print(f\"\\n===== {name} =====\") print(\"Accuracy:\", accuracy_score(y_test, y_pred)) print(classification_report(y_test, y_pred)) # Confusion matrix heatmap cm = confusion_matrix(y_test, y_pred) plt.figure(figsize=(6, 4)) sns.heatmap(cm, annot=True, fmt=\"d\", cmap=\"Blues\") plt.title(f\"Confusion Matrix - {name}\") plt.xlabel(\"Predicted\") plt.ylabel(\"Actual\") plt.show() except Exception as e: print(f\"\\n{name} failed: {e}\") Output :",
+    "created_at": "2025-10-13T08:02:44.403706"
+  },
+  {
+    "document_id": "f56c6e4d98964484b148e7fd502b4d69",
+    "page": 35,
+    "chunk_index": 29,
+    "type": "text",
+    "extraction_method": "pymupdf",
+    "text": "TY.BSc.CS Semester V Omkar Madyal Roll No : 00 Artificial Intelligence Page 35 of",
+    "created_at": "2025-10-13T08:02:44.416365"
+  },
+  {
+    "document_id": "f56c6e4d98964484b148e7fd502b4d69",
+    "page": 36,
+    "chunk_index": 30,
+    "type": "text",
+    "extraction_method": "pymupdf",
+    "text": "TY.BSc.CS Semester V Omkar Madyal Roll No : 00 Artificial Intelligence Page 36 of PRACTICAL NO 8 Implement the K-NN Algorithm for classification or regression K-Nearest Neighbors (KNN) is a supervised machine learning algorithm used for classification and regression.It is a lazy learner (no explicit training phase). Instead, it memorizes the dataset and makes predictions based on the nearest neighbors at query time.It is a non-parametric algorithm, meaning it makes no assumptions about the underlying data distribution. Basic Idea To classify a new data point, the algorithm: Finds the K nearest data points in the training set (using distance measures like Euclidean distance). Looks at the labels of those K neighbors. Assigns the label that is most frequent among them (majority voting). For regression, it takes the average (or weighted average) of the K neighbors\u2019 values.",
+    "created_at": "2025-10-13T08:02:44.433126"
+  },
+  {
+    "document_id": "f56c6e4d98964484b148e7fd502b4d69",
+    "page": 37,
+    "chunk_index": 31,
+    "type": "text",
+    "extraction_method": "pymupdf",
+    "text": "TY.BSc.CS Semester V Omkar Madyal Roll No : 00 Artificial Intelligence Page 37 of \uf06c Apply K-NN Algorithm on the given dataset & predict the class or value for test data import numpy as np import pandas as pd import matplotlib.pyplot as plt from sklearn.model_selection import train_test_split from sklearn.preprocessing import StandardScaler from sklearn.neighbors import KNeighborsClassifier from sklearn.metrics import accuracy_score, confusion_matrix, classification_report # Use ggplot style plt.style.use('ggplot') # Load dataset url = \"https://raw.githubusercontent.com/plotly/datasets/master/diabetes.csv\" df = pd.read_csv(url) print(\"Dataset preview:\") print(df.head()) # Features and target X = df.drop(columns=[\"Outcome\"]) y = df[\"Outcome\"] # Scale features (important for distance-based models like KNN) scaler = StandardScaler() X_scaled = scaler.fit_transform(X) # Train-test split X_train, X_test, y_train, y_test = train_test_split( X_scaled, y, test_size=0.2, random_state=42, stratify=y ) # Try KNN with different values of k k_values = range(1, 21) accuracies = [] for k in k_values: knn = KNeighborsClassifier(n_neighbors=k) knn.fit(X_train, y_train) y_pred = knn.predict(X_test) acc = accuracy_score(y_test, y_pred) accuracies.append(acc) # Plot accuracy vs K plt.figure(figsize=(8, 5)) plt.plot(k_values, accuracies, marker='o', linestyle='-', color='b') plt.title(\"KNN Accuracy for Different K Values\") plt.xlabel(\"Number of Neighbors (K)\") plt.ylabel(\"Accuracy\") plt.xticks(k_values)",
+    "created_at": "2025-10-13T08:02:44.452252"
+  },
+  {
+    "document_id": "f56c6e4d98964484b148e7fd502b4d69",
+    "page": 38,
+    "chunk_index": 32,
+    "type": "text",
+    "extraction_method": "pymupdf",
+    "text": "TY.BSc.CS Semester V Omkar Madyal Roll No : 00 Artificial Intelligence Page 38 of plt.show() # Best K best_k = k_values[np.argmax(accuracies)] print(f\"Best K: {best_k} with Accuracy: {max(accuracies):.4f}\") # Final model with best K knn_best = KNeighborsClassifier(n_neighbors=best_k) knn_best.fit(X_train, y_train) y_pred = knn_best.predict(X_test) # Evaluation print(\"\\nClassification Report:\\n\", classification_report(y_test, y_pred)) # Confusion Matrix cm = confusion_matrix(y_test, y_pred) plt.figure(figsize=(5, 4)) plt.imshow(cm, cmap=\"Blues\") plt.colorbar() plt.title(\"Confusion Matrix\") plt.xlabel(\"Predicted\") plt.ylabel(\"Actual\") for i in range(cm.shape[0]): for j in range(cm.shape[1]): plt.text(j, i, cm[i, j], ha='center', va='center', color='black') plt.show()",
+    "created_at": "2025-10-13T08:02:44.470713"
+  },
+  {
+    "document_id": "f56c6e4d98964484b148e7fd502b4d69",
+    "page": 39,
+    "chunk_index": 33,
+    "type": "text",
+    "extraction_method": "pymupdf",
+    "text": "TY.BSc.CS Semester V Omkar Madyal Roll No : 00 Artificial Intelligence Page 39 of",
+    "created_at": "2025-10-13T08:02:44.486389"
+  },
+  {
+    "document_id": "f56c6e4d98964484b148e7fd502b4d69",
+    "page": 4,
+    "chunk_index": 34,
+    "type": "text",
+    "extraction_method": "pymupdf",
+    "text": "TY.BSc.CS Semester V Omkar Madyal Roll No : 00 Artificial Intelligence Page 4 of Implement the Iterative Depth First Search algorithm to solve the same problem Iterative Depth-First Search (DFS) is a graph or tree traversal algorithm that explores as far as possible along each branch before backtracking, but instead of using recursion, it uses an explicit stack data structure to manage traversal order. This makes the algorithm iterative in nature, as it avoids relying on the system's call stack. In traditional DFS, recursion is commonly used to move deeper into the structure, which implicitly makes use of the call stack to remember the previous states. However, recursion can lead to problems such as stack overflow in deep or large graphs. The iterative approach solves this problem by replacing the function call stack with a user-defined stack data structure, which gives more control and safety during traversal. The algorithm starts by pushing the starting node onto the stack. While the stack is not empty, the algorithm pops the top node, processes it, and then pushes all its unvisited neighbors onto the stack. To prevent visiting the same node multiple times (especially in graphs), a visited set or array is maintained. Since the stack operates in Last-In-First-Out (LIFO) order, the last neighbor added to the stack is processed first. This behavior enables the algorithm to dive deep into the structure before returning to explore other branches \u2014 which is the essence of depth-first search. In the case of trees, where there are no cycles, maintaining a visited array is usually unnecessary. But in graphs, it is essential to avoid infinite loops caused by cycles or repeated nodes. Working Steps of Iterative DFS: Create an empty stack and push the starting node onto it. Mark the starting node as visited. While the stack is not empty: Pop the top node from the stack. Process the node (e.g., print its value). For each adjacent or child node of the current node: If the node is not already visited: Mark it as visited. Push it onto the stack. Time and Space Complexity: Time Complexity: O(V + E) where V is the number of vertices and E is the number of edges. Each node and edge is processed once. Space Complexity: O(V) in the worst case, for storing the stack and visited list. Advantages of Iterative DFS: Avoids function call stack overflow that occurs in recursive DFS. Gives more control over traversal, especially in complex graph structures.",
+    "created_at": "2025-10-13T08:02:44.505025"
+  },
+  {
+    "document_id": "f56c6e4d98964484b148e7fd502b4d69",
+    "page": 40,
+    "chunk_index": 35,
+    "type": "text",
+    "extraction_method": "pymupdf",
+    "text": "TY.BSc.CS Semester V Omkar Madyal Roll No : 00 Artificial Intelligence Page 40 of PRACTICAL NO 9 Implement the Association Rule Mining algorithm (e.g. Apriori) to find frequent dataset. Generate association rules from the frequent item set and calculate their support.",
+    "created_at": "2025-10-13T08:02:44.520150"
+  },
+  {
+    "document_id": "f56c6e4d98964484b148e7fd502b4d69",
+    "page": 41,
+    "chunk_index": 36,
+    "type": "text",
+    "extraction_method": "pymupdf",
+    "text": "TY.BSc.CS Semester V Omkar Madyal Roll No : 00 Artificial Intelligence Page 41 of Code: import numpy as np import pandas as pd import plotly.graph_objects as go",
+    "created_at": "2025-10-13T08:02:44.534410"
+  },
+  {
+    "document_id": "f56c6e4d98964484b148e7fd502b4d69",
+    "page": 42,
+    "chunk_index": 37,
+    "type": "text",
+    "extraction_method": "pymupdf",
+    "text": "TY.BSc.CS Semester V Omkar Madyal Roll No : 00 Artificial Intelligence Page 42 of import plotly.express as px from apyori import apriori df=pd.read_csv('Groceries_dataset.csv') df.head() df.isnull().any() all_products=df['itemDescription'].unique() print(\"Total Products :{}\".format(len(all_products))) def distribution_plot(x,y,name=None,xaxis=None,yaxis=None): fig=go.Figure([go.Bar(x=x,y=y)]) fig.update_layout(title=name,xaxis_title=xaxis,yaxis_title=yaxis) fig.show() x=df['itemDescription'].value_counts() x=x.sort_values(ascending=False) x=x[:10] distribution_plot(x=x.index,y=x.values,yaxis=\"Count\",xaxis=\"Products\") one_hot=pd.get_dummies(df['itemDescription']) df.drop('itemDescription',inplace=True,axis=1) df=df.join(one_hot) df.head() records=df.groupby(['Member_number','Date'])[all_products[:]].apply(sum) records=records.reset_index()[all_products] records.head() records.shape def get_Pnames(x): for product in all_products: if x[product]>0: x[product]=product return x records=records.apply(get_Pnames,axis=1) records.head() records.shape print(\"Total Transactions:{}\".format(len(records))) x=records.values x=[sub[~(sub == 0)].tolist() for sub in x if sub[sub != 0].tolist()] transactions=x rules=apriori(transactions,min_support=0.00030,min_confidence=0.2,min_lift=3,min_length=2) association_results=list(rules) for item in association_results: pair=item[0] items=[x for x in pair] print(\"Rule:\"+items[0]+\"->\"+items[1]) print(\"Support:\"+str(item[1])) print(\"Confidence:\"+str(item[2][0][2])) print(\"Lift:\"+str(item[2][0][3])) print(\"=====================================\") Output :",
+    "created_at": "2025-10-13T08:02:44.551301"
+  },
+  {
+    "document_id": "f56c6e4d98964484b148e7fd502b4d69",
+    "page": 43,
+    "chunk_index": 38,
+    "type": "text",
+    "extraction_method": "pymupdf",
+    "text": "TY.BSc.CS Semester V Omkar Madyal Roll No : 00 Artificial Intelligence Page 43 of",
+    "created_at": "2025-10-13T08:02:44.568602"
+  },
+  {
+    "document_id": "f56c6e4d98964484b148e7fd502b4d69",
+    "page": 44,
+    "chunk_index": 39,
+    "type": "text",
+    "extraction_method": "pymupdf",
+    "text": "TY.BSc.CS Semester V Omkar Madyal Roll No : 00 Artificial Intelligence Page 44 of PRACTICAL NO 10 Demo of OpenAI/TensorFlow Tools What is TensorFlow? TensorFlow is an open-source deep learning framework developed by Google Brain Team. It is widely used for machine learning (ML) and deep learning (DL) applications. Core concept: Tensor (multi-dimensional data array) + Flow (computations through data flow graphs). Key Features Ease of Use \u2013 High-level Keras API for quick prototyping. Flexibility \u2013 Works for deep learning, reinforcement learning, NLP, computer vision, etc. Cross-Platform \u2013 Runs on CPUs, GPUs, TPUs, and even mobile devices. Visualization \u2013 TensorBoard helps visualize model performance. Scalability \u2013 Can handle large datasets and distributed training. Applications Computer Vision \u2192image classification, object detection. Natural Language Processing (NLP) \u2192sentiment analysis, chatbots. Healthcare \u2192disease prediction, medical imaging. Finance \u2192fraud detection, stock prediction. Robotics & IoT \u2192real-time decision making. What is OpenAI? OpenAI is an AI research organization and company focused on building safe, general-purpose artificial intelligence. Famous for GPT (Generative Pretrained Transformer) models \u2192ChatGPT is based on GPT-4/GPT-5 family. Provides APIs for NLP, vision, reasoning, and multi-modal tasks. Key Features Pretrained Models \u2013 No need for training from scratch. Generative AI \u2013 Can generate human-like text, code, and images.",
+    "created_at": "2025-10-13T08:02:44.585253"
+  },
+  {
+    "document_id": "f56c6e4d98964484b148e7fd502b4d69",
+    "page": 45,
+    "chunk_index": 40,
+    "type": "text",
+    "extraction_method": "pymupdf",
+    "text": "TY.BSc.CS Semester V Omkar Madyal Roll No : 00 Artificial Intelligence Page 45 of Zero-Shot & Few-Shot Learning \u2013 Works well even with little or no training data. Multi-Modal \u2013 GPT-4o supports text, images, and even audio. API Access \u2013 Easy integration into apps and products. Applications Chatbots & Virtual Assistants \u2192customer support, education. Content Generation \u2192blogs, reports, code. Language Translation \u2192breaking communication barriers. Creative Fields \u2192story writing, music, art. Data Analysis \u2192summarization, classification, question answering. Code : # Import libraries import tensorflow as tf from tensorflow import keras from tensorflow.keras import layers import matplotlib.pyplot as plt # Step 1: Load Dataset (MNIST) (x_train, y_train), (x_test, y_test) = keras.datasets.mnist.load_data() # Normalize pixel values (0\u2013255 \u21920\u20131) x_train = x_train / 255.0 x_test = x_test / 255.0 # Step 2: Build the Model model = keras.Sequential([ layers.Flatten(input_shape=(28,28)), # Flatten 28x28 image \u2192784 layers.Dense(128, activation=\"relu\"), # Hidden layer layers.Dropout(0.2), # Dropout to avoid overfitting layers.Dense(10, activation=\"softmax\") # Output layer (10 digits) ]) # Step 3: Compile the Model model.compile(optimizer=\"adam\", loss=\"sparse_categorical_crossentropy\", metrics=[\"accuracy\"]) # Step 4: Train the Model history = model.fit(x_train, y_train, epochs=5, validation_split=0.1) # Step 5: Evaluate Model test_loss, test_acc = model.evaluate(x_test, y_test) print(f\"\u2705Test Accuracy: {test_acc:.2f}\")",
+    "created_at": "2025-10-13T08:02:44.602990"
+  },
+  {
+    "document_id": "f56c6e4d98964484b148e7fd502b4d69",
+    "page": 46,
+    "chunk_index": 41,
+    "type": "text",
+    "extraction_method": "pymupdf",
+    "text": "TY.BSc.CS Semester V Omkar Madyal Roll No : 00 Artificial Intelligence Page 46 of # Step 6: Make Predictions predictions = model.predict(x_test) # Display a few test images with predictions for i in range(5): plt.imshow(x_test[i], cmap=\"gray\") plt.title(f\"Predicted: {predictions[i].argmax()}, Actual: {y_test[i]}\") plt.axis(\"off\") plt.show() Output :",
+    "created_at": "2025-10-13T08:02:44.620315"
+  },
+  {
+    "document_id": "f56c6e4d98964484b148e7fd502b4d69",
+    "page": 5,
+    "chunk_index": 42,
+    "type": "text",
+    "extraction_method": "pymupdf",
+    "text": "TY.BSc.CS Semester V Omkar Madyal Roll No : 00 Artificial Intelligence Page 5 of Can be easier to debug and modify compared to recursive implementations. Applications: Solving mazes and puzzles Detecting cycles in a graph Topological sorting in directed acyclic graphs (DAGs) Finding connected components in a graph Pathfinding and backtracking problems Code : def iterative_dfs(graph, start): visited = set() stack = [start] while stack: vertex = stack.pop() if vertex not in visited: print(vertex, end=\" \") visited.add(vertex) # Add unvisited neighbors to the stack for neighbor in reversed(graph[vertex]): if neighbor not in visited: stack.append(neighbor) # Example graph as an adjacency list graph = { 'A': ['B', 'C'], 'B': ['D', 'E'], 'C': ['F'], 'D': [], 'E': ['F'], 'F': [] } # Call DFS starting from node 'A' print(\"Omkar Madyal\") print(\"Iterative DFS Traversal:\") iterative_dfs(graph, 'A') Output :",
+    "created_at": "2025-10-13T08:02:44.641565"
+  },
+  {
+    "document_id": "f56c6e4d98964484b148e7fd502b4d69",
+    "page": 6,
+    "chunk_index": 43,
+    "type": "text",
+    "extraction_method": "pymupdf",
+    "text": "TY.BSc.CS Semester V Omkar Madyal Roll No : 00 Artificial Intelligence Page 6 of Compare the performance and efficiency of both algorithms Both Breadth-First Search (BFS) and Iterative Depth-First Search (DFS) are fundamental algorithms used for traversing trees and graphs. While they may appear similar in terms of implementation, their execution order, memory usage, and practical applications differ significantly. Below is a detailed comparison based on various factors: 1. Traversal Order BFS visits nodes level by level, starting from the root or source node and exploring all neighbors before moving deeper. Iterative DFS explores nodes as deep as possible along each branch before backtracking, using a stack to manage the traversal path. BFS provides a broader view; DFS dives deep into one path before exploring others. 2. Data Structure Used BFS uses a Queue (FIFO) to ensure level-wise traversal. Iterative DFS uses a Stack (LIFO) to simulate the recursive behavior of standard DFS. 3. Time Complexity Both algorithms have similar time complexity in most cases: BFS: O(V + E) Iterative DFS: O(V + E) Where: V is the number of vertices (nodes) E is the number of edges. In terms of raw execution time, neither is significantly faster. Efficiency depends more on the structure of the data and the problem requirements. 4. Space Complexity BFS: O(V) in the worst case \u2014 the queue can grow large if the tree/graph is wide. Iterative DFS: O(V) in the worst case \u2014 the stack may grow large in deep trees or graphs. DFS is usually more memory-efficient for deep and narrow trees. BFS may require more memory when many nodes exist at the same depth. 5. Shortest Path Finding BFS guarantees the shortest path in an unweighted graph.",
+    "created_at": "2025-10-13T08:02:44.659644"
+  },
+  {
+    "document_id": "f56c6e4d98964484b148e7fd502b4d69",
+    "page": 7,
+    "chunk_index": 44,
+    "type": "text",
+    "extraction_method": "pymupdf",
+    "text": "TY.BSc.CS Semester V Omkar Madyal Roll No : 00 Artificial Intelligence Page 7 of Iterative DFS does not guarantee the shortest path as it may find a deeper path first. BFS is preferred for shortest path problems. While BFS and Iterative DFS have similar time complexity, their performance and efficiency vary based on the problem context. BFS is better suited for level-based exploration and shortest-path problems, whereas Iterative DFS is ideal for deep exploration, structural analysis, and solving puzzles or backtracking-based problems. Understanding the nature of the input data and the specific requirements of the problem is essential in choosing the most appropriate traversal method.",
+    "created_at": "2025-10-13T08:02:44.674633"
+  },
+  {
+    "document_id": "f56c6e4d98964484b148e7fd502b4d69",
+    "page": 8,
+    "chunk_index": 45,
+    "type": "text",
+    "extraction_method": "pymupdf",
+    "text": "TY.BSc.CS Semester V Omkar Madyal Roll No : 00 Artificial Intelligence Page 8 of PRACTICAL NO 2 A* Search and Recursive Best-First Search",
+    "created_at": "2025-10-13T08:02:44.687079"
+  },
+  {
+    "document_id": "f56c6e4d98964484b148e7fd502b4d69",
+    "page": 9,
+    "chunk_index": 46,
+    "type": "text",
+    "extraction_method": "pymupdf",
+    "text": "TY.BSc.CS Semester V Omkar Madyal Roll No : 00 Artificial Intelligence Page 9 of Implement the A* Search algorithm for solving a pathfinding problem DATA SET : RMP.py (Save this file as RMP.py in the same folder as your main program.) print(\"Omkar Madyal\") import queue as Q from RMP import dict_gn, dict_hn start = 'Arad' goal = 'Bucharest' result = '' # Function to calculate f(n) = g(n) + h(n) def get_fn(citystr): cities = citystr.split(\",\") gn = 0 for ctr in range(0, len(cities) - 1): gn += dict_gn[cities[ctr]][cities[ctr + 1]] hn = dict_hn[cities[-1]] # heuristic from last city",
+    "created_at": "2025-10-13T08:02:44.701524"
+  },
+  {
+    "document_id": "f56c6e4d98964484b148e7fd502b4d69",
+    "page": 10,
+    "chunk_index": 47,
+    "type": "table",
+    "extraction_method": "camelot/tabula",
+    "text": "TY.BSc.CS Semester V\tOmkar Madyal\tRoll No : 00\nreturn hn + gn\t\t\n# Function to expand the next city in the queue\t\t\ndef expand(cityq):\t\t\nglobal result\t\t\nif cityq.empty():\t\t\nreturn\t\t\ntot, citystr, thiscity = cityq.get()\t\t\nif thiscity == goal:\t\t\nresult = citystr + \" :: \" + str(tot)\t\t\nreturn\t\t\nfor cty in dict_gn[thiscity]:\t\t\ncityq.put((get_fn(citystr + \",\" + cty), citystr + \",\" + cty, cty))\t\t\nexpand(cityq)\t\t\n# Main function\t\t\ndef main():\t\t\ncityq = Q.PriorityQueue()\t\t\ncityq.put((get_fn(start), start, start))\t\t\nexpand(cityq)\t\t\nprint(\"The A* path with the total is:\")\t\t\nprint(result)\t\t\nmain()\t\t\nOutput :\t\t\n\tArtificial Intelligence\tPage 10 of\n\t\t46",
+    "created_at": "2025-10-13T08:02:44.720973"
+  },
+  {
+    "document_id": "f56c6e4d98964484b148e7fd502b4d69",
+    "page": 11,
+    "chunk_index": 48,
+    "type": "table",
+    "extraction_method": "camelot/tabula",
+    "text": "TY.BSc.CS Semester V\tOmkar Madyal\tRoll No : 00\n\tArtificial Intelligence\tPage 11 of\n\t\t46",
+    "created_at": "2025-10-13T08:02:44.733287"
+  },
+  {
+    "document_id": "f56c6e4d98964484b148e7fd502b4d69",
+    "page": 12,
+    "chunk_index": 49,
+    "type": "table",
+    "extraction_method": "camelot/tabula",
+    "text": "TY.BSc.CS Semester V\nprint(\"Omkar Madyal\")\nimport queue as Q\nfrom RMP import dict_gn, dict_hn\nstart = 'Arad'\ngoal = 'Bucharest'\nresult = ''\n# Function to calculate f(n) = g(n) + h(n)\ndef get_fn(citystr):\ncities = citystr.split(\",\")",
+    "created_at": "2025-10-13T08:02:44.747663"
+  },
+  {
+    "document_id": "f56c6e4d98964484b148e7fd502b4d69",
+    "page": 12,
+    "chunk_index": 50,
+    "type": "table",
+    "extraction_method": "camelot/tabula",
+    "text": "# Function to calculate f(n) = g(n) + h(n)\ndef get_fn(citystr):\ncities = citystr.split(\",\")\ngn = 0\nfor ctr in range(0, len(cities) - 1):\ngn += dict_gn[cities[ctr]][cities[ctr + 1]]\nhn = dict_hn[cities[-1]] # heuristic from last city\nreturn hn + gn",
+    "created_at": "2025-10-13T08:02:44.760789"
+  },
+  {
+    "document_id": "f56c6e4d98964484b148e7fd502b4d69",
+    "page": 13,
+    "chunk_index": 51,
+    "type": "table",
+    "extraction_method": "camelot/tabula",
+    "text": "TY.BSc.CS Semester V\nbreak\nprintout(cityq)\nexpand(cityq)\n# Main function\ndef main():\ncityq = Q.PriorityQueue()\nthiscity = start\ncityq.put((999, \"NA\", \"NA\"))\ncityq.put((get_fn(start), start, thiscity))\nexpand(cityq)\nprint(\"\\nFinal Result Path and Cost:\")\nprint(result)",
+    "created_at": "2025-10-13T08:02:44.776148"
+  },
+  {
+    "document_id": "f56c6e4d98964484b148e7fd502b4d69",
+    "page": 14,
+    "chunk_index": 52,
+    "type": "table",
+    "extraction_method": "camelot/tabula",
+    "text": "2. Structure of a Decision Tree\t\t\t\t\t\t\t\t\n\tRoot Node: Represents the entire dataset and the first decision.\t\t\t\t\t\t\t\n\tDecision Nodes: Internal nodes where the dataset is split based on a feature condition.\t\t\t\t\t\t\t\nLeaf Nodes\t(Terminal Nodes): Represent\tthe\tfinal output\t(class\tlabel\tfor\tclassification or value\tfor\nregression).\t\t\t\t\t\t\t\t\n\tBranches: Arrows that connect nodes, representing the outcome of a decision.\t\t\t\t\t\t\t",
+    "created_at": "2025-10-13T08:02:44.793029"
+  },
+  {
+    "document_id": "f56c6e4d98964484b148e7fd502b4d69",
+    "page": 15,
+    "chunk_index": 53,
+    "type": "table",
+    "extraction_method": "camelot/tabula",
+    "text": "TY.BSc.CS Semester V\tOmkar Madyal\tRoll No : 00\n4. Splitting Criteria\t\t\nFor Classification Trees\t\t\nEntropy & Information Gain\t\t\nEntropy measures impurity:\t\t\n5. Advantages\t\t\nEasy to understand and visualize.\t\t\nHandles both numerical and categorical data.\t\t\nRequires little data preprocessing.\t\t\nCan model non-linear relationships.\t\t\n6. Disadvantages\t\t\nProne to overfitting (can be solved with pruning).\t\t\nSmall changes in data can result in a different tree (unstable).\t\t\nGreedy nature may not produce the globally optimal tree.\t\t\n7. Pruning\t\t\nPruning is the process of removing branches that have little importance to reduce overfitting.\t\t\nTypes:\t\t\nPre-Pruning: Stop growing the tree early.\t\t\n\tPost-Pruning: Grow the full tree, then remove unnecessary branches.\t\n\tArtificial Intelligence\tPage 15 of\n\t\t46",
+    "created_at": "2025-10-13T08:02:44.809780"
+  },
+  {
+    "document_id": "f56c6e4d98964484b148e7fd502b4d69",
+    "page": 16,
+    "chunk_index": 54,
+    "type": "table",
+    "extraction_method": "camelot/tabula",
+    "text": "Marketing \u2013 customer segmentation.\nManufacturing \u2013 defect detection\nCode :\nprint(\"Omkar Madyal\")\nimport pandas as pd\nfrom sklearn.model_selection import train_test_split\nfrom sklearn.tree import DecisionTreeClassifier, export_text, plot_tree\nfrom sklearn.metrics import accuracy_score\nimport matplotlib.pyplot as plt\nimport time\n# 1. Load the dataset from an online Gist (PlayTennis.csv)\nurl = \"https://gist.githubusercontent.com/DiogoRibeiro7/c6590d0cf119e87c39e31c21a9c0f3a8/raw/PlayTennis.csv\"\ndata = pd.read_csv(url)\n# 2. Preprocess: one-hot encode categorical features, encode target\nX = pd.get_dummies(data.drop(columns=['Play Tennis']))\ny = data['Play Tennis'].map({'Yes': 1, 'No': 0})\n# 3. Split data into train and test sets\nX_train, X_test, y_train, y_test = train_test_split(\nX, y, test_size=0.3, random_state=42",
+    "created_at": "2025-10-13T08:02:44.828085"
+  },
+  {
+    "document_id": "f56c6e4d98964484b148e7fd502b4d69",
+    "page": 17,
+    "chunk_index": 55,
+    "type": "table",
+    "extraction_method": "camelot/tabula",
+    "text": "# 8. Plot the decision tree structure\nplt.figure(figsize=(12, 8))\nplot_tree(\nclf,\nfeature_names=X.columns,\nclass_names=['No', 'Yes'],\nfilled=True,\nrounded=True,\nfontsize=10",
+    "created_at": "2025-10-13T08:02:44.843121"
+  },
+  {
+    "document_id": "f56c6e4d98964484b148e7fd502b4d69",
+    "page": 18,
+    "chunk_index": 56,
+    "type": "table",
+    "extraction_method": "camelot/tabula",
+    "text": "TY.BSc.CS Semester V\tOmkar Madyal\tRoll No : 00\n\tPRACTICAL NO 4\t\n\tFeed Forward Back propagation Neural Network\t\n\u25cf\tImplement the Feed Forward Back propagation algorithm to train a neural network\t\n\u25cf\tUse a given dataset to train the neural network for a specific task\t\n\tArtificial Intelligence\tPage 18 of\n\t\t46",
+    "created_at": "2025-10-13T08:02:44.856676"
+  },
+  {
+    "document_id": "f56c6e4d98964484b148e7fd502b4d69",
+    "page": 19,
+    "chunk_index": 57,
+    "type": "table",
+    "extraction_method": "camelot/tabula",
+    "text": "TY.BSc.CS Semester V\tOmkar Madyal\tRoll No : 00\n\tArtificial Intelligence\tPage 19 of\n\t\t46",
+    "created_at": "2025-10-13T08:02:44.872640"
+  },
+  {
+    "document_id": "f56c6e4d98964484b148e7fd502b4d69",
+    "page": 1,
+    "chunk_index": 58,
+    "type": "table",
+    "extraction_method": "camelot/tabula",
+    "text": "\tINDEX\t\t\t\n\tAIM\t\tDate of\tDate of\nSR.\t\t\t\t\n\t\t\tExperiment\tSubmission\nNO\t\t\t\t\n\t\t\t19/06/2025\t05/07/2025\n\tBreadth First Search & Iterative Depth First Search\t.\t\t\n1\t\t\t\t\n\t\t\t28/06/2025\t24/07/2025\n\tA* Search and Recursive Best-First Search\t\t\t\n2\t\t\t\t\n\t\t\t17/07/2025\t24/07/2025\n\tDecision Tree Learning\t\t\t\n3\t\t\t\t\n\t\t\t24/07/2025\t07/08/2025\n\tFeed Forward Backpropagation Neural Network\t\t\t\n4\t\t\t\t\n\t\t\t31/07/2025\t07/08/2025\n\tSupport Vector Machines (SVM)\t\t\t\n5\t\t\t\t\n\t\t\t07/08/2025\t21/08/2025\n\tAdaboost Ensemble Learning\t\t\t\n6\t\t\t\t\n\t\t\t14/08/2025\t21/08/2025\n\tNaive Bayes' Classifier\t\t\t\n7\t\t\t\t\n\t\t\t21/08/2025\t25/09/2025\n\tK-Nearest Neighbors (K-NN)\t\t\t\n8\t\t\t\t\n\t\t\t11/09/2025\t25/09/2025\n\tAssociation Rule Mining\t\t\t\n9\t\t\t\t\n\t\t\t18/09/2025\t25/09/2025\n\tDemo of OpenAI/TensorFlow Tools\t\t\t\n10\t\t\t\t",
+    "created_at": "2025-10-13T08:02:44.889991"
+  },
+  {
+    "document_id": "f56c6e4d98964484b148e7fd502b4d69",
+    "page": 20,
+    "chunk_index": 59,
+    "type": "table",
+    "extraction_method": "camelot/tabula",
+    "text": "Relation to FF-BPNN:\nIn a decision tree, Gini Impurity helps split data to make pure subsets.\nIn FF-BPNN, although we do not explicitly calculate Gini, the loss function (e.g., Cross-Entropy) plays a\nsimilar role of ensuring correct class separation.\nYou can combine them in hybrid models: first split data with decision tree (Gini), then use FF-BPNN for\nfinal classification.",
+    "created_at": "2025-10-13T08:02:44.906286"
+  },
+  {
+    "document_id": "f56c6e4d98964484b148e7fd502b4d69",
+    "page": 20,
+    "chunk_index": 60,
+    "type": "table",
+    "extraction_method": "camelot/tabula",
+    "text": "import numpy as np\nclass NeuralNetwork:\ndef __init__(self):\nnp.random.seed(1) # For reproducibility\n# Randomly initialize weights with mean 0\nself.synaptic_weights = 2 * np.random.random((3, 1)) - 1\ndef sigmoid(self, x):\n\"\"\"Sigmoid activation function\"\"\"\nreturn 1 / (1 + np.exp(-x))\nArtificial Intelligence",
+    "created_at": "2025-10-13T08:02:44.922397"
+  },
+  {
+    "document_id": "f56c6e4d98964484b148e7fd502b4d69",
+    "page": 21,
+    "chunk_index": 61,
+    "type": "table",
+    "extraction_method": "camelot/tabula",
+    "text": "def train(self, training_inputs, training_outputs, training_iterations):\n\"\"\"Train the neural network using backpropagation\"\"\"\nfor iteration in range(training_iterations):\n# Forward pass\noutput = self.think(training_inputs)\n# Calculate the error\nerror = training_outputs - output\n# Backpropagation\nadjustments = np.dot(training_inputs.T, error * self.sigmoid_derivative(output))\n# Adjust weights\nself.synaptic_weights += adjustments",
+    "created_at": "2025-10-13T08:02:44.938483"
+  },
+  {
+    "document_id": "f56c6e4d98964484b148e7fd502b4d69",
+    "page": 22,
+    "chunk_index": 62,
+    "type": "table",
+    "extraction_method": "camelot/tabula",
+    "text": "TY.BSc.CS Semester V\tOmkar Madyal\tRoll No : 00\n\tprint(\"Considering New Situation:\", user_input_one, user_input_two, user_input_three)\t\nprint(\"New Output data:\")\t\t\n\tprint(neural_network.think(np.array([user_input_one, user_input_two, user_input_three])))\t\nOutput :\t\t\n\tArtificial Intelligence\tPage 22 of\n\t\t46",
+    "created_at": "2025-10-13T08:02:44.955953"
+  },
+  {
+    "document_id": "f56c6e4d98964484b148e7fd502b4d69",
+    "page": 23,
+    "chunk_index": 63,
+    "type": "table",
+    "extraction_method": "camelot/tabula",
+    "text": "TY.BSc.CS Semester V\tOmkar Madyal\tRoll No : 00\n\tPRACTICAL NO 5\t\n\tSupport Vector Machines (SVM)\t\n\tImplement the SVM algorithm for binary classification. Train a SVM Model using the given dataset.\t\n\tEvaluate the performance on test data and analyze the results\t\n\tArtificial Intelligence\tPage 23 of\n\t\t46",
+    "created_at": "2025-10-13T08:02:44.971059"
+  },
+  {
+    "document_id": "f56c6e4d98964484b148e7fd502b4d69",
+    "page": 24,
+    "chunk_index": 64,
+    "type": "table",
+    "extraction_method": "camelot/tabula",
+    "text": "TY.BSc.CS Semester V\tOmkar Madyal\tRoll No : 00\n\tArtificial Intelligence\tPage 24 of\n\t\t46",
+    "created_at": "2025-10-13T08:02:44.985851"
+  },
+  {
+    "document_id": "f56c6e4d98964484b148e7fd502b4d69",
+    "page": 25,
+    "chunk_index": 65,
+    "type": "table",
+    "extraction_method": "camelot/tabula",
+    "text": "Code:\nprint(\"Omkar Madyal\")\n# Import required libraries\nfrom warnings import filterwarnings\nfilterwarnings(\"ignore\")\nimport pandas as pd\nimport numpy as np\nimport matplotlib.pyplot as plt\nimport seaborn as sns\nfrom sklearn.model_selection import cross_val_score, GridSearchCV\nfrom sklearn.svm import SVC\nfrom sklearn.metrics import confusion_matrix, accuracy_score, classification_report\nimport time\n# ================================\n# Step 1: Load the Dataset Online\n# ================================\n# URL of the dataset hosted on GitHub\nurl = \"https://raw.githubusercontent.com/jbrownlee/Datasets/master/pima-indians-diabetes.data.csv\"\n# Define column names manually (since dataset has no header row)\ncolumn_names = ['Pregnancies', 'Glucose', 'BloodPressure', 'SkinThickness',\n'Insulin', 'BMI', 'DiabetesPedigreeFunction', 'Age', 'Outcome']\n# Load the dataset\ndf = pd.read_csv(url, names=column_names)\n# Show first few rows\nprint(\"First 5 rows of the dataset:\")\nprint(df.head())",
+    "created_at": "2025-10-13T08:02:45.005964"
+  },
+  {
+    "document_id": "f56c6e4d98964484b148e7fd502b4d69",
+    "page": 26,
+    "chunk_index": 66,
+    "type": "table",
+    "extraction_method": "camelot/tabula",
+    "text": "TY.BSc.CS Semester V\tOmkar Madyal\n# Dataset shape and stats\t\nprint(\"\\nDataset shape:\", df.shape)\t\nprint(\"\\nStatistical Summary:\")\t\nprint(df.describe())\t\n# ==========================\t\n# Step 2: Prepare the Data\t\n# ==========================\t\n# Features and target\t\nX = df.drop(\"Outcome\", axis=1) # Independent variables\t\ny = df[\"Outcome\"] # Target variable\t\n# Manual train-test split (600 train + 168 test)\t\nX_train = X.iloc[:600]\t\nX_test = X.iloc[600:]\t\ny_train = y.iloc[:600]\t\ny_test = y.iloc[600:]\t\nprint(\"\\nTraining set shape:\", X_train.shape)\t\nprint(\"Test set shape:\", X_test.shape)\t\n# ================================\t\n# Step 3: Train SVM with Linear Kernel\t\n# ================================\t\nmodel = SVC(kernel='linear') # Linear SVM\t\nmodel.fit(X_train, y_train) # Train the model\t\n# ============================\t\n# Step 4: Predictions & Metrics\t\n# ============================\t\ny_pred = model.predict(X_test)\t\n# Confusion matrix\t\ncm = confusion_matrix(y_test, y_pred)\t\nprint(\"\\nConfusion Matrix:\\n\", cm)\t\n# Accuracy\t\naccuracy = accuracy_score(y_test, y_pred)\t\nprint(\"\\nAccuracy:\", accuracy)\t\n# Classification report\t\nprint(\"\\nClassification Report:\\n\", classification_report(y_test, y_pred))\t\n# ================================\t\n# Step 5: Cross-Validation\t\n# ================================\t\n# 10-fold cross-validation on training set\t\ncv_scores = cross_val_score(model, X_train, y_train, cv=10)\t\nprint(\"\\nCross-Validation Accuracy: {:.2f}%\".format(cv_scores.mean() * 100))\t\n\tArtificial Intelligence",
+    "created_at": "2025-10-13T08:02:45.020575"
+  },
+  {
+    "document_id": "f56c6e4d98964484b148e7fd502b4d69",
+    "page": 27,
+    "chunk_index": 67,
+    "type": "table",
+    "extraction_method": "camelot/tabula",
+    "text": "TY.BSc.CS Semester V\tOmkar Madyal\nprint(\"Standard Deviation: {:.2f}%\".format(cv_scores.std() * 100))\t\n# ================================\t\n# Step 6: Hyperparameter Tuning\t\n# ================================\t\n# Define values of C to try\t\nparam_grid = {'C': np.arange(1, 20)} # Regularization parameter\t\n# GridSearch with 8-fold CV\t\ngrid_search = GridSearchCV(SVC(kernel='linear'), param_grid, cv=8)\t\nstart_time = time.time()\t\ngrid_search.fit(X_train, y_train)\t\nelapsed_time = time.time() - start_time\t\nprint(\"\\nGrid Search completed in {:.2f} seconds\".format(elapsed_time))\t\nprint(\"Best Parameters:\", grid_search.best_params_)\t\nprint(\"Best CV Score: {:.2f}%\".format(grid_search.best_score_ * 100))\t\n# ================================\t\n# Step 7: Final Model Evaluation\t\n# ================================\t\n# Train final model using best parameters\t\nfinal_model = SVC(kernel='linear', C=grid_search.best_params_['C'])\t\nfinal_model.fit(X_train, y_train)\t\n# Predict and evaluate again\t\nfinal_pred = final_model.predict(X_test)\t\nfinal_cm = confusion_matrix(y_test, final_pred)\t\nprint(\"\\nFinal Confusion Matrix:\\n\", final_cm)\t\nprint(\"Final Accuracy: {:.2f}%\".format(accuracy_score(y_test, final_pred) * 100))\t\nprint(\"Final Classification Report:\\n\", classification_report(y_test, final_pred))\t\nOutput :\t",
+    "created_at": "2025-10-13T08:02:45.035067"
+  },
+  {
+    "document_id": "f56c6e4d98964484b148e7fd502b4d69",
+    "page": 28,
+    "chunk_index": 68,
+    "type": "table",
+    "extraction_method": "camelot/tabula",
+    "text": "TY.BSc.CS Semester V\nOmkar Madyal\nRoll No : 00\nPRACTICAL NO 6\nAdaboost Ensemble Learning\n\u25cf Implement the Adaboost algorithm to create an ensemble of weak classifiers.\n\u25cf Train the ensemble model on a given dataset and evaluate its performance\n\u25cf Compare the results with individual weak classifiers\n1. Introduction\nAdaBoost, short\nfor Adaptive Boosting,\nis a powerful ensemble learning technique introduced by Yoav Freund\nis one of the first boosting algorithms that gained popularity due to its simplicity\nand Robert Schapire in 1996. It\nand effectiveness. AdaBoost combines multiple weak learners (usually decision stumps) to form a strong learner\nwith high predictive accuracy.\n2. Concept of Ensemble Learning\nEnsemble learning is based on the principle that combining the predictions of multiple models can result\nin better\nperformance than any individual model. There are three main types of ensemble methods:\nBagging (Bootstrap Aggregating) \u2013 e.g., Random Forest\nBoosting \u2013 e.g., AdaBoost, Gradient Boosting, XGBoost\nStacking \u2013 combining predictions of different model types\nAdaBoost\nfalls under the Boosting category, where weak learners are trained sequentially, and each new learner\nfocuses more on the mistakes made by the previous ones.\n3. Idea Behind AdaBoost\nThe idea of AdaBoost is to:\nTrain multiple weak learners one after another.\nAssign weights to each training sample.\nIn each iteration,\nthe next model pays more attention\nincrease the weight of misclassified samples so that\nto them.\nCombine all weak learners using a weighted majority vote (for classification) or weighted average (for\nregression).\n4. Working of AdaBoost (Step-by-Step)\nLet\u2019s assume we are solving a binary classification problem.\nStep 1: Initialize Weights\nPage 28 of\nArtificial Intelligence\n46",
+    "created_at": "2025-10-13T08:02:45.054683"
+  },
+  {
+    "document_id": "f56c6e4d98964484b148e7fd502b4d69",
+    "page": 29,
+    "chunk_index": 69,
+    "type": "table",
+    "extraction_method": "camelot/tabula",
+    "text": "TY.BSc.CS Semester V\tOmkar Madyal\tRoll No : 00\nInitially, all training samples are assigned equal weights:\t\t\nwi=1/ N where N is the number of samples.\t\t\nStep 2: Train a Weak Learner\t\t\nA weak learner is trained on the weighted dataset.\t\t\n\tCommonly used weak learner: Decision Stump (a one-level decision tree).\t\nStep 3: Calculate Error\t\t\nWeighted error is calculated as:\t\t\n\tArtificial Intelligence\tPage 29 of\n\t\t46",
+    "created_at": "2025-10-13T08:02:45.074145"
+  },
+  {
+    "document_id": "f56c6e4d98964484b148e7fd502b4d69",
+    "page": 2,
+    "chunk_index": 70,
+    "type": "table",
+    "extraction_method": "camelot/tabula",
+    "text": "\tBreadth First Search & Iterative Depth First Search\t\t\n\tImplement the Breadth First Search algorithm to solve a given problem\t\t\nis\na fundamental\nBreadth-First Search (BFS)\talgorithm used to traverse a\ntree in a\tlevel-wise manner.\tIn this\nmethod, nodes are visited one level at a time, starting from the root node, then moving on to all nodes at the next level,\t\t\t\nand so on until every node in the tree has been visited.\t\t\t\nThe traversal begins at the root node, which is the topmost node in the tree. From the root, the algorithm first visits all\t\t\t\nimmediate child nodes. Once all nodes at\nthe current\tlevel are processed,\tthe traversal continues to the nodes at\tthe\nnext level. This process continues level by level until all nodes have been visited.\t\t\t\nBFS is implemented using a queue data structure, which follows\tthe First-In-First-Out\t(FIFO) principle. At\tthe\nbeginning of the traversal, the root node is inserted into the queue. Then, in a loop, the node at the front of the queue is\t\t\t\nremoved (dequeued), processed, and its children are added (enqueued) to the end of the queue. This ensures that nodes\t\t\t\nare processed in the exact order they appear level by level in the tree.\t\t\t\nOne of the key benefits of BFS in trees is that it does not require tracking visited nodes, because in a tree, each node\t\t\t\nis unique and there are no repeated connections or cycles. This makes BFS implementation in trees simpler and more\t\t\t\nefficient compared to other structures.\t\t\t\nThe time complexity of BFS in a tree is O(n), where n is the number of nodes in the tree. This is because each node is\t\t\t\nvisited exactly once. The space complexity is also O(n) in the worst case, especially when the tree is wide and a large\t\t\t\nnumber of nodes need to be stored in the queue at the same time (for example, all nodes at the bottom level).\t\t\t\nBFS is particularly useful when solving problems that involve:\t\t\t",
+    "created_at": "2025-10-13T08:02:45.092834"
+  },
+  {
+    "document_id": "f56c6e4d98964484b148e7fd502b4d69",
+    "page": 30,
+    "chunk_index": 71,
+    "type": "table",
+    "extraction_method": "camelot/tabula",
+    "text": "Face detection in computer vision\nSentiment analysis\nCode:\nprint(\"Omkar Madyal\")\nimport pandas as pd\nfrom sklearn import model_selection\nfrom sklearn.ensemble import AdaBoostClassifier\n# Correct dataset URL\nurl = \"https://raw.githubusercontent.com/jbrownlee/Datasets/master/pima-indians-diabetes.data.csv\"\n# Column names\nnames = ['preg', 'plas', 'pres', 'skin', 'test', 'mass', 'pedi', 'age', 'class']\n# Load dataset",
+    "created_at": "2025-10-13T08:02:45.109802"
+  },
+  {
+    "document_id": "f56c6e4d98964484b148e7fd502b4d69",
+    "page": 31,
+    "chunk_index": 72,
+    "type": "table",
+    "extraction_method": "camelot/tabula",
+    "text": "TY.BSc.CS Semester V\tOmkar Madyal\ndataframe = pd.read_csv(url, names=names)\t\n# Separate into input and output\t\narray = dataframe.values\t\nX = array[:, 0:8]\t\nY = array[:, 8]\t\n# Parameters\t\nseed = 7\t\nnum_trees = 30\t\n# Define kfold cross-validation\t\nkfold = model_selection.KFold(n_splits=10, shuffle=True, random_state=seed)\t\n# Define model\t\nmodel = AdaBoostClassifier(n_estimators=num_trees, random_state=seed)\t\n# Evaluate model\t\nresults = model_selection.cross_val_score(model, X, Y, cv=kfold)\t\nprint(\"Accuracy:\", results.mean())\t\nOutput\t",
+    "created_at": "2025-10-13T08:02:45.127365"
+  },
+  {
+    "document_id": "f56c6e4d98964484b148e7fd502b4d69",
+    "page": 32,
+    "chunk_index": 73,
+    "type": "table",
+    "extraction_method": "camelot/tabula",
+    "text": "\uf06c\nImplement the Naive Bayes algorithm for classification\n\uf06c\nTrin a Naive Bayes' model using a given dataset and calculate class probabilities\n\uf06c\nEvaluate the accuracy of the model on test data and analyze the results\nis called\nNa\u00efve Bayes Classifier is a probabilistic machine learning algorithm based on Bayes\u2019 Theorem.It\n\u201cna\u00efve\u201d because it assumes that all\nfeatures (symptoms, words, attributes, etc.) are independent of each other,\nwhich is rarely true in real life but works surprisingly well.\nCommonly used for:\nText classification (spam detection, sentiment analysis)\nMedical diagnosis (symptom \u2192 disease)\nDocument categorization",
+    "created_at": "2025-10-13T08:02:45.144196"
+  },
+  {
+    "document_id": "f56c6e4d98964484b148e7fd502b4d69",
+    "page": 33,
+    "chunk_index": 74,
+    "type": "table",
+    "extraction_method": "camelot/tabula",
+    "text": "Works with binary/categorical features (yes/no, 0/1).\nExample: Symptom present or not\nCode:\nprint('Omkar Madyal')\nimport pandas as pd\nimport matplotlib.pyplot as plt\nfrom sklearn.model_selection import train_test_split\nfrom sklearn.naive_bayes import MultinomialNB, CategoricalNB, GaussianNB\nfrom sklearn.metrics import accuracy_score, classification_report, confusion_matrix\nimport seaborn as sns\nfrom sklearn.preprocessing import LabelEncoder\n# Load dataset from URL (symptoms vs disease dataset)\nurl = \"https://raw.githubusercontent.com/plotly/datasets/master/diabetes.csv\"\ndf = pd.read_csv(url, on_bad_lines=\"skip\", engine=\"python\")\nprint(\"Dataset preview:\")\nprint(df.head())\n# For this dataset, target column = \"Outcome\"\nX = df.drop(columns=[\"Outcome\"])\ny = df[\"Outcome\"]\n# Encode target if needed\nif y.dtype == \"object\":\ny = LabelEncoder().fit_transform(y)\n# Train-test split\nX_train, X_test, y_train, y_test = train_test_split(\nX, y, test_size=0.2, random_state=42, stratify=y",
+    "created_at": "2025-10-13T08:02:45.165778"
+  },
+  {
+    "document_id": "f56c6e4d98964484b148e7fd502b4d69",
+    "page": 34,
+    "chunk_index": 75,
+    "type": "table",
+    "extraction_method": "camelot/tabula",
+    "text": "}\nfor name, model in models.items():\ntry:\nmodel.fit(X_train, y_train)\ny_pred = model.predict(X_test)\nprint(f\"\\n===== {name} =====\")\nprint(\"Accuracy:\", accuracy_score(y_test, y_pred))\nprint(classification_report(y_test, y_pred))\n# Confusion matrix heatmap\ncm = confusion_matrix(y_test, y_pred)\nplt.figure(figsize=(6, 4))\nsns.heatmap(cm, annot=True, fmt=\"d\", cmap=\"Blues\")\nplt.title(f\"Confusion Matrix - {name}\")\nplt.xlabel(\"Predicted\")\nplt.ylabel(\"Actual\")\nplt.show()\nexcept Exception as e:\nprint(f\"\\n{name} failed: {e}\")",
+    "created_at": "2025-10-13T08:02:45.179706"
+  },
+  {
+    "document_id": "f56c6e4d98964484b148e7fd502b4d69",
+    "page": 35,
+    "chunk_index": 76,
+    "type": "table",
+    "extraction_method": "camelot/tabula",
+    "text": "TY.BSc.CS Semester V\tOmkar Madyal\tRoll No : 00\n\tArtificial Intelligence\tPage 35 of\n\t\t46",
+    "created_at": "2025-10-13T08:02:45.194780"
+  },
+  {
+    "document_id": "f56c6e4d98964484b148e7fd502b4d69",
+    "page": 36,
+    "chunk_index": 77,
+    "type": "table",
+    "extraction_method": "camelot/tabula",
+    "text": "PRACTICAL NO 8\nImplement\nthe K-NN Algorithm for classification or regression\nis\na\nfor\nand\nK-Nearest Neighbors\n(KNN)\nsupervised machine\nlearning\nalgorithm used\nclassification\nregression.It is a lazy learner (no explicit training phase). Instead, it memorizes the dataset and makes predictions\nbased on the nearest neighbors at query time.It\nis a non-parametric algorithm, meaning it makes no assumptions\nabout the underlying data distribution.\nBasic Idea\nTo classify a new data point, the algorithm:\nFinds the K nearest data points in the training set (using distance measures like Euclidean distance).\nLooks at the labels of those K neighbors.\nAssigns the label that is most frequent among them (majority voting).\nFor regression, it takes the average (or weighted average) of the K neighbors\u2019 values.",
+    "created_at": "2025-10-13T08:02:45.211001"
+  },
+  {
+    "document_id": "f56c6e4d98964484b148e7fd502b4d69",
+    "page": 37,
+    "chunk_index": 78,
+    "type": "table",
+    "extraction_method": "camelot/tabula",
+    "text": "\uf06c\tApply K-NN Algorithm on the given dataset & predict the class or value for test data\nimport numpy as np\t\nimport pandas as pd\t\nimport matplotlib.pyplot as plt\t\nfrom sklearn.model_selection import train_test_split\t\nfrom sklearn.preprocessing import StandardScaler\t\nfrom sklearn.neighbors import KNeighborsClassifier\t\nfrom sklearn.metrics import accuracy_score, confusion_matrix, classification_report\t\n# Use ggplot style\t\nplt.style.use('ggplot')\t\n# Load dataset\t\nurl = \"https://raw.githubusercontent.com/plotly/datasets/master/diabetes.csv\"\t\ndf = pd.read_csv(url)\t\nprint(\"Dataset preview:\")\t\nprint(df.head())\t\n# Features and target\t\nX = df.drop(columns=[\"Outcome\"])\t\ny = df[\"Outcome\"]\t\n# Scale features (important for distance-based models like KNN)\t\nscaler = StandardScaler()\t\nX_scaled = scaler.fit_transform(X)\t\n# Train-test split\t\nX_train, X_test, y_train, y_test = train_test_split(\t\n\tX_scaled, y, test_size=0.2, random_state=42, stratify=y",
+    "created_at": "2025-10-13T08:02:45.229842"
+  },
+  {
+    "document_id": "f56c6e4d98964484b148e7fd502b4d69",
+    "page": 38,
+    "chunk_index": 79,
+    "type": "table",
+    "extraction_method": "camelot/tabula",
+    "text": "TY.BSc.CS Semester V\tOmkar Madyal\nplt.show()\t\n# Best K\t\nbest_k = k_values[np.argmax(accuracies)]\t\nprint(f\"Best K: {best_k} with Accuracy: {max(accuracies):.4f}\")\t\n# Final model with best K\t\nknn_best = KNeighborsClassifier(n_neighbors=best_k)\t\nknn_best.fit(X_train, y_train)\t\ny_pred = knn_best.predict(X_test)\t\n# Evaluation\t\nprint(\"\\nClassification Report:\\n\", classification_report(y_test, y_pred))\t\n# Confusion Matrix\t\ncm = confusion_matrix(y_test, y_pred)\t\nplt.figure(figsize=(5, 4))\t\nplt.imshow(cm, cmap=\"Blues\")\t\nplt.colorbar()\t\nplt.title(\"Confusion Matrix\")\t\nplt.xlabel(\"Predicted\")\t\nplt.ylabel(\"Actual\")\t\nfor i in range(cm.shape[0]):\t\nfor j in range(cm.shape[1]):\t\nplt.text(j, i, cm[i, j], ha='center', va='center', color='black')\t\nplt.show()\t",
+    "created_at": "2025-10-13T08:02:45.245055"
+  },
+  {
+    "document_id": "f56c6e4d98964484b148e7fd502b4d69",
+    "page": 39,
+    "chunk_index": 80,
+    "type": "table",
+    "extraction_method": "camelot/tabula",
+    "text": "TY.BSc.CS Semester V\tOmkar Madyal\tRoll No : 00\n\tArtificial Intelligence\tPage 39 of\n\t\t46",
+    "created_at": "2025-10-13T08:02:45.258273"
+  },
+  {
+    "document_id": "f56c6e4d98964484b148e7fd502b4d69",
+    "page": 3,
+    "chunk_index": 81,
+    "type": "table",
+    "extraction_method": "camelot/tabula",
+    "text": "Code :\ngraph = {\n'A': ['B', 'C'],\n'B': ['D', 'E'],\n'C': ['F'],\n'D': [],\n'E': ['F'],\n'F': []\n}",
+    "created_at": "2025-10-13T08:02:45.272681"
+  },
+  {
+    "document_id": "f56c6e4d98964484b148e7fd502b4d69",
+    "page": 40,
+    "chunk_index": 82,
+    "type": "table",
+    "extraction_method": "camelot/tabula",
+    "text": "TY.BSc.CS Semester V\tOmkar Madyal\tRoll No : 00\n\tPRACTICAL NO 9\t\n\tImplement the Association Rule Mining algorithm (e.g. Apriori) to find frequent dataset.\t\n\tGenerate association rules from the frequent item set and calculate their support.\t\n\tArtificial Intelligence\tPage 40 of\n\t\t46",
+    "created_at": "2025-10-13T08:02:45.288123"
+  },
+  {
+    "document_id": "f56c6e4d98964484b148e7fd502b4d69",
+    "page": 41,
+    "chunk_index": 83,
+    "type": "table",
+    "extraction_method": "camelot/tabula",
+    "text": "TY.BSc.CS Semester V\tOmkar Madyal\tRoll No : 00\nCode:\t\t\nimport numpy as np\t\t\nimport pandas as pd\t\t\nimport plotly.graph_objects as go\t\t\n\tArtificial Intelligence\tPage 41 of\n\t\t46",
+    "created_at": "2025-10-13T08:02:45.300386"
+  },
+  {
+    "document_id": "f56c6e4d98964484b148e7fd502b4d69",
+    "page": 42,
+    "chunk_index": 84,
+    "type": "table",
+    "extraction_method": "camelot/tabula",
+    "text": "TY.BSc.CS Semester V\tOmkar Madyal\nimport plotly.express as px\t\nfrom apyori import apriori\t\ndf=pd.read_csv('Groceries_dataset.csv')\t\ndf.head()\t\ndf.isnull().any()\t\nall_products=df['itemDescription'].unique()\t\nprint(\"Total Products :{}\".format(len(all_products)))\t\ndef distribution_plot(x,y,name=None,xaxis=None,yaxis=None):\t\nfig=go.Figure([go.Bar(x=x,y=y)])\t",
+    "created_at": "2025-10-13T08:02:45.313527"
+  },
+  {
+    "document_id": "f56c6e4d98964484b148e7fd502b4d69",
+    "page": 43,
+    "chunk_index": 85,
+    "type": "table",
+    "extraction_method": "camelot/tabula",
+    "text": "TY.BSc.CS Semester V\tOmkar Madyal\tRoll No : 00\n\tArtificial Intelligence\tPage 43 of\n\t\t46",
+    "created_at": "2025-10-13T08:02:45.327994"
+  },
+  {
+    "document_id": "f56c6e4d98964484b148e7fd502b4d69",
+    "page": 44,
+    "chunk_index": 86,
+    "type": "table",
+    "extraction_method": "camelot/tabula",
+    "text": "TY.BSc.CS Semester V\tOmkar Madyal\tRoll No : 00\n\tPRACTICAL NO 10\t\n\tDemo of OpenAI/TensorFlow Tools\t\nWhat is TensorFlow?\t\t\n\tTensorFlow is an open-source deep learning framework developed by Google Brain Team.\t\n\tIt is widely used for machine learning (ML) and deep learning (DL) applications.\t\n\tCore concept: Tensor (multi-dimensional data array) + Flow (computations through data flow graphs).\t\nKey Features\t\t\nEase of Use \u2013 High-level Keras API for quick prototyping.\t\t\n\tFlexibility \u2013 Works for deep learning, reinforcement learning, NLP, computer vision, etc.\t\n\tCross-Platform \u2013 Runs on CPUs, GPUs, TPUs, and even mobile devices.\t\nVisualization \u2013 TensorBoard helps visualize model performance.\t\t\nScalability \u2013 Can handle large datasets and distributed training.\t\t\nApplications\t\t\nComputer Vision \u2192 image classification, object detection.\t\t\n\tNatural Language Processing (NLP) \u2192 sentiment analysis, chatbots.\t\nHealthcare \u2192 disease prediction, medical imaging.\t\t\nFinance \u2192 fraud detection, stock prediction.\t\t\nRobotics & IoT \u2192 real-time decision making.\t\t\nWhat is OpenAI?\t\t\n\tOpenAI is an AI research organization and company focused on building safe, general-purpose artificial\t\nintelligence.\t\t\n\tFamous for GPT (Generative Pretrained Transformer) models \u2192 ChatGPT is based on GPT-4/GPT-5\t\nfamily.\t\t\nProvides APIs for NLP, vision, reasoning, and multi-modal tasks.\t\t\nKey Features\t\t\nPretrained Models \u2013 No need for training from scratch.\t\t\n\tGenerative AI \u2013 Can generate human-like text, code, and images.\t\n\tArtificial Intelligence\tPage 44 of\n\t\t46",
+    "created_at": "2025-10-13T08:02:45.344694"
+  },
+  {
+    "document_id": "f56c6e4d98964484b148e7fd502b4d69",
+    "page": 45,
+    "chunk_index": 87,
+    "type": "table",
+    "extraction_method": "camelot/tabula",
+    "text": "Creative Fields \u2192 story writing, music, art.\t\n\tData Analysis \u2192 summarization, classification, question answering.\nCode :\t\n# Import libraries\t\nimport tensorflow as tf\t\nfrom tensorflow import keras\t\nfrom tensorflow.keras import layers\t\nimport matplotlib.pyplot as plt\t\n# Step 1: Load Dataset (MNIST)\t\n(x_train, y_train), (x_test, y_test) = keras.datasets.mnist.load_data()\t\n# Normalize pixel values (0\u2013255 \u2192 0\u20131)\t\nx_train = x_train / 255.0\t\nx_test = x_test / 255.0\t\n# Step 2: Build the Model\t\nmodel = keras.Sequential([\t\nlayers.Flatten(input_shape=(28,28)),\t# Flatten 28x28 image \u2192 784",
+    "created_at": "2025-10-13T08:02:45.357694"
+  },
+  {
+    "document_id": "f56c6e4d98964484b148e7fd502b4d69",
+    "page": 46,
+    "chunk_index": 88,
+    "type": "table",
+    "extraction_method": "camelot/tabula",
+    "text": "TY.BSc.CS Semester V\tOmkar Madyal\tRoll No : 00\n# Step 6: Make Predictions\t\t\npredictions = model.predict(x_test)\t\t\n# Display a few test images with predictions\t\t\nfor i in range(5):\t\t\nplt.imshow(x_test[i], cmap=\"gray\")\t\t\nplt.title(f\"Predicted: {predictions[i].argmax()}, Actual: {y_test[i]}\")\t\t\nplt.axis(\"off\")\t\t\nplt.show()\t\t\nOutput :\t\t\n\tArtificial Intelligence\tPage 46 of\n\t\t46",
+    "created_at": "2025-10-13T08:02:45.369873"
+  },
+  {
+    "document_id": "f56c6e4d98964484b148e7fd502b4d69",
+    "page": 4,
+    "chunk_index": 89,
+    "type": "table",
+    "extraction_method": "camelot/tabula",
+    "text": "TY.BSc.CS Semester V\nOmkar Madyal\nRoll No : 00\nImplement the Iterative Depth First Search algorithm to solve the same problem\nIterative Depth-First Search (DFS) is a graph or tree traversal algorithm that explores as far as possible along each\nbranch before backtracking, but instead of using recursion, it uses an explicit stack data structure to manage traversal\norder. This makes the algorithm iterative in nature, as it avoids relying on the system's call stack.\nIn traditional DFS, recursion is commonly used to move deeper into the structure, which implicitly makes use of the\ncall stack to remember the previous states. However, recursion can lead to problems such as stack overflow in deep or\nlarge graphs. The iterative approach solves this problem by replacing the function call stack with a user-defined stack\ndata structure, which gives more control and safety during traversal.\nThe algorithm starts by pushing the starting node onto the stack. While the stack is not empty, the algorithm pops the\ntop node, processes it, and then pushes all\nits unvisited neighbors onto the stack. To prevent visiting the same node\nmultiple times (especially in graphs), a visited set or array is maintained.\nthe last neighbor added to the stack is processed first.\nSince the stack operates in Last-In-First-Out (LIFO) order,\nThis behavior enables\nthe algorithm to dive deep into the structure before returning to explore other branches \u2014\nwhich is the essence of depth-first search.\nit is\nIn the case of trees, where there are no cycles, maintaining a visited array is usually unnecessary. But\nin graphs,\nessential to avoid infinite loops caused by cycles or repeated nodes.\nWorking Steps of Iterative DFS:",
+    "created_at": "2025-10-13T08:02:45.388000"
+  },
+  {
+    "document_id": "f56c6e4d98964484b148e7fd502b4d69",
+    "page": 5,
+    "chunk_index": 90,
+    "type": "table",
+    "extraction_method": "camelot/tabula",
+    "text": "TY.BSc.CS Semester V\tOmkar Madyal\n\tCan be easier to debug and modify compared to recursive implementations.\nApplications:\t\nSolving mazes and puzzles\t\nDetecting cycles in a graph\t\nTopological sorting in directed acyclic graphs (DAGs)\t\nFinding connected components in a graph\t\nPathfinding and backtracking problems\t",
+    "created_at": "2025-10-13T08:02:45.405449"
+  },
+  {
+    "document_id": "f56c6e4d98964484b148e7fd502b4d69",
+    "page": 6,
+    "chunk_index": 91,
+    "type": "table",
+    "extraction_method": "camelot/tabula",
+    "text": "\t\tCompare the performance and efficiency of both algorithms\t\t\t\t\t\nBoth Breadth-First Search (BFS) and Iterative Depth-First Search (DFS) are fundamental algorithms used for\t\t\t\t\t\t\t\ntraversing trees\tand graphs. While\tthey may appear\tsimilar\tin terms of\timplementation,\ttheir\texecution order,\nmemory usage, and practical applications differ\t\t\tsignificantly. Below is a detailed comparison based on various\t\t\t\t\nfactors:\t\t\t\t\t\t\t\n1. Traversal Order\t\t\t\t\t\t\t",
+    "created_at": "2025-10-13T08:02:45.423484"
+  },
+  {
+    "document_id": "f56c6e4d98964484b148e7fd502b4d69",
+    "page": 7,
+    "chunk_index": 92,
+    "type": "table",
+    "extraction_method": "camelot/tabula",
+    "text": "Iterative DFS does not guarantee the shortest path as it may find a deeper path first.\nBFS is preferred for shortest path problems.\nWhile BFS and Iterative DFS have\nsimilar\ntime complexity,\ntheir performance and efficiency vary based on the\nproblem context. BFS is better suited for level-based exploration and shortest-path problems, whereas Iterative DFS is\nideal for deep exploration, structural analysis, and solving puzzles or backtracking-based problems. Understanding the\nnature of\nthe input data and the specific requirements of\nthe problem is essential\nin choosing the most appropriate\ntraversal method.",
+    "created_at": "2025-10-13T08:02:45.439529"
+  },
+  {
+    "document_id": "f56c6e4d98964484b148e7fd502b4d69",
+    "page": 8,
+    "chunk_index": 93,
+    "type": "table",
+    "extraction_method": "camelot/tabula",
+    "text": "TY.BSc.CS Semester V\tOmkar Madyal\tRoll No : 00\n\tPRACTICAL NO 2\t\n\tA* Search and Recursive Best-First Search\t\n\tArtificial Intelligence\tPage 8 of\n\t\t46",
+    "created_at": "2025-10-13T08:02:45.454964"
+  },
+  {
+    "document_id": "f56c6e4d98964484b148e7fd502b4d69",
+    "page": 9,
+    "chunk_index": 94,
+    "type": "table",
+    "extraction_method": "camelot/tabula",
+    "text": "Implement the A* Search algorithm for solving a pathfinding problem\nDATA SET : RMP.py (Save this file as RMP.py in the same folder as your main program.)\nprint(\"Omkar Madyal\")\nimport queue as Q\nfrom RMP import dict_gn, dict_hn\nstart = 'Arad'\ngoal = 'Bucharest'\nresult = ''\n# Function to calculate f(n) = g(n) + h(n)\ndef get_fn(citystr):\ncities = citystr.split(\",\")",
+    "created_at": "2025-10-13T08:02:45.470588"
+  }
+]

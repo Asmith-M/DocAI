@@ -1,12 +1,30 @@
 #docai_backend/app/agents/generator_agent.py
 import asyncio
 import uuid
+import logging
 from typing import List, Dict, Any, AsyncGenerator
 from loguru import logger
 from app.llm.ollama_client import get_ollama_client
 from app.core.config import settings
 
+# Check if Ollama client is available
+try:
+    client = get_ollama_client()
+    # Test client availability
+    asyncio.run(client.generate_async("test"))
+    logger.info("Ollama client initialized successfully")
+except Exception as e:
+    logger.warning(f"Ollama client not available: {e}")
+    client = None
+from enum import Enum, auto
+
+log = logging.getLogger(__name__)
+
 class GeneratorAgent:
+    """
+    Agent responsible for generating answers using Ollama with streaming support.
+    """
+
     def __init__(self):
         self.client = get_ollama_client()
         self.temperature = 0.0
@@ -22,7 +40,8 @@ class GeneratorAgent:
         question: str,
         context_chunks: List[Dict[str, Any]],
         stream: bool = False,
-        request_id: str = None
+        request_id: str = None,
+        language: str = "en"
     ) -> Any:
         if not request_id:
             request_id = str(uuid.uuid4())
@@ -32,47 +51,133 @@ class GeneratorAgent:
         logger.info(f"📊 Context chunks: {len(context_chunks)}")
         logger.info(f"🔄 Stream mode: {stream}")
         logger.info(f"🎯 Current model: {self.current_model}, Using fallback: {self.using_fallback}")
+        logger.info(f"🌐 Language context: {language}")
 
-        # Limit context chunks to top N and truncate text to ~300 tokens (approx 1500 chars)
-        max_chunks = int(getattr(settings, "GENERATOR_MAX_CONTEXT_CHUNKS", 5))
+        # Limit context chunks to top N and truncate text (~200 tokens ≈ 1000 chars)
+        max_chunks = int(getattr(settings, "GENERATOR_MAX_CONTEXT_CHUNKS", 3))
         truncated_chunks = []
         for chunk in context_chunks[:max_chunks]:
             text = chunk.get("text", "")
-            truncated_text = text[:1500]  # Approximate truncation
+            truncated_text = text[:1000]  # Approximate truncation
             truncated_chunks.append({**chunk, "text": truncated_text})
 
         logger.info(f"📊 Truncated to {len(truncated_chunks)} chunks")
 
-        prompt = self._build_prompt(question, truncated_chunks)
+        # Build prompt with language context
+        prompt = self._build_prompt(question, truncated_chunks, language)
         logger.info(f"📝 Prompt length: {len(prompt)} characters")
+        logger.info(f"📝 Final prompt:\n{prompt}")
 
         async with self.semaphore:
             logger.info(f"🔒 Acquired semaphore for request_id {request_id}")
             if stream:
                 logger.info(f"📡 Starting streaming generation for request_id {request_id}")
-                return self._stream_generate_with_fallback(prompt, request_id)
+                async for token in self._stream_generate_with_fallback(prompt, request_id):
+                    yield token
             else:
                 logger.info(f"📝 Starting sync generation for request_id {request_id}")
-                return await self._generate_sync_with_fallback(prompt, request_id)
+                result = await self._generate_sync_with_fallback(prompt, request_id)
+                yield result
 
-    def _build_prompt(self, question: str, context_chunks: List[Dict[str, Any]]) -> str:
-        context_text = "\n\n".join([chunk.get("text", "") for chunk in context_chunks])
-        prompt = f"Context:\n{context_text}\n\nQuestion:\n{question}\n\nAnswer:"
-        return self._truncate_prompt(prompt)
+    def _build_prompt(self, question: str, context_chunks: List[Dict[str, Any]], language: str = "en") -> str:
+        """
+        Build a structured prompt with dynamic system prompt including language instruction.
+        """
+        if not context_chunks:
+            logger.warning("⚠️ No context chunks provided, using simple fallback prompt")
+            return f"Question:\n{question}\n\nAnswer:"
 
-    def _truncate_prompt(self, prompt: str) -> str:
-        """Truncate prompt to fit within context window."""
-        max_chars = settings.OLLAMA_CTX * 4  # Approximate: 1 token ~ 4 characters
-        if len(prompt) > max_chars:
-            logger.warning(f"Prompt length {len(prompt)} exceeds context window {max_chars}, truncating")
-            truncated_prompt = prompt[:max_chars]
-            # Ensure we don't cut in the middle of a word
-            last_space = truncated_prompt.rfind(" ")
-            if last_space > max_chars * 0.9:
-                truncated_prompt = truncated_prompt[:last_space]
-            logger.info(f"Truncated prompt to {len(truncated_prompt)} characters")
-            return truncated_prompt
-        return prompt
+        # Dynamic system prompt with language instruction
+        if language == "en":
+            system_prompt = (
+                "You are a helpful AI assistant. Answer the question based on the provided context. "
+                "Be concise and accurate."
+            )
+        else:
+            system_prompt = (
+                f"You are a helpful AI assistant. Answer the question based on the provided context. "
+                f"The user's query is in {language.upper()}. Please provide your final answer in {language.upper()}. "
+                f"Be concise and accurate."
+            )
+
+        # Truncate each chunk for safety
+        max_chunk_size = int(getattr(settings, "GENERATOR_MAX_CHUNK_SIZE", 800))
+        truncated_chunks = []
+        for chunk in context_chunks:
+            text = chunk.get("text", "")
+            if len(text) > max_chunk_size:
+                truncated_text = text[:max_chunk_size]
+                last_period = truncated_text.rfind('.')
+                if last_period > max_chunk_size * 0.8:
+                    truncated_text = truncated_text[:last_period + 1]
+                text = truncated_text
+            truncated_chunks.append({**chunk, "text": text})
+
+        # Build context section with metadata (Code 1 feature)
+        context_sections = []
+        for i, chunk in enumerate(truncated_chunks):
+            page_info = f"Page {chunk.get('metadata', {}).get('page', 'unknown')}" if chunk.get('metadata', {}).get('page') else ""
+            context_sections.append(f"[Source {i+1}] {page_info}\n{chunk.get('text', '')}")
+
+        context_text = "\n\n".join(context_sections)
+
+        # Add explicit instruction to answer in the detected language
+        language_instruction = f"\n\nImportant: The user's query is in {language}. You must provide your final answer in {language} only."
+
+        # Final structured prompt
+        prompt = f"""{system_prompt}
+
+Context:
+{context_text}
+
+Question: {question}
+
+Answer:{language_instruction}
+"""
+
+        return self._truncate_prompt(prompt, preserve_system=True)
+
+    def _truncate_prompt(self, prompt: str, preserve_system: bool = False) -> str:
+        """Truncate prompt (Code 1 advanced + Code 2’s safe cutoff)."""
+        max_chars = settings.OLLAMA_CTX * 4  # Approximate: 1 token ~ 4 chars
+
+        if len(prompt) <= max_chars:
+            return prompt
+
+        logger.warning(f"Prompt length {len(prompt)} exceeds context window {max_chars}, truncating")
+
+        if preserve_system:
+            system_end = prompt.find("Context:")
+            question_start = prompt.find("Question:")
+
+            if system_end > 0 and question_start > 0:
+                system_part = prompt[:system_end]
+                question_part = prompt[question_start:]
+
+                available_chars = max_chars - len(system_part) - len(question_part) - 100
+                if available_chars > 500:
+                    context_part = prompt[system_end:question_start]
+                    if len(context_part) > available_chars:
+                        truncated_context = context_part[:available_chars]
+                        last_period = truncated_context.rfind('.')
+                        if last_period > available_chars * 0.7:
+                            truncated_context = truncated_context[:last_period + 1]
+                        truncated_prompt = system_part + truncated_context + "\n\n" + question_part
+                        logger.info(f"Truncated prompt with preserved system to {len(truncated_prompt)} characters")
+                        return truncated_prompt
+
+        # Fallback: simple truncation (Code 2)
+        truncated_prompt = prompt[:max_chars]
+        last_space = truncated_prompt.rfind(" ")
+        if last_space > max_chars * 0.9:
+            truncated_prompt = truncated_prompt[:last_space]
+
+        logger.info(f"Truncated prompt to {len(truncated_prompt)} characters")
+        return truncated_prompt
+
+    # ------------------------
+    # Generation methods (same in both codes)
+    # ------------------------
 
     async def _generate_sync(self, prompt: str, request_id: str) -> str:
         try:
@@ -230,3 +335,6 @@ class GeneratorAgent:
                 except Exception as fallback_error:
                     logger.error(f"GeneratorAgent: Fallback model also failed for request_id {request_id}: {fallback_error}")
                     raise fallback_error
+
+# Global instance
+generator_agent = GeneratorAgent()

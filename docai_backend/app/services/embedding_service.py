@@ -14,6 +14,12 @@ import asyncio
 from concurrent.futures import ThreadPoolExecutor
 from app.agents.language_detect_agent import language_detect_agent
 
+# Ensure storage directories exist
+Path(settings.CHROMA_PERSIST_DIR).mkdir(parents=True, exist_ok=True)
+(Path(os.getcwd()) / "app" / "storage" / "chunks").mkdir(parents=True, exist_ok=True)
+(Path(os.getcwd()) / "app" / "storage" / "tables").mkdir(parents=True, exist_ok=True)
+(Path(os.getcwd()) / "app" / "storage" / "uploads").mkdir(parents=True, exist_ok=True)
+
 log = logging.getLogger(__name__)
 
 # Set Hugging Face offline mode

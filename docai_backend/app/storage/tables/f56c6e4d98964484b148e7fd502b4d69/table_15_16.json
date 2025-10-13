@@ -1,0 +1,112 @@
+{
+  "document_id": "f56c6e4d98964484b148e7fd502b4d69",
+  "page": 15,
+  "table_index": 16,
+  "data": [
+    [
+      "TY.BSc.CS Semester V",
+      "Omkar Madyal",
+      "Roll No : 00"
+    ],
+    [
+      "4. Splitting Criteria",
+      "",
+      ""
+    ],
+    [
+      "For Classification Trees",
+      "",
+      ""
+    ],
+    [
+      "Entropy & Information Gain",
+      "",
+      ""
+    ],
+    [
+      "Entropy measures impurity:",
+      "",
+      ""
+    ],
+    [
+      "5. Advantages",
+      "",
+      ""
+    ],
+    [
+      "Easy to understand and visualize.",
+      "",
+      ""
+    ],
+    [
+      "Handles both numerical and categorical data.",
+      "",
+      ""
+    ],
+    [
+      "Requires little data preprocessing.",
+      "",
+      ""
+    ],
+    [
+      "Can model non-linear relationships.",
+      "",
+      ""
+    ],
+    [
+      "6. Disadvantages",
+      "",
+      ""
+    ],
+    [
+      "Prone to overfitting (can be solved with pruning).",
+      "",
+      ""
+    ],
+    [
+      "Small changes in data can result in a different tree (unstable).",
+      "",
+      ""
+    ],
+    [
+      "Greedy nature may not produce the globally optimal tree.",
+      "",
+      ""
+    ],
+    [
+      "7. Pruning",
+      "",
+      ""
+    ],
+    [
+      "Pruning is the process of removing branches that have little importance to reduce overfitting.",
+      "",
+      ""
+    ],
+    [
+      "Types:",
+      "",
+      ""
+    ],
+    [
+      "Pre-Pruning: Stop growing the tree early.",
+      "",
+      ""
+    ],
+    [
+      "",
+      "Post-Pruning: Grow the full tree, then remove unnecessary branches.",
+      ""
+    ],
+    [
+      "",
+      "Artificial Intelligence",
+      "Page 15 of"
+    ],
+    [
+      "",
+      "",
+      "46"
+    ]
+  ]
+}

@@ -1,0 +1,143 @@
+{
+  "document_id": "5ebba130263447f8b4b6f6e19fdcfdc7",
+  "page": 4,
+  "table_index": 4,
+  "data": [
+    [
+      "",
+      "verification mechanisms, perform offline processing, and support modular scalability"
+    ],
+    [
+      "",
+      "to effectively serve a wide range of industries."
+    ],
+    [
+      "\u2022",
+      "Automate PDF Chunking and Processing :"
+    ],
+    [
+      "",
+      "Break  down  large  internal  PDF  files  into  semantically  coherent  sections  to  enable"
+    ],
+    [
+      "",
+      "accurate retrieval and query matching."
+    ],
+    [
+      "\u2022",
+      "Ensure Fully Offline Operation :"
+    ],
+    [
+      "",
+      "Protect  data  privacy  and  security  by  processing  all  queries  and  documents  locally"
+    ],
+    [
+      "",
+      "without relying on cloud servers."
+    ],
+    [
+      "\u2022",
+      "Adapt to Domain-Agnostic Application :"
+    ],
+    [
+      "",
+      "Support  multiple  industries  such  as  healthcare,  education,  HR,  legal,  and  enterprise"
+    ],
+    [
+      "",
+      "knowledge management."
+    ],
+    [
+      "\u2022",
+      "Deliver Contextually Accurate Responses :"
+    ],
+    [
+      "",
+      "Retrieve and present answers based on semantic meaning instead of simple keyword"
+    ],
+    [
+      "",
+      "matching."
+    ],
+    [
+      "\u2022",
+      "Leverage Multi-Agent Collaboration :"
+    ],
+    [
+      "",
+      "Employ  specialized  agents  to  perform  chunking,  ranking,  generating,  and  verifying"
+    ],
+    [
+      "",
+      "answers to enhance reliability."
+    ],
+    [
+      "\u2022",
+      "Provide Source Verification and Citations :"
+    ],
+    [
+      "",
+      "Ensure \nfactual  accuracy  by \nlinking \nresponses \nto  original  document  sections  as"
+    ],
+    [
+      "",
+      "references."
+    ],
+    [
+      "\u2022",
+      "Design a Modular Architecture :"
+    ],
+    [
+      "",
+      "Create a flexible system that enables seamless integration of new features and supports"
+    ],
+    [
+      "",
+      "scaling to larger datasets."
+    ],
+    [
+      "\u2022",
+      "Integrate with Vector Databases :"
+    ],
+    [
+      "",
+      "Use  local  vector  databases  like  ChromaDB  to  perform  fast  and  accurate  semantic"
+    ],
+    [
+      "",
+      "search."
+    ],
+    [
+      "\u2022",
+      "Handle Complex Queries :"
+    ],
+    [
+      "",
+      "Support  multi-part,  multi-step,  or  deeply  contextual  questions  that  require  logical"
+    ],
+    [
+      "",
+      "reasoning."
+    ],
+    [
+      "\u2022",
+      "Enable Future Automation Readiness :"
+    ],
+    [
+      "",
+      "Support integration with visual workflow orchestration tools like n8n for automating"
+    ],
+    [
+      "",
+      "processes."
+    ],
+    [
+      "\u2022",
+      "Optimize for Limited-Connectivity Environments :"
+    ],
+    [
+      "",
+      "Ensure functionality in areas where internet access is restricted or unavailable."
+    ]
+  ]
+}

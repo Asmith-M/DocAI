@@ -1,0 +1,40 @@
+{
+  "document_id": "f56c6e4d98964484b148e7fd502b4d69",
+  "page": 21,
+  "table_index": 23,
+  "data": [
+    [
+      "def train(self, training_inputs, training_outputs, training_iterations):"
+    ],
+    [
+      "\"\"\"Train the neural network using backpropagation\"\"\""
+    ],
+    [
+      "for iteration in range(training_iterations):"
+    ],
+    [
+      "# Forward pass"
+    ],
+    [
+      "output = self.think(training_inputs)"
+    ],
+    [
+      "# Calculate the error"
+    ],
+    [
+      "error = training_outputs - output"
+    ],
+    [
+      "# Backpropagation"
+    ],
+    [
+      "adjustments = np.dot(training_inputs.T, error * self.sigmoid_derivative(output))"
+    ],
+    [
+      "# Adjust weights"
+    ],
+    [
+      "self.synaptic_weights += adjustments"
+    ]
+  ]
+}

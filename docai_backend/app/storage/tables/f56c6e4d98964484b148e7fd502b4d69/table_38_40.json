@@ -1,0 +1,99 @@
+{
+  "document_id": "f56c6e4d98964484b148e7fd502b4d69",
+  "page": 38,
+  "table_index": 40,
+  "data": [
+    [
+      "TY.BSc.CS Semester V",
+      "Omkar Madyal"
+    ],
+    [
+      "plt.show()",
+      ""
+    ],
+    [
+      "# Best K",
+      ""
+    ],
+    [
+      "best_k = k_values[np.argmax(accuracies)]",
+      ""
+    ],
+    [
+      "print(f\"Best K: {best_k} with Accuracy: {max(accuracies):.4f}\")",
+      ""
+    ],
+    [
+      "# Final model with best K",
+      ""
+    ],
+    [
+      "knn_best = KNeighborsClassifier(n_neighbors=best_k)",
+      ""
+    ],
+    [
+      "knn_best.fit(X_train, y_train)",
+      ""
+    ],
+    [
+      "y_pred = knn_best.predict(X_test)",
+      ""
+    ],
+    [
+      "# Evaluation",
+      ""
+    ],
+    [
+      "print(\"\\nClassification Report:\\n\", classification_report(y_test, y_pred))",
+      ""
+    ],
+    [
+      "# Confusion Matrix",
+      ""
+    ],
+    [
+      "cm = confusion_matrix(y_test, y_pred)",
+      ""
+    ],
+    [
+      "plt.figure(figsize=(5, 4))",
+      ""
+    ],
+    [
+      "plt.imshow(cm, cmap=\"Blues\")",
+      ""
+    ],
+    [
+      "plt.colorbar()",
+      ""
+    ],
+    [
+      "plt.title(\"Confusion Matrix\")",
+      ""
+    ],
+    [
+      "plt.xlabel(\"Predicted\")",
+      ""
+    ],
+    [
+      "plt.ylabel(\"Actual\")",
+      ""
+    ],
+    [
+      "for i in range(cm.shape[0]):",
+      ""
+    ],
+    [
+      "for j in range(cm.shape[1]):",
+      ""
+    ],
+    [
+      "plt.text(j, i, cm[i, j], ha='center', va='center', color='black')",
+      ""
+    ],
+    [
+      "plt.show()",
+      ""
+    ]
+  ]
+}

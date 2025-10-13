@@ -1,0 +1,85 @@
+{
+  "document_id": "f56c6e4d98964484b148e7fd502b4d69",
+  "page": 25,
+  "table_index": 27,
+  "data": [
+    [
+      "Code:"
+    ],
+    [
+      "print(\"Omkar Madyal\")"
+    ],
+    [
+      "# Import required libraries"
+    ],
+    [
+      "from warnings import filterwarnings"
+    ],
+    [
+      "filterwarnings(\"ignore\")"
+    ],
+    [
+      "import pandas as pd"
+    ],
+    [
+      "import numpy as np"
+    ],
+    [
+      "import matplotlib.pyplot as plt"
+    ],
+    [
+      "import seaborn as sns"
+    ],
+    [
+      "from sklearn.model_selection import cross_val_score, GridSearchCV"
+    ],
+    [
+      "from sklearn.svm import SVC"
+    ],
+    [
+      "from sklearn.metrics import confusion_matrix, accuracy_score, classification_report"
+    ],
+    [
+      "import time"
+    ],
+    [
+      "# ================================"
+    ],
+    [
+      "# Step 1: Load the Dataset Online"
+    ],
+    [
+      "# ================================"
+    ],
+    [
+      "# URL of the dataset hosted on GitHub"
+    ],
+    [
+      "url = \"https://raw.githubusercontent.com/jbrownlee/Datasets/master/pima-indians-diabetes.data.csv\""
+    ],
+    [
+      "# Define column names manually (since dataset has no header row)"
+    ],
+    [
+      "column_names = ['Pregnancies', 'Glucose', 'BloodPressure', 'SkinThickness',"
+    ],
+    [
+      "'Insulin', 'BMI', 'DiabetesPedigreeFunction', 'Age', 'Outcome']"
+    ],
+    [
+      "# Load the dataset"
+    ],
+    [
+      "df = pd.read_csv(url, names=column_names)"
+    ],
+    [
+      "# Show first few rows"
+    ],
+    [
+      "print(\"First 5 rows of the dataset:\")"
+    ],
+    [
+      "print(df.head())"
+    ]
+  ]
+}

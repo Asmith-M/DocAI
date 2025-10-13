@@ -1,0 +1,40 @@
+{
+  "document_id": "f56c6e4d98964484b148e7fd502b4d69",
+  "page": 9,
+  "table_index": 9,
+  "data": [
+    [
+      "Implement the A* Search algorithm for solving a pathfinding problem"
+    ],
+    [
+      "DATA SET : RMP.py (Save this file as RMP.py in the same folder as your main program.)"
+    ],
+    [
+      "print(\"Omkar Madyal\")"
+    ],
+    [
+      "import queue as Q"
+    ],
+    [
+      "from RMP import dict_gn, dict_hn"
+    ],
+    [
+      "start = 'Arad'"
+    ],
+    [
+      "goal = 'Bucharest'"
+    ],
+    [
+      "result = ''"
+    ],
+    [
+      "# Function to calculate f(n) = g(n) + h(n)"
+    ],
+    [
+      "def get_fn(citystr):"
+    ],
+    [
+      "cities = citystr.split(\",\")"
+    ]
+  ]
+}

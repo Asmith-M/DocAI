@@ -1,0 +1,67 @@
+{
+  "document_id": "f56c6e4d98964484b148e7fd502b4d69",
+  "page": 6,
+  "table_index": 6,
+  "data": [
+    [
+      "",
+      "",
+      "Compare the performance and efficiency of both algorithms",
+      "",
+      "",
+      "",
+      "",
+      ""
+    ],
+    [
+      "Both Breadth-First Search (BFS) and Iterative Depth-First Search (DFS) are fundamental algorithms used for",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      ""
+    ],
+    [
+      "traversing trees",
+      "and graphs. While",
+      "they may appear",
+      "similar",
+      "in terms of",
+      "implementation,",
+      "their",
+      "execution order,"
+    ],
+    [
+      "memory usage, and practical applications differ",
+      "",
+      "",
+      "significantly. Below is a detailed comparison based on various",
+      "",
+      "",
+      "",
+      ""
+    ],
+    [
+      "factors:",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      ""
+    ],
+    [
+      "1. Traversal Order",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      ""
+    ]
+  ]
+}

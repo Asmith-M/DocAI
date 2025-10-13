@@ -1,0 +1,103 @@
+{
+  "document_id": "f56c6e4d98964484b148e7fd502b4d69",
+  "page": 37,
+  "table_index": 39,
+  "data": [
+    [
+      "\uf06c",
+      "Apply K-NN Algorithm on the given dataset & predict the class or value for test data"
+    ],
+    [
+      "import numpy as np",
+      ""
+    ],
+    [
+      "import pandas as pd",
+      ""
+    ],
+    [
+      "import matplotlib.pyplot as plt",
+      ""
+    ],
+    [
+      "from sklearn.model_selection import train_test_split",
+      ""
+    ],
+    [
+      "from sklearn.preprocessing import StandardScaler",
+      ""
+    ],
+    [
+      "from sklearn.neighbors import KNeighborsClassifier",
+      ""
+    ],
+    [
+      "from sklearn.metrics import accuracy_score, confusion_matrix, classification_report",
+      ""
+    ],
+    [
+      "# Use ggplot style",
+      ""
+    ],
+    [
+      "plt.style.use('ggplot')",
+      ""
+    ],
+    [
+      "# Load dataset",
+      ""
+    ],
+    [
+      "url = \"https://raw.githubusercontent.com/plotly/datasets/master/diabetes.csv\"",
+      ""
+    ],
+    [
+      "df = pd.read_csv(url)",
+      ""
+    ],
+    [
+      "print(\"Dataset preview:\")",
+      ""
+    ],
+    [
+      "print(df.head())",
+      ""
+    ],
+    [
+      "# Features and target",
+      ""
+    ],
+    [
+      "X = df.drop(columns=[\"Outcome\"])",
+      ""
+    ],
+    [
+      "y = df[\"Outcome\"]",
+      ""
+    ],
+    [
+      "# Scale features (important for distance-based models like KNN)",
+      ""
+    ],
+    [
+      "scaler = StandardScaler()",
+      ""
+    ],
+    [
+      "X_scaled = scaler.fit_transform(X)",
+      ""
+    ],
+    [
+      "# Train-test split",
+      ""
+    ],
+    [
+      "X_train, X_test, y_train, y_test = train_test_split(",
+      ""
+    ],
+    [
+      "",
+      "X_scaled, y, test_size=0.2, random_state=42, stratify=y"
+    ]
+  ]
+}

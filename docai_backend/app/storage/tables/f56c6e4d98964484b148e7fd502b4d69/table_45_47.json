@@ -1,0 +1,71 @@
+{
+  "document_id": "f56c6e4d98964484b148e7fd502b4d69",
+  "page": 45,
+  "table_index": 47,
+  "data": [
+    [
+      "Creative Fields \u2192 story writing, music, art.",
+      ""
+    ],
+    [
+      "",
+      "Data Analysis \u2192 summarization, classification, question answering."
+    ],
+    [
+      "Code :",
+      ""
+    ],
+    [
+      "# Import libraries",
+      ""
+    ],
+    [
+      "import tensorflow as tf",
+      ""
+    ],
+    [
+      "from tensorflow import keras",
+      ""
+    ],
+    [
+      "from tensorflow.keras import layers",
+      ""
+    ],
+    [
+      "import matplotlib.pyplot as plt",
+      ""
+    ],
+    [
+      "# Step 1: Load Dataset (MNIST)",
+      ""
+    ],
+    [
+      "(x_train, y_train), (x_test, y_test) = keras.datasets.mnist.load_data()",
+      ""
+    ],
+    [
+      "# Normalize pixel values (0\u2013255 \u2192 0\u20131)",
+      ""
+    ],
+    [
+      "x_train = x_train / 255.0",
+      ""
+    ],
+    [
+      "x_test = x_test / 255.0",
+      ""
+    ],
+    [
+      "# Step 2: Build the Model",
+      ""
+    ],
+    [
+      "model = keras.Sequential([",
+      ""
+    ],
+    [
+      "layers.Flatten(input_shape=(28,28)),",
+      "# Flatten 28x28 image \u2192 784"
+    ]
+  ]
+}

@@ -1,0 +1,31 @@
+{
+  "document_id": "5ebba130263447f8b4b6f6e19fdcfdc7",
+  "page": 7,
+  "table_index": 10,
+  "data": [
+    [
+      "microservices. FastAPI offers speed and developer productivity, while Python\u2019s AI/NLP"
+    ],
+    [
+      "libraries integrate seamlessly for the RAG pipeline."
+    ],
+    [
+      "2.3 LLM & Retrieval Technologies"
+    ],
+    [
+      "Before finalizing the LLM and retrieval stack for DocAI, several offline-capable"
+    ],
+    [
+      "tools and frameworks were identified, evaluated, and selected to ensure privacy, high"
+    ],
+    [
+      "accuracy, and smooth integration with the backend. The chosen tools had to function"
+    ],
+    [
+      "without an internet connection, support semantic search, and allow easy deployment"
+    ],
+    [
+      "on typical hardware."
+    ]
+  ]
+}

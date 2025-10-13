@@ -1,0 +1,46 @@
+{
+  "document_id": "f56c6e4d98964484b148e7fd502b4d69",
+  "page": 13,
+  "table_index": 14,
+  "data": [
+    [
+      "TY.BSc.CS Semester V"
+    ],
+    [
+      "break"
+    ],
+    [
+      "printout(cityq)"
+    ],
+    [
+      "expand(cityq)"
+    ],
+    [
+      "# Main function"
+    ],
+    [
+      "def main():"
+    ],
+    [
+      "cityq = Q.PriorityQueue()"
+    ],
+    [
+      "thiscity = start"
+    ],
+    [
+      "cityq.put((999, \"NA\", \"NA\"))"
+    ],
+    [
+      "cityq.put((get_fn(start), start, thiscity))"
+    ],
+    [
+      "expand(cityq)"
+    ],
+    [
+      "print(\"\\nFinal Result Path and Cost:\")"
+    ],
+    [
+      "print(result)"
+    ]
+  ]
+}

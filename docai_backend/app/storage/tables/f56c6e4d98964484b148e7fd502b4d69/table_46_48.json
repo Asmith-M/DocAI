@@ -1,0 +1,67 @@
+{
+  "document_id": "f56c6e4d98964484b148e7fd502b4d69",
+  "page": 46,
+  "table_index": 48,
+  "data": [
+    [
+      "TY.BSc.CS Semester V",
+      "Omkar Madyal",
+      "Roll No : 00"
+    ],
+    [
+      "# Step 6: Make Predictions",
+      "",
+      ""
+    ],
+    [
+      "predictions = model.predict(x_test)",
+      "",
+      ""
+    ],
+    [
+      "# Display a few test images with predictions",
+      "",
+      ""
+    ],
+    [
+      "for i in range(5):",
+      "",
+      ""
+    ],
+    [
+      "plt.imshow(x_test[i], cmap=\"gray\")",
+      "",
+      ""
+    ],
+    [
+      "plt.title(f\"Predicted: {predictions[i].argmax()}, Actual: {y_test[i]}\")",
+      "",
+      ""
+    ],
+    [
+      "plt.axis(\"off\")",
+      "",
+      ""
+    ],
+    [
+      "plt.show()",
+      "",
+      ""
+    ],
+    [
+      "Output :",
+      "",
+      ""
+    ],
+    [
+      "",
+      "Artificial Intelligence",
+      "Page 46 of"
+    ],
+    [
+      "",
+      "",
+      "46"
+    ]
+  ]
+}

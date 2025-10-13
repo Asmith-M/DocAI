@@ -1,0 +1,35 @@
+{
+  "document_id": "5ebba130263447f8b4b6f6e19fdcfdc7",
+  "page": 5,
+  "table_index": 5,
+  "data": [
+    [
+      "\u2022",
+      "Support Cross-Document Query Handling :"
+    ],
+    [
+      "",
+      "Answer questions that require retrieving and merging information from multiple PDFs."
+    ],
+    [
+      "\u2022",
+      "Develop a User-Friendly Interface :"
+    ],
+    [
+      "",
+      "Provide  a  simple,  intuitive  interface  accessible  to  both  technical  and  non-technical"
+    ],
+    [
+      "",
+      "users."
+    ],
+    [
+      "\u2022",
+      "Scale for Enterprise Use :"
+    ],
+    [
+      "",
+      "Manage thousands of documents and serve multiple departments simultaneously."
+    ]
+  ]
+}

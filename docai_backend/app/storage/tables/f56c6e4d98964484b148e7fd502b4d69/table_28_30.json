@@ -1,0 +1,103 @@
+{
+  "document_id": "f56c6e4d98964484b148e7fd502b4d69",
+  "page": 28,
+  "table_index": 30,
+  "data": [
+    [
+      "TY.BSc.CS Semester V\nOmkar Madyal\nRoll No : 00"
+    ],
+    [
+      "PRACTICAL NO 6"
+    ],
+    [
+      "Adaboost Ensemble Learning"
+    ],
+    [
+      "\u25cf Implement the Adaboost algorithm to create an ensemble of weak classifiers."
+    ],
+    [
+      "\u25cf Train the ensemble model on a given dataset and evaluate its performance"
+    ],
+    [
+      "\u25cf Compare the results with individual weak classifiers"
+    ],
+    [
+      "1. Introduction"
+    ],
+    [
+      "AdaBoost, short\nfor Adaptive Boosting,\nis a powerful ensemble learning technique introduced by Yoav Freund"
+    ],
+    [
+      "is one of the first boosting algorithms that gained popularity due to its simplicity\nand Robert Schapire in 1996. It"
+    ],
+    [
+      "and effectiveness. AdaBoost combines multiple weak learners (usually decision stumps) to form a strong learner"
+    ],
+    [
+      "with high predictive accuracy."
+    ],
+    [
+      "2. Concept of Ensemble Learning"
+    ],
+    [
+      "Ensemble learning is based on the principle that combining the predictions of multiple models can result\nin better"
+    ],
+    [
+      "performance than any individual model. There are three main types of ensemble methods:"
+    ],
+    [
+      "Bagging (Bootstrap Aggregating) \u2013 e.g., Random Forest"
+    ],
+    [
+      "Boosting \u2013 e.g., AdaBoost, Gradient Boosting, XGBoost"
+    ],
+    [
+      "Stacking \u2013 combining predictions of different model types"
+    ],
+    [
+      "AdaBoost\nfalls under the Boosting category, where weak learners are trained sequentially, and each new learner"
+    ],
+    [
+      "focuses more on the mistakes made by the previous ones."
+    ],
+    [
+      "3. Idea Behind AdaBoost"
+    ],
+    [
+      "The idea of AdaBoost is to:"
+    ],
+    [
+      "Train multiple weak learners one after another."
+    ],
+    [
+      "Assign weights to each training sample."
+    ],
+    [
+      "In each iteration,\nthe next model pays more attention\nincrease the weight of misclassified samples so that"
+    ],
+    [
+      "to them."
+    ],
+    [
+      "Combine all weak learners using a weighted majority vote (for classification) or weighted average (for"
+    ],
+    [
+      "regression)."
+    ],
+    [
+      "4. Working of AdaBoost (Step-by-Step)"
+    ],
+    [
+      "Let\u2019s assume we are solving a binary classification problem."
+    ],
+    [
+      "Step 1: Initialize Weights"
+    ],
+    [
+      "Page 28 of\nArtificial Intelligence"
+    ],
+    [
+      "46"
+    ]
+  ]
+}

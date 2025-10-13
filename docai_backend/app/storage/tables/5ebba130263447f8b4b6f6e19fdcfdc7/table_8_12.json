@@ -1,0 +1,51 @@
+{
+  "document_id": "5ebba130263447f8b4b6f6e19fdcfdc7",
+  "page": 8,
+  "table_index": 12,
+  "data": [
+    [
+      "To coordinate the various stages of retrieval-augmented generation, a minimal multi-",
+      ""
+    ],
+    [
+      "agent architecture was designed, implemented, and optimized for simplicity and",
+      ""
+    ],
+    [
+      "debugging ease.",
+      ""
+    ],
+    [
+      "\u2022",
+      "ChunkAgent: Parse documents, segment them into chunks, and generate"
+    ],
+    [
+      "",
+      "embeddings."
+    ],
+    [
+      "\u2022",
+      "RankerAgent: Retrieve the top-k relevant chunks from Chroma."
+    ],
+    [
+      "\u2022",
+      "GeneratorAgent: Invoke the local LLM (via Ollama) to draft answers."
+    ],
+    [
+      "\u2022",
+      "VerifierAgent: Validate that answers are grounded in retrieved chunks, add"
+    ],
+    [
+      "",
+      "citations, or flag uncertainty."
+    ],
+    [
+      "\u2022",
+      "Simple Orchestrator: Sequence calls to these agents for streamlined"
+    ],
+    [
+      "",
+      "execution."
+    ]
+  ]
+}

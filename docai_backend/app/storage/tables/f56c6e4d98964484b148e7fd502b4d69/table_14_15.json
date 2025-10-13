@@ -1,0 +1,73 @@
+{
+  "document_id": "f56c6e4d98964484b148e7fd502b4d69",
+  "page": 14,
+  "table_index": 15,
+  "data": [
+    [
+      "2. Structure of a Decision Tree",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      ""
+    ],
+    [
+      "",
+      "Root Node: Represents the entire dataset and the first decision.",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      ""
+    ],
+    [
+      "",
+      "Decision Nodes: Internal nodes where the dataset is split based on a feature condition.",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      ""
+    ],
+    [
+      "Leaf Nodes",
+      "(Terminal Nodes): Represent",
+      "the",
+      "final output",
+      "(class",
+      "label",
+      "for",
+      "classification or value",
+      "for"
+    ],
+    [
+      "regression).",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      ""
+    ],
+    [
+      "",
+      "Branches: Arrows that connect nodes, representing the outcome of a decision.",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      ""
+    ]
+  ]
+}

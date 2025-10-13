@@ -1,0 +1,55 @@
+{
+  "document_id": "5ebba130263447f8b4b6f6e19fdcfdc7",
+  "page": 6,
+  "table_index": 7,
+  "data": [
+    [
+      "libraries were evaluated to ensure fast performance, a clean UI, and smooth",
+      ""
+    ],
+    [
+      "integration with the backend. The chosen tools needed to work well in an offline",
+      ""
+    ],
+    [
+      "environment, support modular development, and allow quick prototyping.",
+      ""
+    ],
+    [
+      "\u2022",
+      "React + Next.js: A component-based framework with optional server-side"
+    ],
+    [
+      "",
+      "rendering (SSR) and built-in routing, which can also be packaged as a local"
+    ],
+    [
+      "",
+      "Single Page Application (SPA)."
+    ],
+    [
+      "\u2022",
+      "Tailwind CSS: A utility-first CSS framework that enables rapid development"
+    ],
+    [
+      "",
+      "of responsive, modern, and consistent UIs."
+    ],
+    [
+      "\u2022",
+      "Axios: A lightweight HTTP client for making requests to FastAPI endpoints"
+    ],
+    [
+      "",
+      "with ease."
+    ],
+    [
+      "\u2022",
+      "Next.js Routing: Provides structured page navigation and layout"
+    ],
+    [
+      "",
+      "management without extra configuration."
+    ]
+  ]
+}

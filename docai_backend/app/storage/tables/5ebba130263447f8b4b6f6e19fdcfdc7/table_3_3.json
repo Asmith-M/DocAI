@@ -1,0 +1,107 @@
+{
+  "document_id": "5ebba130263447f8b4b6f6e19fdcfdc7",
+  "page": 3,
+  "table_index": 3,
+  "data": [
+    [
+      "1.3 Purpose , Scope and Applicability",
+      "",
+      ""
+    ],
+    [
+      "1.3.1 Purpose",
+      "",
+      ""
+    ],
+    [
+      "",
+      "The primary purpose of this project is to create an intelligent question-answering system",
+      ""
+    ],
+    [
+      "",
+      "capable  of  extracting  and  delivering  precise  information  from  large  internal  PDF",
+      ""
+    ],
+    [
+      "",
+      "documents. It is designed to address the challenges faced by organizations that deal with",
+      ""
+    ],
+    [
+      "",
+      "vast  amounts  of  unstructured  text,  enabling  users  to  retrieve  quick  and  accurate",
+      ""
+    ],
+    [
+      "",
+      "responses to complex queries without manually searching through files.",
+      ""
+    ],
+    [
+      "",
+      "A core focus is to ensure privacy and security by operating entirely offline. By hosting",
+      ""
+    ],
+    [
+      "",
+      "both the language model and the vector database locally, the system retains sensitive",
+      ""
+    ],
+    [
+      "",
+      "data within the organization\u2019s infrastructure, making it ideal for privacycritical domains",
+      ""
+    ],
+    [
+      "such  as  healthcare,",
+      "legal  services,  human",
+      "resources,  and  enterprise  knowledge"
+    ],
+    [
+      "management.",
+      "",
+      ""
+    ],
+    [
+      "",
+      "The  project  also  aims  to  guarantee  the  reliability  of  responses  through  contextual",
+      ""
+    ],
+    [
+      "",
+      "accuracy and verification. A multi-agent approach is implemented to retrieve the most",
+      ""
+    ],
+    [
+      "",
+      "relevant  document  segments,  verify  the  extracted  information,  and  cross-check  the",
+      ""
+    ],
+    [
+      "",
+      "generated answers, thereby reducing the risk of errors or hallucinations.",
+      ""
+    ],
+    [
+      "",
+      "Finally, the system is built with a modular architecture that enables easy scaling and",
+      ""
+    ],
+    [
+      "future  enhancements.  This",
+      "flexibility  ensures",
+      "that  additional \nfeatures\u2014such  as"
+    ],
+    [
+      "",
+      "integration  with  visual  workflow  tools  like  n8n\u2014can  be  implemented  with  minimal",
+      ""
+    ],
+    [
+      "",
+      "effort, allowing the solution to evolve alongside organizational needs.",
+      ""
+    ]
+  ]
+}

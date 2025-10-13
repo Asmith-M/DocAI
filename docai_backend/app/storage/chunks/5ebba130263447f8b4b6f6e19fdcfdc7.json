@@ -1,0 +1,218 @@
+[
+  {
+    "document_id": "5ebba130263447f8b4b6f6e19fdcfdc7",
+    "page": 1,
+    "chunk_index": 1,
+    "type": "text",
+    "extraction_method": "pymupdf",
+    "text": "1 INTRODUCTION 1.1 Background DocAI is designed to address the growing need for intelligent, secure, and context-aware document retrieval systems. In today\u2019s digital era, information is one of the most valuable assets for organizations, institutions, and businesses. Whether it is a multinational enterprise or a small educational institution, the ability to store, manage, and retrieve knowledge effectively impacts decision-making, operational efficiency, and compliance. It is important to remember that documentation\u2014ranging from policy guides, training manuals, SOPs, compliance policies, to research reports\u2014represents the institutional memory of an organization. Yet, due to the size and complexity of such documents, retrieval becomes a major challenge. Traditional methods like keyword search (Ctrl+F), indexes, and bookmarks are still common but operate on a lexical basis, depending on exact word matches, which often leads to irrelevant or missed information. To understand this problem more deeply, consider that corporate HR teams, legal professionals, or academic administrators regularly need to answer complex, multilayered questions. For example, an HR query may require going through hundreds of pages of policy documents, while legal professionals might need to cross-reference internal SOPs, legal codes, and case law. In these cases, keyword search often fails to grasp the intent behind a question. The emergence of Natural Language Processing (NLP) and Large Language Models (LLMs) has transformed this landscape by enabling systems to understand semantic meaning. This allows users to ask questions in natural language and receive answers that are contextually appropriate, shifting from manual, inefficient methods to AI-powered question-answering systems that summarize, explain, or extract salient points from large volumes of text. To apply these advances, this project implements Retrieval-Augmented Generation (RAG) to accurately respond to queries from internal PDF documents. The system begins by preprocessing documents and breaking them into semantically coherent chunks. These chunks are then embedded using a sentence transformer model, allowing the system to numerically capture their meaning. The resulting vector embeddings are stored in a local vector database, which enables rapid and efficient retrieval of relevant information. This approach ensures that the system remains fully offline, aligning with privacy-first principles and avoiding the use of external cloud services. Analyzing the process further, when a user submits a question, the system performs a similarity search within the vector database to identify the most contextually relevant text chunks. These are then passed to a locally hosted large language model, which uses them as context to generate a grounded, precise answer. By using a local vector database and on-premise inference, the system addresses concerns of data privacy, especially for sectors",
+    "created_at": "2025-10-13T09:15:07.925635"
+  },
+  {
+    "document_id": "5ebba130263447f8b4b6f6e19fdcfdc7",
+    "page": 10,
+    "chunk_index": 2,
+    "type": "text",
+    "extraction_method": "pymupdf",
+    "text": "10",
+    "created_at": "2025-10-13T09:15:07.926286"
+  },
+  {
+    "document_id": "5ebba130263447f8b4b6f6e19fdcfdc7",
+    "page": 2,
+    "chunk_index": 3,
+    "type": "text",
+    "extraction_method": "pymupdf",
+    "text": "2 with strict compliance regulations such as GDPR, HIPAA, or those bound by corporate NDAs. Evaluating the reliability of responses, the project integrates a multi-agent verification mechanism within the RAG pipeline. Multiple agents assess the retrieved content, verify the factual integrity, and cross-check the generated output before it is presented to the user. This minimizes hallucinations and maintains high consistency with the original source material, significantly improving the trustworthiness and accuracy of the system\u2019s answers. Finally, to create a scalable and future-ready architecture, the project is built in a modular manner, allowing seamless integration with workflow tools such as n8n. This design ensures easy adaptability across various domains, including human resources, healthcare, education, and legal document analysis. By combining offline privacy, semantic understanding, and multi-agent validation, DocAI is positioned as a modern, intelligent, and reliable solution for document intelligence in the enterprise ecosystem. 1.2 Objectives \u2022 Develop a secure offline document intelligence platform : Enable querying of large internal documents without cloud use to prevent data leakage. \u2022 Implement advanced PDF parsing : Utilize PyMuPDF to extract text accurately, including complex layouts like tables and multi-columns. \u2022 Design a modular multi-agent RAG pipeline : Assign separate agents to perform chunking, ranking, generation, and verification tasks. \u2022 Add a ChunkAgent for semantic segmentation : Segment extracted text into context-rich chunks optimized for retrieval. \u2022 Integrate a local vector database : Store and search embeddings in ChromaDB for high-speed offline retrieval. \u2022 Generate high-quality embeddings : Apply sentence-transformers to capture semantic meaning beyond keywords. \u2022 Create a RankerAgent for precision retrieval : Retrieve and order the most relevant chunks for a query. \u2022 Use a local LLM for answer generation : Employ Mistral 7B via Ollama to generate context-aware, offline answers.",
+    "created_at": "2025-10-13T09:15:07.951796"
+  },
+  {
+    "document_id": "5ebba130263447f8b4b6f6e19fdcfdc7",
+    "page": 3,
+    "chunk_index": 4,
+    "type": "text",
+    "extraction_method": "pymupdf",
+    "text": "3 \u2022 Add a VerifierAgent for factual accuracy : Validate answers against sources and provide references. \u2022 Build an intuitive and responsive frontend : Develop using React + Tailwind for document upload and chat functionality. \u2022 Develop a modular backend with FastAPI : Implement separate routes for ingestion, queries, and agent control. \u2022 Ensure privacy and regulatory compliance : Process all data locally to align with GDPR, HIPAA, and security policies. 1.3 Purpose , Scope and Applicability 1.3.1 Purpose The primary purpose of this project is to create an intelligent question-answering system capable of extracting and delivering precise information from large internal PDF documents. It is designed to address the challenges faced by organizations that deal with vast amounts of unstructured text, enabling users to retrieve quick and accurate responses to complex queries without manually searching through files. A core focus is to ensure privacy and security by operating entirely offline. By hosting both the language model and the vector database locally, the system retains sensitive data within the organization\u2019s infrastructure, making it ideal for privacycritical domains such as healthcare, legal services, human resources, and enterprise knowledge management. The project also aims to guarantee the reliability of responses through contextual accuracy and verification. A multi-agent approach is implemented to retrieve the most relevant document segments, verify the extracted information, and cross-check the generated answers, thereby reducing the risk of errors or hallucinations. Finally, the system is built with a modular architecture that enables easy scaling and future enhancements. This flexibility ensures that additional features\u2014such as integration with visual workflow tools like n8n\u2014can be implemented with minimal effort, allowing the solution to evolve alongside organizational needs. 1.3.2 Scope The scope of DocAI is to transform large, unstructured internal PDFs into an intelligent, context-aware, and privacy-preserving Q&A assistant. This solution is designed to not only provide direct, relevant answers to user queries but also to integrate advanced",
+    "created_at": "2025-10-13T09:15:07.975883"
+  },
+  {
+    "document_id": "5ebba130263447f8b4b6f6e19fdcfdc7",
+    "page": 4,
+    "chunk_index": 5,
+    "type": "text",
+    "extraction_method": "pymupdf",
+    "text": "4 verification mechanisms, perform offline processing, and support modular scalability to effectively serve a wide range of industries. \u2022 Automate PDF Chunking and Processing : Break down large internal PDF files into semantically coherent sections to enable accurate retrieval and query matching. \u2022 Ensure Fully Offline Operation : Protect data privacy and security by processing all queries and documents locally without relying on cloud servers. \u2022 Adapt to Domain-Agnostic Application : Support multiple industries such as healthcare, education, HR, legal, and enterprise knowledge management. \u2022 Deliver Contextually Accurate Responses : Retrieve and present answers based on semantic meaning instead of simple keyword matching. \u2022 Leverage Multi-Agent Collaboration : Employ specialized agents to perform chunking, ranking, generating, and verifying answers to enhance reliability. \u2022 Provide Source Verification and Citations : Ensure factual accuracy by linking responses to original document sections as references. \u2022 Design a Modular Architecture : Create a flexible system that enables seamless integration of new features and supports scaling to larger datasets. \u2022 Integrate with Vector Databases : Use local vector databases like ChromaDB to perform fast and accurate semantic search. \u2022 Handle Complex Queries : Support multi-part, multi-step, or deeply contextual questions that require logical reasoning. \u2022 Enable Future Automation Readiness : Support integration with visual workflow orchestration tools like n8n for automating processes. \u2022 Optimize for Limited-Connectivity Environments : Ensure functionality in areas where internet access is restricted or unavailable.",
+    "created_at": "2025-10-13T09:15:08.000783"
+  },
+  {
+    "document_id": "5ebba130263447f8b4b6f6e19fdcfdc7",
+    "page": 5,
+    "chunk_index": 6,
+    "type": "text",
+    "extraction_method": "pymupdf",
+    "text": "5 \u2022 Support Cross-Document Query Handling : Answer questions that require retrieving and merging information from multiple PDFs. \u2022 Develop a User-Friendly Interface : Provide a simple, intuitive interface accessible to both technical and non-technical users. \u2022 Scale for Enterprise Use : Manage thousands of documents and serve multiple departments simultaneously. 1.3.3 Applicability DocAI demonstrates strong applicability across multiple domains. In privacysensitive and data-intensive sectors, it enables organizations to instantly extract accurate answers from large internal PDF documents, thereby making information retrieval faster, safer, and more efficient. The ability to process queries offline, verify responses with source references, and adapt to various document types makes the system valuable for industries such as healthcare, legal services, human resources, and enterprise knowledge management. In the academic and development context, this project serves as a powerful example of how to design a real-world intelligent system from scratch. It applies theoretical concepts from natural language processing, information retrieval, multi-agent architectures, and vector database search\u2014into a functional, domain-agnostic tool. Students, educators, and project reviewers can use this as a blueprint to integrate AIdriven solutions into practical, real-life scenarios while ensuring data security and transparency. The system also applies to research institutions and corporate environments that require instant access to critical knowledge while maintaining strict data privacy. By enabling offline operations, supporting modular upgrades, and integrating with workflow automation tools like n8n, DocAI contributes not just as an academic project but as a scalable foundation to build advanced, secure, and context-aware AI assistants across diverse professional settings.",
+    "created_at": "2025-10-13T09:15:08.021887"
+  },
+  {
+    "document_id": "5ebba130263447f8b4b6f6e19fdcfdc7",
+    "page": 6,
+    "chunk_index": 7,
+    "type": "text",
+    "extraction_method": "pymupdf",
+    "text": "6 SURVEY OF TECHNOLOGIES DocAI \u2013 Offline Multi-Agent RAG Pipeline for Internal Document Intelligence is designed to process and query large internal documents, including HR manuals, policy documents, and SOPs, entirely offline. The system identifies the need for secure, fast, and accurate document retrieval while preserving data privacy. It applies retrieval-augmented generation techniques to enhance efficiency and relevance in responses. A thorough survey of modern web, backend, AI, and storage technologies was conducted to evaluate their suitability for speed, modularity, and offline capability. This analysis involved comparing frameworks and tools to determine the most effective options. The resulting tech stack was chosen to ensure scalability, maintainability, and high performance in real- world use. 2.1 Frontend Technologies Before finalizing the frontend stack for DocAI, multiple modern frameworks and libraries were evaluated to ensure fast performance, a clean UI, and smooth integration with the backend. The chosen tools needed to work well in an offline environment, support modular development, and allow quick prototyping. \u2022 React + Next.js: A component-based framework with optional server-side rendering (SSR) and built-in routing, which can also be packaged as a local Single Page Application (SPA). \u2022 Tailwind CSS: A utility-first CSS framework that enables rapid development of responsive, modern, and consistent UIs. \u2022 Axios: A lightweight HTTP client for making requests to FastAPI endpoints with ease. \u2022 Next.js Routing: Provides structured page navigation and layout management without extra configuration. Why React + Next.js? React with Next.js was chosen for its flexibility, speed, and developer-friendly architecture. It supports both SSR and static builds, making it easy to deploy offline for local demos. Since the team had prior experience with Next.js, development time was reduced. Combined with Tailwind CSS, the stack allows for quick creation of responsive interfaces, and Axios ensures smooth communication with the backend APIs. 2.2 Backend Technologies The backend technologies implement a high-performance, privacy-preserving architecture using Python 3.10+, FastAPI, and Uvicorn to process and serve AI-driven document intelligence. These tools integrate seamlessly to validate, manage, and",
+    "created_at": "2025-10-13T09:15:08.048926"
+  },
+  {
+    "document_id": "5ebba130263447f8b4b6f6e19fdcfdc7",
+    "page": 7,
+    "chunk_index": 8,
+    "type": "text",
+    "extraction_method": "pymupdf",
+    "text": "7 optimize data flows, enabling the system to deliver accurate and efficient query responses in an offline environment. \u2022 Core Backend (Python 3.10+) \u2014 Primary backend language with a rich ecosystem for AI/NLP and rapid prototyping. \u2022 FastAPI \u2014 High-performance Python web framework to expose REST endpoints for document upload, indexing, and question answering. \u2022 Uvicorn (uvicorn[standard]) \u2014 ASGI server that runs the FastAPI app with efficient async I/O. \u2022 Pydantic v2 \u2014 Data validation and typed request/response schemas for clean, reliable APIs. \u2022 python-dotenv \u2014 Loads configuration (paths, model names) from a .env file to keep code organized. \u2022 (Optional) loguru \u2014 Structured logging for easier debugging and error tracing. Why this combo? This stack is lightweight, fast, and well-suited for building privacy-preserving, offline microservices. FastAPI offers speed and developer productivity, while Python\u2019s AI/NLP libraries integrate seamlessly for the RAG pipeline. 2.3 LLM & Retrieval Technologies Before finalizing the LLM and retrieval stack for DocAI, several offline-capable tools and frameworks were identified, evaluated, and selected to ensure privacy, high accuracy, and smooth integration with the backend. The chosen tools had to function without an internet connection, support semantic search, and allow easy deployment on typical hardware. \u2022 Ollama: Utilize to run the language model locally without internet connectivity. \u2022 Mistral 7B: Adopt for balancing quality and speed on standard systems. \u2022 Sentence-Transformers: Implement to generate embeddings locally for semantic search. \u2022 all-MiniLM-L6-v2: Apply as the embedding model to produce fast, 384- dimensional vectors. \u2022 ChromaDB (with persist_directory): Store and retrieve chunk embeddings with metadata in a local vector store. \u2022 LangChain (core/light use): Construct a simple RAG chain (prompts + retrieval) without heavy agent frameworks. Why these? These tools maintain the entire RAG pipeline fully offline, ensure privacy, and enable a lightweight, persistent, and easy-to-operate setup.",
+    "created_at": "2025-10-13T09:15:08.071947"
+  },
+  {
+    "document_id": "5ebba130263447f8b4b6f6e19fdcfdc7",
+    "page": 8,
+    "chunk_index": 9,
+    "type": "text",
+    "extraction_method": "pymupdf",
+    "text": "8 2.4 Multi-Agent Orchestration (V1) To coordinate the various stages of retrieval-augmented generation, a minimal multi- agent architecture was designed, implemented, and optimized for simplicity and debugging ease. \u2022 ChunkAgent: Parse documents, segment them into chunks, and generate embeddings. \u2022 RankerAgent: Retrieve the top-k relevant chunks from Chroma. \u2022 GeneratorAgent: Invoke the local LLM (via Ollama) to draft answers. \u2022 VerifierAgent: Validate that answers are grounded in retrieved chunks, add citations, or flag uncertainty. \u2022 Simple Orchestrator: Sequence calls to these agents for streamlined execution. Why this (and not heavy \u201cAgents\u201d libraries)? This approach establishes a clear multi-agent workflow, avoids unnecessary complexity, and facilitates easier debugging and explanation in V1. 2.5 File Processing & Parsing High-quality document parsing was prioritized, selected, and implemented to ensure accurate embeddings and reliable retrieval. \u2022 PyMuPDF (fitz): Utilize as the primary tool for PDF extraction to handle complex layouts more effectively than PyPDF2. \u2022 python-docx / docx2txt: Integrate optional support for processing .docx files. \u2022 pandas: Apply optionally for parsing and structuring tables. Why PyMuPDF? It delivers superior text fidelity for PDFs, minimizes artifacts, and ensures consistent results across enterprise and academic documents. 2.6 Storage & Data Handling A combination of relational and vector databases was selected, implemented, and maintained to ensure separation of concerns and portability. \u2022 SQLite: Store document metadata, session history, and application settings. \u2022 ChromaDB: Manage embeddings and chunk metadata for efficient retrieval. \u2022 Pydantic Settings + .env: Adopt as a safer method for configuring application parameters. \u2022 Local Filesystem: Preserve uploaded PDFs and processed artifacts.",
+    "created_at": "2025-10-13T09:15:08.095565"
+  },
+  {
+    "document_id": "5ebba130263447f8b4b6f6e19fdcfdc7",
+    "page": 9,
+    "chunk_index": 10,
+    "type": "text",
+    "extraction_method": "pymupdf",
+    "text": "9 Why SQLite + Chroma? SQLite handles application metadata, while Chroma specializes in vector search \u2014 both operate offline and remain lightweight. 2.7 Authentication (V1 Scope) For the initial offline demo, authentication was kept minimal. \u2022 None: Single-user, fully offline operation. \u2022 (Optional) Local JWT: If authentication becomes necessary, without requiring internet. Why? Avoids OAuth or cloud-based auth systems to preserve the core USP of complete offline privacy.",
+    "created_at": "2025-10-13T09:15:08.114191"
+  },
+  {
+    "document_id": "5ebba130263447f8b4b6f6e19fdcfdc7",
+    "page": 10,
+    "chunk_index": 11,
+    "type": "table",
+    "extraction_method": "camelot/tabula",
+    "text": "10",
+    "created_at": "2025-10-13T09:15:08.133535"
+  },
+  {
+    "document_id": "5ebba130263447f8b4b6f6e19fdcfdc7",
+    "page": 1,
+    "chunk_index": 12,
+    "type": "table",
+    "extraction_method": "camelot/tabula",
+    "text": "1.1 Background\t\t\n\tDocAI is designed to address the growing need for intelligent, secure, and context-aware\t\n\tdocument retrieval systems. In today\u2019s digital era, information is one of the most valuable\t\n\tassets  for  organizations,\tinstitutions,  and  businesses.  Whether \nit \nis  a  multinational\n\tenterprise  or  a  small  educational  institution,  the  ability  to  store,  manage,  and  retrieve\t\n\tknowledge effectively impacts decision-making, operational efficiency, and compliance.\t\n\tIt  is  important  to  remember  that  documentation\u2014ranging  from  policy  guides,  training\t\n\tmanuals,  SOPs,  compliance  policies,  to  research  reports\u2014represents  the  institutional\t\n\tmemory  of  an  organization.  Yet,  due  to  the  size  and  complexity  of  such  documents,\t\n\tretrieval becomes a major challenge. Traditional methods like keyword search (Ctrl+F),\t\n\tindexes,  and  bookmarks  are  still  common  but  operate  on  a  lexical  basis,  depending  on\t\n\texact word matches, which often leads to irrelevant or missed information.\t\nTo  understand\tthis  problem  more  deeply,  consider\tthat  corporate  HR \nteams, \nlegal\n\tprofessionals, or academic administrators regularly need to answer complex, multilayered\t\n\tquestions.  For  example,  an  HR  query  may  require  going  through  hundreds  of  pages  of\t\n\tpolicy documents, while legal professionals might need to cross-reference internal SOPs,\t\n\tlegal  codes,  and  case  law.  In  these  cases,  keyword  search  often  fails  to  grasp  the  intent\t\n\tbehind  a  question.  The  emergence  of  Natural  Language  Processing  (NLP)  and  Large\t\nLanguage  Models\t(LLMs)  has\ttransformed \nthis \nlandscape  by  enabling  systems \nto\n\tunderstand semantic meaning. This allows users to ask questions in natural language and\t\n\treceive answers that are contextually appropriate, shifting from manual, inefficient methods\t\n\tto  AI-powered  question-answering  systems  that  summarize,  explain,  or  extract  salient\t\n\tpoints from large volumes of text.\t\n\tTo apply these advances, this project implements Retrieval-Augmented Generation (RAG)\t\n\tto  accurately  respond  to  queries  from  internal  PDF  documents.  The  system  begins  by\t\n\tpreprocessing  documents  and  breaking  them  into  semantically  coherent  chunks.  These\t\n\tchunks are then  embedded using a sentence transformer model,  allowing the system  to\t\n\tnumerically capture their meaning. The resulting vector embeddings are stored in a local\t\n\tvector database, which enables rapid and efficient retrieval of relevant information. This\t\napproach  ensures\tthat\tthe  system  remains  fully  offline,  aligning  with  privacy-first\n\tprinciples and avoiding the use of external cloud services.\t\n\tAnalyzing  the  process  further,  when  a  user  submits  a  question,  the  system  performs  a\t\n\tsimilarity search within the vector database to identify the most contextually relevant text\t\n\tchunks. These are then passed to a locally hosted large language model, which uses them\t\n\tas context to generate a grounded, precise answer. By using a local vector database and\t\n\ton-premise inference, the system addresses concerns of data privacy, especially for sectors\t",
+    "created_at": "2025-10-13T09:15:08.154488"
+  },
+  {
+    "document_id": "5ebba130263447f8b4b6f6e19fdcfdc7",
+    "page": 2,
+    "chunk_index": 13,
+    "type": "table",
+    "extraction_method": "camelot/tabula",
+    "text": "\twith strict compliance regulations such as GDPR, HIPAA, or those bound by corporate\t\nNDAs.\t\t\nEvaluating  the  reliability  of  responses,  the  project  integrates  a  multi-agent  verification\t\t\n\tmechanism within the RAG pipeline. Multiple agents assess the retrieved content, verify\t\n\tthe factual integrity, and cross-check the generated output before it is presented to the user.\t\n\tThis  minimizes  hallucinations  and  maintains  high  consistency  with  the  original  source\t\nmaterial,  significantly\timproving \nthe \ntrustworthiness  and  accuracy  of\tthe  system\u2019s\nanswers.\t\t\nFinally, to create a scalable and future-ready architecture, the project is built in a modular\t\t\n\tmanner,  allowing  seamless  integration  with  workflow  tools  such  as  n8n.  This  design\t\n\tensures easy adaptability across various domains, including human resources, healthcare,\t\neducation,  and\tlegal  document  analysis.  By  combining  offline  privacy,\tsemantic\n\tunderstanding, and multi-agent validation, DocAI is positioned as a modern, intelligent,\t\nand reliable solution for document intelligence in the enterprise ecosystem.\t\t",
+    "created_at": "2025-10-13T09:15:08.178253"
+  },
+  {
+    "document_id": "5ebba130263447f8b4b6f6e19fdcfdc7",
+    "page": 3,
+    "chunk_index": 14,
+    "type": "table",
+    "extraction_method": "camelot/tabula",
+    "text": "1.3 Purpose , Scope and Applicability\t\t\n1.3.1 Purpose\t\t\n\tThe primary purpose of this project is to create an intelligent question-answering system\t\n\tcapable  of  extracting  and  delivering  precise  information  from  large  internal  PDF\t\n\tdocuments. It is designed to address the challenges faced by organizations that deal with\t\n\tvast  amounts  of  unstructured  text,  enabling  users  to  retrieve  quick  and  accurate\t\n\tresponses to complex queries without manually searching through files.\t\n\tA core focus is to ensure privacy and security by operating entirely offline. By hosting\t\n\tboth the language model and the vector database locally, the system retains sensitive\t\n\tdata within the organization\u2019s infrastructure, making it ideal for privacycritical domains\t\nsuch  as  healthcare,\tlegal  services,  human\tresources,  and  enterprise  knowledge\nmanagement.\t\t\n\tThe  project  also  aims  to  guarantee  the  reliability  of  responses  through  contextual\t\n\taccuracy and verification. A multi-agent approach is implemented to retrieve the most\t\n\trelevant  document  segments,  verify  the  extracted  information,  and  cross-check  the\t\n\tgenerated answers, thereby reducing the risk of errors or hallucinations.\t\n\tFinally, the system is built with a modular architecture that enables easy scaling and\t\nfuture  enhancements.  This\tflexibility  ensures\tthat  additional \nfeatures\u2014such  as\n\tintegration  with  visual  workflow  tools  like  n8n\u2014can  be  implemented  with  minimal\t\n\teffort, allowing the solution to evolve alongside organizational needs.\t",
+    "created_at": "2025-10-13T09:15:08.201017"
+  },
+  {
+    "document_id": "5ebba130263447f8b4b6f6e19fdcfdc7",
+    "page": 4,
+    "chunk_index": 15,
+    "type": "table",
+    "extraction_method": "camelot/tabula",
+    "text": "\tverification mechanisms, perform offline processing, and support modular scalability\n\tto effectively serve a wide range of industries.\n\u2022\tAutomate PDF Chunking and Processing :\n\tBreak  down  large  internal  PDF  files  into  semantically  coherent  sections  to  enable\n\taccurate retrieval and query matching.\n\u2022\tEnsure Fully Offline Operation :\n\tProtect  data  privacy  and  security  by  processing  all  queries  and  documents  locally\n\twithout relying on cloud servers.\n\u2022\tAdapt to Domain-Agnostic Application :\n\tSupport  multiple  industries  such  as  healthcare,  education,  HR,  legal,  and  enterprise\n\tknowledge management.\n\u2022\tDeliver Contextually Accurate Responses :\n\tRetrieve and present answers based on semantic meaning instead of simple keyword\n\tmatching.\n\u2022\tLeverage Multi-Agent Collaboration :\n\tEmploy  specialized  agents  to  perform  chunking,  ranking,  generating,  and  verifying\n\tanswers to enhance reliability.\n\u2022\tProvide Source Verification and Citations :\n\tEnsure \nfactual  accuracy  by \nlinking \nresponses \nto  original  document  sections  as\n\treferences.\n\u2022\tDesign a Modular Architecture :\n\tCreate a flexible system that enables seamless integration of new features and supports\n\tscaling to larger datasets.\n\u2022\tIntegrate with Vector Databases :\n\tUse  local  vector  databases  like  ChromaDB  to  perform  fast  and  accurate  semantic\n\tsearch.\n\u2022\tHandle Complex Queries :\n\tSupport  multi-part,  multi-step,  or  deeply  contextual  questions  that  require  logical\n\treasoning.\n\u2022\tEnable Future Automation Readiness :\n\tSupport integration with visual workflow orchestration tools like n8n for automating\n\tprocesses.\n\u2022\tOptimize for Limited-Connectivity Environments :\n\tEnsure functionality in areas where internet access is restricted or unavailable.",
+    "created_at": "2025-10-13T09:15:08.225386"
+  },
+  {
+    "document_id": "5ebba130263447f8b4b6f6e19fdcfdc7",
+    "page": 5,
+    "chunk_index": 16,
+    "type": "table",
+    "extraction_method": "camelot/tabula",
+    "text": "\u2022\tSupport Cross-Document Query Handling :\n\tAnswer questions that require retrieving and merging information from multiple PDFs.\n\u2022\tDevelop a User-Friendly Interface :\n\tProvide  a  simple,  intuitive  interface  accessible  to  both  technical  and  non-technical\n\tusers.\n\u2022\tScale for Enterprise Use :\n\tManage thousands of documents and serve multiple departments simultaneously.",
+    "created_at": "2025-10-13T09:15:08.245769"
+  },
+  {
+    "document_id": "5ebba130263447f8b4b6f6e19fdcfdc7",
+    "page": 6,
+    "chunk_index": 17,
+    "type": "table",
+    "extraction_method": "camelot/tabula",
+    "text": "SURVEY OF TECHNOLOGIES\nDocAI  \u2013  Offline  Multi-Agent  RAG  Pipeline  for  Internal  Document  Intelligence  is\ndesigned to process and query large internal documents, including HR manuals, policy\ndocuments, and SOPs, entirely offline. The system identifies the need for secure, fast, and\naccurate document retrieval while preserving data privacy. It applies retrieval-augmented\ngeneration  techniques  to  enhance  efficiency  and  relevance  in  responses.  A  thorough\nsurvey of modern web, backend, AI, and storage technologies was conducted to evaluate\ntheir  suitability  for  speed,  modularity,  and  offline  capability.  This  analysis  involved\ncomparing frameworks and tools to determine the most effective options. The resulting\ntech stack was chosen to ensure scalability, maintainability, and high performance in real-\nworld use.\n2.1 Frontend  Technologies\nBefore finalizing the frontend stack for DocAI, multiple modern frameworks and",
+    "created_at": "2025-10-13T09:15:08.267530"
+  },
+  {
+    "document_id": "5ebba130263447f8b4b6f6e19fdcfdc7",
+    "page": 6,
+    "chunk_index": 18,
+    "type": "table",
+    "extraction_method": "camelot/tabula",
+    "text": "libraries were evaluated to ensure fast performance, a clean UI, and smooth\t\nintegration with the backend. The chosen tools needed to work well in an offline\t\nenvironment, support modular development, and allow quick prototyping.\t\n\u2022\tReact + Next.js: A component-based framework with optional server-side\n\trendering (SSR) and built-in routing, which can also be packaged as a local\n\tSingle Page Application (SPA).\n\u2022\tTailwind CSS: A utility-first CSS framework that enables rapid development\n\tof responsive, modern, and consistent UIs.\n\u2022\tAxios: A lightweight HTTP client for making requests to FastAPI endpoints\n\twith ease.\n\u2022\tNext.js Routing: Provides structured page navigation and layout\n\tmanagement without extra configuration.",
+    "created_at": "2025-10-13T09:15:08.291490"
+  },
+  {
+    "document_id": "5ebba130263447f8b4b6f6e19fdcfdc7",
+    "page": 7,
+    "chunk_index": 19,
+    "type": "table",
+    "extraction_method": "camelot/tabula",
+    "text": "microservices. FastAPI offers speed and developer productivity, while Python\u2019s AI/NLP\nlibraries integrate seamlessly for the RAG pipeline.\n2.3 LLM & Retrieval Technologies\nBefore finalizing the LLM and retrieval stack for DocAI, several offline-capable\ntools and frameworks were identified, evaluated, and selected to ensure privacy, high\naccuracy, and smooth integration with the backend. The chosen tools had to function\nwithout an internet connection, support semantic search, and allow easy deployment\non typical hardware.",
+    "created_at": "2025-10-13T09:15:08.314002"
+  },
+  {
+    "document_id": "5ebba130263447f8b4b6f6e19fdcfdc7",
+    "page": 7,
+    "chunk_index": 20,
+    "type": "table",
+    "extraction_method": "camelot/tabula",
+    "text": "accuracy, and smooth integration with the backend. The chosen tools had to function\t\nwithout an internet connection, support semantic search, and allow easy deployment\t\non typical hardware.\t\n\u2022\tOllama: Utilize to run the language model locally without internet\n\tconnectivity.\n\t\u2022  Mistral 7B: Adopt for balancing quality and speed on standard systems.\n\u2022\tSentence-Transformers: Implement to generate embeddings locally for\n\tsemantic search.\n\u2022\tall-MiniLM-L6-v2: Apply as the embedding model to produce fast, 384-\n\tdimensional vectors.\n\u2022\tChromaDB (with persist_directory): Store and retrieve chunk embeddings\n\twith metadata in a local vector store.\n\u2022\tLangChain (core/light use): Construct a simple RAG chain (prompts +\n\tretrieval) without heavy agent frameworks.",
+    "created_at": "2025-10-13T09:15:08.338199"
+  },
+  {
+    "document_id": "5ebba130263447f8b4b6f6e19fdcfdc7",
+    "page": 7,
+    "chunk_index": 21,
+    "type": "table",
+    "extraction_method": "camelot/tabula",
+    "text": "optimize  data  flows,  enabling  the  system  to  deliver  accurate  and  efficient  query\t\nresponses in an offline environment.\t\n\u2022\tCore Backend (Python 3.10+) \u2014 Primary backend language with a rich ecosystem\n\tfor AI/NLP and rapid prototyping.\n\u2022\tFastAPI \u2014 High-performance Python web framework to expose REST endpoints\n\tfor document upload, indexing, and question answering.\n\u2022\tUvicorn  (uvicorn[standard])  \u2014  ASGI  server  that  runs  the  FastAPI  app  with\n\tefficient async I/O.\n\u2022\tPydantic  v2  \u2014  Data  validation  and  typed  request/response  schemas  for  clean,\n\treliable APIs.\n\u2022\tpython-dotenv \u2014 Loads configuration (paths, model names) from a .env file to\n\tkeep code organized.\n\u2022\t(Optional) loguru \u2014 Structured logging for easier debugging and error tracing.",
+    "created_at": "2025-10-13T09:15:08.361087"
+  },
+  {
+    "document_id": "5ebba130263447f8b4b6f6e19fdcfdc7",
+    "page": 7,
+    "chunk_index": 22,
+    "type": "table",
+    "extraction_method": "camelot/tabula",
+    "text": "\tkeep code organized.\n\u2022\t(Optional) loguru \u2014 Structured logging for easier debugging and error tracing.\nWhy this combo?\t\nThis stack is lightweight, fast, and well-suited for building privacy-preserving, offline\t\nmicroservices. FastAPI offers speed and developer productivity, while Python\u2019s AI/NLP\t\nlibraries integrate seamlessly for the RAG pipeline.\t\n2.3 LLM & Retrieval Technologies\t\n\tBefore finalizing the LLM and retrieval stack for DocAI, several offline-capable",
+    "created_at": "2025-10-13T09:15:08.380089"
+  },
+  {
+    "document_id": "5ebba130263447f8b4b6f6e19fdcfdc7",
+    "page": 8,
+    "chunk_index": 23,
+    "type": "table",
+    "extraction_method": "camelot/tabula",
+    "text": "To coordinate the various stages of retrieval-augmented generation, a minimal multi-\t\nagent architecture was designed, implemented, and optimized for simplicity and\t\ndebugging ease.\t\n\u2022\tChunkAgent: Parse documents, segment them into chunks, and generate\n\tembeddings.\n\u2022\tRankerAgent: Retrieve the top-k relevant chunks from Chroma.\n\u2022\tGeneratorAgent: Invoke the local LLM (via Ollama) to draft answers.\n\u2022\tVerifierAgent: Validate that answers are grounded in retrieved chunks, add\n\tcitations, or flag uncertainty.\n\u2022\tSimple Orchestrator: Sequence calls to these agents for streamlined\n\texecution.",
+    "created_at": "2025-10-13T09:15:08.401136"
+  },
+  {
+    "document_id": "5ebba130263447f8b4b6f6e19fdcfdc7",
+    "page": 9,
+    "chunk_index": 24,
+    "type": "table",
+    "extraction_method": "camelot/tabula",
+    "text": "\tWhy SQLite + Chroma?\t\n\tSQLite handles application metadata, while Chroma specializes in vector search \u2014 both\t\n\toperate offline and remain lightweight.\t\n\t2.7 Authentication (V1 Scope)\t\n\tFor the initial offline demo, authentication was kept minimal.\t\n\t\u2022\tNone: Single-user, fully offline operation.\n\t\u2022\t(Optional) Local JWT: If authentication becomes necessary, without\n\t\trequiring internet.\nWhy?\t\t\n\tAvoids OAuth or cloud-based auth systems to preserve the core USP of complete offline\t\nprivacy.\t\t\n\t\t9",
+    "created_at": "2025-10-13T09:15:08.425195"
+  }
+]

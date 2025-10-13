@@ -1,0 +1,37 @@
+{
+  "document_id": "f56c6e4d98964484b148e7fd502b4d69",
+  "page": 32,
+  "table_index": 34,
+  "data": [
+    [
+      "\uf06c\nImplement the Naive Bayes algorithm for classification"
+    ],
+    [
+      "\uf06c\nTrin a Naive Bayes' model using a given dataset and calculate class probabilities"
+    ],
+    [
+      "\uf06c\nEvaluate the accuracy of the model on test data and analyze the results"
+    ],
+    [
+      "is called\nNa\u00efve Bayes Classifier is a probabilistic machine learning algorithm based on Bayes\u2019 Theorem.It"
+    ],
+    [
+      "\u201cna\u00efve\u201d because it assumes that all\nfeatures (symptoms, words, attributes, etc.) are independent of each other,"
+    ],
+    [
+      "which is rarely true in real life but works surprisingly well."
+    ],
+    [
+      "Commonly used for:"
+    ],
+    [
+      "Text classification (spam detection, sentiment analysis)"
+    ],
+    [
+      "Medical diagnosis (symptom \u2192 disease)"
+    ],
+    [
+      "Document categorization"
+    ]
+  ]
+}

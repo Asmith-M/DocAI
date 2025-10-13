@@ -1,0 +1,43 @@
+{
+  "document_id": "f56c6e4d98964484b148e7fd502b4d69",
+  "page": 30,
+  "table_index": 32,
+  "data": [
+    [
+      "Face detection in computer vision"
+    ],
+    [
+      "Sentiment analysis"
+    ],
+    [
+      "Code:"
+    ],
+    [
+      "print(\"Omkar Madyal\")"
+    ],
+    [
+      "import pandas as pd"
+    ],
+    [
+      "from sklearn import model_selection"
+    ],
+    [
+      "from sklearn.ensemble import AdaBoostClassifier"
+    ],
+    [
+      "# Correct dataset URL"
+    ],
+    [
+      "url = \"https://raw.githubusercontent.com/jbrownlee/Datasets/master/pima-indians-diabetes.data.csv\""
+    ],
+    [
+      "# Column names"
+    ],
+    [
+      "names = ['preg', 'plas', 'pres', 'skin', 'test', 'mass', 'pedi', 'age', 'class']"
+    ],
+    [
+      "# Load dataset"
+    ]
+  ]
+}

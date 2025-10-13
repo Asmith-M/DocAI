@@ -1,0 +1,64 @@
+{
+  "document_id": "f56c6e4d98964484b148e7fd502b4d69",
+  "page": 16,
+  "table_index": 17,
+  "data": [
+    [
+      "Marketing \u2013 customer segmentation."
+    ],
+    [
+      "Manufacturing \u2013 defect detection"
+    ],
+    [
+      "Code :"
+    ],
+    [
+      "print(\"Omkar Madyal\")"
+    ],
+    [
+      "import pandas as pd"
+    ],
+    [
+      "from sklearn.model_selection import train_test_split"
+    ],
+    [
+      "from sklearn.tree import DecisionTreeClassifier, export_text, plot_tree"
+    ],
+    [
+      "from sklearn.metrics import accuracy_score"
+    ],
+    [
+      "import matplotlib.pyplot as plt"
+    ],
+    [
+      "import time"
+    ],
+    [
+      "# 1. Load the dataset from an online Gist (PlayTennis.csv)"
+    ],
+    [
+      "url = \"https://gist.githubusercontent.com/DiogoRibeiro7/c6590d0cf119e87c39e31c21a9c0f3a8/raw/PlayTennis.csv\""
+    ],
+    [
+      "data = pd.read_csv(url)"
+    ],
+    [
+      "# 2. Preprocess: one-hot encode categorical features, encode target"
+    ],
+    [
+      "X = pd.get_dummies(data.drop(columns=['Play Tennis']))"
+    ],
+    [
+      "y = data['Play Tennis'].map({'Yes': 1, 'No': 0})"
+    ],
+    [
+      "# 3. Split data into train and test sets"
+    ],
+    [
+      "X_train, X_test, y_train, y_test = train_test_split("
+    ],
+    [
+      "X, y, test_size=0.3, random_state=42"
+    ]
+  ]
+}

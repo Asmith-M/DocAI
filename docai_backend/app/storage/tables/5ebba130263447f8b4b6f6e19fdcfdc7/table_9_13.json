@@ -1,0 +1,67 @@
+{
+  "document_id": "5ebba130263447f8b4b6f6e19fdcfdc7",
+  "page": 9,
+  "table_index": 13,
+  "data": [
+    [
+      "",
+      "Why SQLite + Chroma?",
+      ""
+    ],
+    [
+      "",
+      "SQLite handles application metadata, while Chroma specializes in vector search \u2014 both",
+      ""
+    ],
+    [
+      "",
+      "operate offline and remain lightweight.",
+      ""
+    ],
+    [
+      "",
+      "2.7 Authentication (V1 Scope)",
+      ""
+    ],
+    [
+      "",
+      "For the initial offline demo, authentication was kept minimal.",
+      ""
+    ],
+    [
+      "",
+      "\u2022",
+      "None: Single-user, fully offline operation."
+    ],
+    [
+      "",
+      "\u2022",
+      "(Optional) Local JWT: If authentication becomes necessary, without"
+    ],
+    [
+      "",
+      "",
+      "requiring internet."
+    ],
+    [
+      "Why?",
+      "",
+      ""
+    ],
+    [
+      "",
+      "Avoids OAuth or cloud-based auth systems to preserve the core USP of complete offline",
+      ""
+    ],
+    [
+      "privacy.",
+      "",
+      ""
+    ],
+    [
+      "",
+      "",
+      "9"
+    ]
+  ]
+}

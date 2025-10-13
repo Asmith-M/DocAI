@@ -2,6 +2,14 @@ import logging
 from typing import Optional
 from app.core.config import settings
 
+# Check if langdetect is available
+try:
+    from langdetect import detect
+    detect("This is English text.")
+    logging.getLogger(__name__).info("Langdetect library initialized successfully")
+except Exception as e:
+    logging.getLogger(__name__).warning(f"Langdetect library not available: {e}")
+
 log = logging.getLogger(__name__)
 
 class LanguageDetectAgent:

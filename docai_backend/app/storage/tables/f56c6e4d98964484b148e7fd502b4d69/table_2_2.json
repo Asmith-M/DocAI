@@ -1,0 +1,121 @@
+{
+  "document_id": "f56c6e4d98964484b148e7fd502b4d69",
+  "page": 2,
+  "table_index": 2,
+  "data": [
+    [
+      "",
+      "Breadth First Search & Iterative Depth First Search",
+      "",
+      ""
+    ],
+    [
+      "",
+      "Implement the Breadth First Search algorithm to solve a given problem",
+      "",
+      ""
+    ],
+    [
+      "is\na fundamental\nBreadth-First Search (BFS)",
+      "algorithm used to traverse a\ntree in a",
+      "level-wise manner.",
+      "In this"
+    ],
+    [
+      "method, nodes are visited one level at a time, starting from the root node, then moving on to all nodes at the next level,",
+      "",
+      "",
+      ""
+    ],
+    [
+      "and so on until every node in the tree has been visited.",
+      "",
+      "",
+      ""
+    ],
+    [
+      "The traversal begins at the root node, which is the topmost node in the tree. From the root, the algorithm first visits all",
+      "",
+      "",
+      ""
+    ],
+    [
+      "immediate child nodes. Once all nodes at\nthe current",
+      "level are processed,",
+      "the traversal continues to the nodes at",
+      "the"
+    ],
+    [
+      "next level. This process continues level by level until all nodes have been visited.",
+      "",
+      "",
+      ""
+    ],
+    [
+      "BFS is implemented using a queue data structure, which follows",
+      "the First-In-First-Out",
+      "(FIFO) principle. At",
+      "the"
+    ],
+    [
+      "beginning of the traversal, the root node is inserted into the queue. Then, in a loop, the node at the front of the queue is",
+      "",
+      "",
+      ""
+    ],
+    [
+      "removed (dequeued), processed, and its children are added (enqueued) to the end of the queue. This ensures that nodes",
+      "",
+      "",
+      ""
+    ],
+    [
+      "are processed in the exact order they appear level by level in the tree.",
+      "",
+      "",
+      ""
+    ],
+    [
+      "One of the key benefits of BFS in trees is that it does not require tracking visited nodes, because in a tree, each node",
+      "",
+      "",
+      ""
+    ],
+    [
+      "is unique and there are no repeated connections or cycles. This makes BFS implementation in trees simpler and more",
+      "",
+      "",
+      ""
+    ],
+    [
+      "efficient compared to other structures.",
+      "",
+      "",
+      ""
+    ],
+    [
+      "The time complexity of BFS in a tree is O(n), where n is the number of nodes in the tree. This is because each node is",
+      "",
+      "",
+      ""
+    ],
+    [
+      "visited exactly once. The space complexity is also O(n) in the worst case, especially when the tree is wide and a large",
+      "",
+      "",
+      ""
+    ],
+    [
+      "number of nodes need to be stored in the queue at the same time (for example, all nodes at the bottom level).",
+      "",
+      "",
+      ""
+    ],
+    [
+      "BFS is particularly useful when solving problems that involve:",
+      "",
+      "",
+      ""
+    ]
+  ]
+}

@@ -1,0 +1,39 @@
+{
+  "document_id": "5ebba130263447f8b4b6f6e19fdcfdc7",
+  "page": 7,
+  "table_index": 9,
+  "data": [
+    [
+      "",
+      "keep code organized."
+    ],
+    [
+      "\u2022",
+      "(Optional) loguru \u2014 Structured logging for easier debugging and error tracing."
+    ],
+    [
+      "Why this combo?",
+      ""
+    ],
+    [
+      "This stack is lightweight, fast, and well-suited for building privacy-preserving, offline",
+      ""
+    ],
+    [
+      "microservices. FastAPI offers speed and developer productivity, while Python\u2019s AI/NLP",
+      ""
+    ],
+    [
+      "libraries integrate seamlessly for the RAG pipeline.",
+      ""
+    ],
+    [
+      "2.3 LLM & Retrieval Technologies",
+      ""
+    ],
+    [
+      "",
+      "Before finalizing the LLM and retrieval stack for DocAI, several offline-capable"
+    ]
+  ]
+}

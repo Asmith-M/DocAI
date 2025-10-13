@@ -1,0 +1,175 @@
+{
+  "document_id": "f56c6e4d98964484b148e7fd502b4d69",
+  "page": 26,
+  "table_index": 28,
+  "data": [
+    [
+      "TY.BSc.CS Semester V",
+      "Omkar Madyal"
+    ],
+    [
+      "# Dataset shape and stats",
+      ""
+    ],
+    [
+      "print(\"\\nDataset shape:\", df.shape)",
+      ""
+    ],
+    [
+      "print(\"\\nStatistical Summary:\")",
+      ""
+    ],
+    [
+      "print(df.describe())",
+      ""
+    ],
+    [
+      "# ==========================",
+      ""
+    ],
+    [
+      "# Step 2: Prepare the Data",
+      ""
+    ],
+    [
+      "# ==========================",
+      ""
+    ],
+    [
+      "# Features and target",
+      ""
+    ],
+    [
+      "X = df.drop(\"Outcome\", axis=1) # Independent variables",
+      ""
+    ],
+    [
+      "y = df[\"Outcome\"] # Target variable",
+      ""
+    ],
+    [
+      "# Manual train-test split (600 train + 168 test)",
+      ""
+    ],
+    [
+      "X_train = X.iloc[:600]",
+      ""
+    ],
+    [
+      "X_test = X.iloc[600:]",
+      ""
+    ],
+    [
+      "y_train = y.iloc[:600]",
+      ""
+    ],
+    [
+      "y_test = y.iloc[600:]",
+      ""
+    ],
+    [
+      "print(\"\\nTraining set shape:\", X_train.shape)",
+      ""
+    ],
+    [
+      "print(\"Test set shape:\", X_test.shape)",
+      ""
+    ],
+    [
+      "# ================================",
+      ""
+    ],
+    [
+      "# Step 3: Train SVM with Linear Kernel",
+      ""
+    ],
+    [
+      "# ================================",
+      ""
+    ],
+    [
+      "model = SVC(kernel='linear') # Linear SVM",
+      ""
+    ],
+    [
+      "model.fit(X_train, y_train) # Train the model",
+      ""
+    ],
+    [
+      "# ============================",
+      ""
+    ],
+    [
+      "# Step 4: Predictions & Metrics",
+      ""
+    ],
+    [
+      "# ============================",
+      ""
+    ],
+    [
+      "y_pred = model.predict(X_test)",
+      ""
+    ],
+    [
+      "# Confusion matrix",
+      ""
+    ],
+    [
+      "cm = confusion_matrix(y_test, y_pred)",
+      ""
+    ],
+    [
+      "print(\"\\nConfusion Matrix:\\n\", cm)",
+      ""
+    ],
+    [
+      "# Accuracy",
+      ""
+    ],
+    [
+      "accuracy = accuracy_score(y_test, y_pred)",
+      ""
+    ],
+    [
+      "print(\"\\nAccuracy:\", accuracy)",
+      ""
+    ],
+    [
+      "# Classification report",
+      ""
+    ],
+    [
+      "print(\"\\nClassification Report:\\n\", classification_report(y_test, y_pred))",
+      ""
+    ],
+    [
+      "# ================================",
+      ""
+    ],
+    [
+      "# Step 5: Cross-Validation",
+      ""
+    ],
+    [
+      "# ================================",
+      ""
+    ],
+    [
+      "# 10-fold cross-validation on training set",
+      ""
+    ],
+    [
+      "cv_scores = cross_val_score(model, X_train, y_train, cv=10)",
+      ""
+    ],
+    [
+      "print(\"\\nCross-Validation Accuracy: {:.2f}%\".format(cv_scores.mean() * 100))",
+      ""
+    ],
+    [
+      "",
+      "Artificial Intelligence"
+    ]
+  ]
+}
