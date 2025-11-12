@@ -11,6 +11,8 @@ try:
 except Exception as e:
     logging.getLogger(__name__).warning(f"Transformers library not available: {e}")
 
+from app.utils.agent_timer import log_time
+
 log = logging.getLogger(__name__)
 
 class TranslatorAgent:
@@ -37,6 +39,7 @@ class TranslatorAgent:
                 log.warning(f"Failed to load translation model for {pair}: {e}. Translation will be disabled for this pair.")
                 self.models[pair] = None
 
+    @log_time
     def translate(self, text: str, src_lang: str, tgt_lang: str, max_length: int = 512) -> str:
         """
         Translate text from src_lang to tgt_lang.

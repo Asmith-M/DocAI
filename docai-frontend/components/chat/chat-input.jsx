@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect } from "react"
 import { Send, Paperclip, Mic, Square, Globe, ChevronDown } from "lucide-react"
 
-export function ChatInput({ value, onChange, onSend, documentId }) {
+export function ChatInput({ value, onChange, onSend, documentId, isTyping }) {
   const [inputValue, setInputValue] = useState(value || "")
   const [isRecording, setIsRecording] = useState(false)
   const [autoDetect, setAutoDetect] = useState(true)
@@ -86,6 +86,7 @@ export function ChatInput({ value, onChange, onSend, documentId }) {
             type="button"
             className="p-2 text-gray-400 hover:text-lavender-500 transition-colors rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700"
             title="Attach file"
+            disabled={isTyping}
           >
             <Paperclip className="w-5 h-5" />
           </button>
@@ -97,10 +98,11 @@ export function ChatInput({ value, onChange, onSend, documentId }) {
               value={inputValue}
               onChange={handleInputChange}
               onKeyDown={handleKeyDown}
-              placeholder="Ask a question about your documents... (Try typing ':about' for a surprise!)"
+              placeholder={isTyping ? "Generating response..." : "Ask a question about your documents... (Try typing ':about' for a surprise!)"}
               className="w-full resize-none border-0 focus:ring-0 focus:outline-none bg-transparent text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500"
               rows={1}
               style={{ maxHeight: "120px" }}
+              disabled={isTyping}
             />
           </div>
 
@@ -116,6 +118,7 @@ export function ChatInput({ value, onChange, onSend, documentId }) {
                   : "text-gray-400 hover:text-lavender-500 hover:bg-gray-100 dark:hover:bg-gray-700"
               }`}
               title={autoDetect ? "Auto-detect language enabled" : "Auto-detect language disabled"}
+              disabled={isTyping}
             >
               <Globe className="w-5 h-5" />
             </button>
@@ -126,7 +129,7 @@ export function ChatInput({ value, onChange, onSend, documentId }) {
                 type="button"
                 onClick={() => setShowLangDropdown(!showLangDropdown)}
                 className="flex items-center gap-1 px-3 py-2 text-sm bg-gray-100 dark:bg-gray-700 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
-                disabled={autoDetect}
+                disabled={autoDetect || isTyping}
               >
                 <span className={autoDetect ? "text-gray-400" : "text-gray-900 dark:text-white"}>
                   {selectedLang}
@@ -164,6 +167,7 @@ export function ChatInput({ value, onChange, onSend, documentId }) {
                 : "text-gray-400 hover:text-lavender-500 hover:bg-gray-100 dark:hover:bg-gray-700"
             }`}
             title={isRecording ? "Stop recording" : "Start voice recording"}
+            disabled={isTyping}
           >
             {isRecording ? <Square className="w-5 h-5" /> : <Mic className="w-5 h-5" />}
           </button>
@@ -171,7 +175,7 @@ export function ChatInput({ value, onChange, onSend, documentId }) {
           {/* Send Button */}
           <button
             type="submit"
-            disabled={!inputValue.trim()}
+            disabled={!inputValue.trim() || isTyping}
             className="p-3 bg-gradient-to-r from-lavender-500 to-lavender-600 hover:from-lavender-600 hover:to-lavender-700 text-white rounded-lg disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 hover:scale-105 disabled:hover:scale-100 shadow-sm"
             title="Send message"
           >

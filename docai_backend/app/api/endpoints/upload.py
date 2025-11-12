@@ -164,7 +164,7 @@ async def upload_documents(files: List[UploadFile] = File(...)):
             }
 
             metadata_path = doc_folder / "metadata.json"
-            metadata_path.write_text(json.dumps(metadata, indent=2), encoding="utf-8")
+            metadata_path.write_text(json.dumps(metadata, indent=2, default=str), encoding="utf-8")
 
             file_result.update({
                 "document_id": document_id,

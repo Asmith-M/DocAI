@@ -1,31 +1,43 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { Globe, Monitor, FileText, Palette } from "lucide-react"
-import { motion } from "framer-motion"
-import { DarkModeToggle } from "@/components/shared/dark-mode-toggle"
+import { useState } from "react";
+import { Globe, Monitor, FileText, Palette } from "lucide-react";
+import { motion } from "framer-motion";
+import { DarkModeToggle } from "@/components/shared/dark-mode-toggle";
 
 export function SettingsPanel() {
-  const [language, setLanguage] = useState("en")
-  const [model, setModel] = useState("gpt-4")
-  const [viewMode, setViewMode] = useState("card")
+  const [language, setLanguage] = useState("en");
+  const [model, setModel] = useState("gpt-4");
+  const [viewMode, setViewMode] = useState("card");
 
   const languages = [
     { code: "en", name: "English", flag: "🇺🇸" },
     { code: "hi", name: "हिंदी", flag: "🇮🇳" },
     { code: "mr", name: "मराठी", flag: "🇮🇳" },
-  ]
+  ];
 
   const models = [
-    { id: "gpt-4", name: "GPT-4", description: "Most capable model for complex tasks" },
-    { id: "gpt-3.5", name: "GPT-3.5 Turbo", description: "Fast and efficient for most queries" },
-    { id: "claude", name: "Claude", description: "Excellent for analysis and reasoning" },
-  ]
+    {
+      id: "gpt-4",
+      name: "GPT-4",
+      description: "Most capable model for complex tasks",
+    },
+    {
+      id: "gpt-3.5",
+      name: "GPT-3.5 Turbo",
+      description: "Fast and efficient for most queries",
+    },
+    {
+      id: "claude",
+      name: "Claude",
+      description: "Excellent for analysis and reasoning",
+    },
+  ];
 
   const viewModes = [
     { id: "card", name: "Card View", icon: "📋" },
-    { id: "table", name: "Table View", icon: "📊" },
-  ]
+    { id: "table", name: "Table View", icon: "-" },
+  ];
 
   return (
     <div className="space-y-8">
@@ -38,7 +50,9 @@ export function SettingsPanel() {
       >
         <div className="flex items-center space-x-3 mb-4">
           <Globe className="w-6 h-6 text-lavender-500" />
-          <h3 className="text-xl font-semibold text-gray-900 dark:text-white">Language</h3>
+          <h3 className="text-xl font-semibold text-gray-900 dark:text-white">
+            Language
+          </h3>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
@@ -53,7 +67,9 @@ export function SettingsPanel() {
               }`}
             >
               <div className="text-2xl mb-2">{lang.flag}</div>
-              <div className="font-medium text-gray-900 dark:text-white">{lang.name}</div>
+              <div className="font-medium text-gray-900 dark:text-white">
+                {lang.name}
+              </div>
             </button>
           ))}
         </div>
@@ -68,7 +84,9 @@ export function SettingsPanel() {
       >
         <div className="flex items-center space-x-3 mb-4">
           <Monitor className="w-6 h-6 text-lavender-500" />
-          <h3 className="text-xl font-semibold text-gray-900 dark:text-white">AI Model</h3>
+          <h3 className="text-xl font-semibold text-gray-900 dark:text-white">
+            AI Model
+          </h3>
         </div>
 
         <div className="space-y-3">
@@ -82,8 +100,12 @@ export function SettingsPanel() {
                   : "border-gray-200 dark:border-gray-600 hover:border-lavender-300 dark:hover:border-lavender-400"
               }`}
             >
-              <div className="font-medium text-gray-900 dark:text-white mb-1">{modelOption.name}</div>
-              <div className="text-sm text-gray-600 dark:text-gray-300">{modelOption.description}</div>
+              <div className="font-medium text-gray-900 dark:text-white mb-1">
+                {modelOption.name}
+              </div>
+              <div className="text-sm text-gray-600 dark:text-gray-300">
+                {modelOption.description}
+              </div>
             </button>
           ))}
         </div>
@@ -100,8 +122,12 @@ export function SettingsPanel() {
           <div className="flex items-center space-x-3">
             <Palette className="w-6 h-6 text-lavender-500" />
             <div>
-              <h3 className="text-xl font-semibold text-gray-900 dark:text-white">Theme</h3>
-              <p className="text-sm text-gray-600 dark:text-gray-300">Toggle between light and dark mode</p>
+              <h3 className="text-xl font-semibold text-gray-900 dark:text-white">
+                Theme
+              </h3>
+              <p className="text-sm text-gray-600 dark:text-gray-300">
+                Toggle between light and dark mode
+              </p>
             </div>
           </div>
           <DarkModeToggle />
@@ -117,7 +143,9 @@ export function SettingsPanel() {
       >
         <div className="flex items-center space-x-3 mb-4">
           <FileText className="w-6 h-6 text-lavender-500" />
-          <h3 className="text-xl font-semibold text-gray-900 dark:text-white">Document View Mode</h3>
+          <h3 className="text-xl font-semibold text-gray-900 dark:text-white">
+            Document View Mode
+          </h3>
         </div>
 
         <div className="grid grid-cols-2 gap-3">
@@ -132,11 +160,13 @@ export function SettingsPanel() {
               }`}
             >
               <div className="text-2xl mb-2">{mode.icon}</div>
-              <div className="font-medium text-gray-900 dark:text-white">{mode.name}</div>
+              <div className="font-medium text-gray-900 dark:text-white">
+                {mode.name}
+              </div>
             </button>
           ))}
         </div>
       </motion.div>
     </div>
-  )
+  );
 }

@@ -48,6 +48,19 @@ class Settings:
     OLLAMA_MAX_QUEUE: int = int(os.getenv("OLLAMA_MAX_QUEUE", "10"))
     OLLAMA_KEEP_ALIVE: str = os.getenv("OLLAMA_KEEP_ALIVE", "5m")
 
+    # Generator tuning (performance vs quality)
+    # FAST_GENERATION: when true, use smaller context and shorter timeouts to return answers faster
+    FAST_GENERATION: bool = os.getenv("FAST_GENERATION", "false").lower() == "true"
+    GENERATOR_CONCURRENCY_LIMIT: int = int(os.getenv("GENERATOR_CONCURRENCY_LIMIT", "3"))
+    GENERATOR_MAX_CONTEXT_CHUNKS: int = int(os.getenv("GENERATOR_MAX_CONTEXT_CHUNKS", "3"))
+    GENERATOR_MAX_CHUNK_SIZE: int = int(os.getenv("GENERATOR_MAX_CHUNK_SIZE", "800"))
+    GENERATOR_FAST_MAX_CONTEXT_CHUNKS: int = int(os.getenv("GENERATOR_FAST_MAX_CONTEXT_CHUNKS", "1"))
+    GENERATOR_FAST_MAX_CHUNK_SIZE: int = int(os.getenv("GENERATOR_FAST_MAX_CHUNK_SIZE", "400"))
+    GENERATOR_SYNC_TIMEOUT: float = float(os.getenv("GENERATOR_SYNC_TIMEOUT", "120.0"))
+    GENERATOR_STREAM_CHUNK_TIMEOUT: float = float(os.getenv("GENERATOR_STREAM_CHUNK_TIMEOUT", "30.0"))
+    GENERATOR_FAST_SYNC_TIMEOUT: float = float(os.getenv("GENERATOR_FAST_SYNC_TIMEOUT", "30.0"))
+    GENERATOR_FAST_STREAM_CHUNK_TIMEOUT: float = float(os.getenv("GENERATOR_FAST_STREAM_CHUNK_TIMEOUT", "15.0"))
+
     # Offline mode settings
     OFFLINE_MODE: bool = os.getenv("OFFLINE_MODE", "true").lower() == "true"
     ENABLE_TELEMETRY: bool = os.getenv("ENABLE_TELEMETRY", "false").lower() == "true"

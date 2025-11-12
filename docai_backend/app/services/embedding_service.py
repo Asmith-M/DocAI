@@ -210,6 +210,14 @@ class EmbeddingService:
                         # Generate embeddings for batch
                         embeddings = self._generate_embeddings(batch_texts)
 
+                        # Log diagnostic info before adding to collection
+                        try:
+                            collection_name = self._get_collection_name(document_id)
+                        except Exception:
+                            collection_name = f"doc_{document_id}"
+
+                        log.info(f"Adding {len(batch_ids)} embeddings to collection {collection_name} for document {document_id}")
+
                         # Add to collection
                         collection.add(
                             embeddings=embeddings.tolist(),
@@ -367,6 +375,54 @@ class EmbeddingService:
         except Exception as e:
             log.error(f"Failed to delete embeddings for document {document_id}: {e}")
             return False
+
+        def diagnose_document(self, document_id: str) -> Dict[str, Any]:
+            """Return diagnostic information to help debug embedding generation/storage."""
+            info: Dict[str, Any] = {}
+
+            # Model loaded?
+            info["model_loaded"] = self.model is not None
+
+            # Chunks file info
+            try:
+                chunks = self._load_chunks(document_id)
+                info["chunks_file_exists"] = bool(chunks)
+                info["total_chunks_in_file"] = len(chunks)
+            except Exception as e:
+                info["chunks_error"] = str(e)
+
+            # Collection info
+            collection_name = self._get_collection_name(document_id)
+            try:
+                collection = self.chroma_client.get_collection(collection_name)
+                info["collection_exists"] = True
+                # Try to get ids count
+                try:
+                    data = collection.get(include=["ids"]) or {}
+                    ids_list = []
+                    if data.get("ids"):
+                        # data['ids'] is usually a list of lists per result
+                        first = data.get("ids")[0]
+                        if isinstance(first, list):
+                            ids_list = first
+                        else:
+                            ids_list = data.get("ids")
+
+                    info["collection_ids_count"] = len(ids_list)
+                except Exception as e:
+                    info["collection_get_error"] = str(e)
+            except Exception as e:
+                info["collection_exists"] = False
+                info["collection_error"] = str(e)
+
+            # Files on disk for chroma persistence (quick filesystem check)
+            try:
+                files = list(self.chroma_storage.iterdir())
+                info["chroma_storage_files"] = len(files)
+            except Exception as e:
+                info["chroma_storage_error"] = str(e)
+
+            return info
 
 # Global instance
 embedding_service = EmbeddingService()

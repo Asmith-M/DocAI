@@ -1,22 +1,28 @@
-# TODO: Implement Sources Panel Functionality
+# Document History Sidebar Fixes - COMPLETED
 
-## Backend Implementation
+## Backend Changes
 
-- [ ] Create new `/chat` API endpoint that returns JSON with `answer` and `sources`
-- [ ] Implement source aggregation function to group chunks by filename and consolidate page numbers
-- [ ] Update response format to match: `{"answer": "...", "sources": [{"fileName": "doc.pdf", "pages": "Pages 1, 3"}]}`
+- [x] Created `/api/docs/clear` endpoint in `docai_backend/app/api/endpoints/docs.py`
+- [x] Added docs router to `docai_backend/app/api/routes.py`
+- [x] Endpoint deletes all document directories and associated embeddings from ChromaDB
+- [x] Added proper error handling and logging
 
-## Frontend Implementation
+## Frontend Changes
 
-- [ ] Update API client (`lib/api.js`) to call new `/chat` endpoint
-- [ ] Modify ChatContainer to handle new JSON response structure
-- [ ] Add separate state for current sources (most recent AI response)
-- [ ] Update SourcePanel component to display aggregated sources format
-- [ ] Ensure sources update dynamically with each new AI response
+- [x] Updated `handleClearHistory` function in `docai-frontend/components/chat/document-history-sidebar.jsx`
+- [x] Added `clearHistory` import from API
+- [x] Function now calls backend API and refreshes document list on success
+- [x] Added proper error handling with toast notifications
 
 ## Testing
 
-- [ ] Test backend endpoint returns correct format
-- [ ] Test frontend displays sources correctly
-- [ ] Test empty sources case
-- [ ] Test multiple documents with different page ranges
+- [x] Created comprehensive tests in `docai_backend/tests/test_docs_endpoints.py`
+- [x] Tests cover clearing documents when they exist and when none exist
+- [x] All tests passing
+
+## Issues Fixed
+
+- [x] Clear History button now works and removes all documents from both backend and frontend
+- [x] Document list refreshes immediately after clearing
+- [x] Proper error handling for failed operations
+- [x] Documents deleted from backend are no longer shown in frontend after clearing

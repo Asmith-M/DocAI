@@ -10,6 +10,8 @@ from typing import List, Dict, Any
 
 from app.orchestrator.rag_orchestrator import rag_orchestrator
 from app.cache.rag_cache import clear_cache
+from app.agents.language_detect_agent import language_detect_agent
+from app.agents.translator_agent import translator_agent
 
 router = APIRouter()
 
@@ -166,11 +168,15 @@ async def chat_endpoint(request: Request, response: Response):
         request_id = str(uuid.uuid4())
         response.headers["X-Correlation-Id"] = request_id
 
-        logger.info(f"🚀 Starting chat query for doc {document_id}, request_id {request_id}")
-        logger.info(f"📝 Query: {query}")
+        logger.info(f"- Starting chat query for doc {document_id}, request_id {request_id}")
+        logger.info(f"- Query: {query}")
 
-        # Get candidates from RAG orchestrator
-        candidates = await rag_orchestrator.ranker_agent.get_candidates(document_id, query, return_top=5, lang=lang)
+        # Detect language if not provided
+        detected_lang = lang if lang else language_detect_agent.detect_lang(query)
+        logger.info(f"Detected language: {detected_lang} for request {request_id}")
+
+        # Get candidates from RAG orchestrator (pass detected language for retrieval filtering)
+        candidates = await rag_orchestrator.ranker_agent.get_candidates(document_id, query, return_top=5, lang=detected_lang)
 
         if not candidates.get("chunks"):
             # Return empty sources if no chunks found
@@ -179,25 +185,37 @@ async def chat_endpoint(request: Request, response: Response):
                 "sources": []
             }, headers={"X-Correlation-Id": request_id})
 
-        # Generate answer
-        # Note: generator_agent.generate is an async-generator (it yields tokens or a single result).
-        # We must iterate it to collect the (single) non-streaming result instead of awaiting it.
-        answer = None
-        gen = rag_orchestrator.generator_agent.generate(query, candidates["chunks"], stream=False, request_id=request_id)
-        async for item in gen:
-            answer = item
+        # Generate answer (pass detected language so prompts are localized)
+        try:
+            # When stream=False, generate() returns a coroutine that we need to await
+            answer = await rag_orchestrator.generator_agent.generate(
+                query, 
+                candidates["chunks"], 
+                stream=False, 
+                request_id=request_id, 
+                language=detected_lang
+            )
+            
+            if not answer:
+                raise HTTPException(status_code=500, detail="Failed to generate answer")
+        except Exception as e:
+            logger.error(f"Error generating answer for request {request_id}: {e}")
+            raise HTTPException(status_code=500, detail="Failed to generate answer")
 
         # Aggregate sources from chunks
         sources = aggregate_sources(candidates["chunks"])
 
-        logger.info(f"✅ Chat query completed for request_id {request_id}")
-        logger.info(f"📄 Answer length: {len(answer)} characters")
-        logger.info(f"📚 Sources found: {len(sources)}")
+        logger.info(f"- Chat query completed for request_id {request_id}")
+        logger.info(f"- Answer length: {len(answer)} characters")
+        logger.info(f"- Sources found: {len(sources)}")
 
-        return JSONResponse(content={
+        resp = {
             "answer": answer,
-            "sources": sources
-        }, headers={"X-Correlation-Id": request_id})
+            "sources": sources,
+            "detected_lang": detected_lang
+        }
+
+        return JSONResponse(content=resp, headers={"X-Correlation-Id": request_id})
 
     except json.JSONDecodeError:
         raise HTTPException(status_code=400, detail="Invalid JSON in request body")

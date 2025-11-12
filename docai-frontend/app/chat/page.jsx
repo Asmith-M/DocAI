@@ -28,6 +28,7 @@ export default function ChatPage() {
   const [currentQuery, setCurrentQuery] = useState("")
   const [hasMessages, setHasMessages] = useState(false)
   const [chatInput, setChatInput] = useState("")
+  const [isTyping, setIsTyping] = useState(false)
   const [searchParams] = useSearchParams()
 
   // Handle document selection from URL parameter
@@ -147,7 +148,11 @@ export default function ChatPage() {
                   {/* Chat messages area - takes remaining space */}
                   <div className="flex-1 min-h-0 overflow-hidden">
                     {hasMessages ? (
-                      <ChatContainer onShowAgentTrail={handleShowAgentTrail} />
+                      <ChatContainer
+                        onShowAgentTrail={handleShowAgentTrail}
+                        isTyping={isTyping}
+                        onTypingChange={setIsTyping}
+                      />
                     ) : (
                       <div className="h-full flex items-center justify-center bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl rounded-2xl border border-gray-200 dark:border-gray-700">
                         <ChatEmpty onSampleQuestionClick={handleSampleQuestion} />
@@ -167,6 +172,7 @@ export default function ChatPage() {
                       onChange={setChatInput}
                       onSend={() => setHasMessages(true)}
                       documentId={searchParams.get('documentId')}
+                      isTyping={isTyping}
                     />
                   </div>
                 </div>

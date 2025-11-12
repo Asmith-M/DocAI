@@ -94,3 +94,14 @@ async def get_embeddings_status():
         "vector_store": "ChromaDB",
         "storage_path": str(embedding_service.chroma_storage),
     }
+
+
+@router.get("/diagnose/{document_id}")
+async def diagnose_document(document_id: str):
+    """Return diagnostic info about a document's embedding and collection state."""
+    try:
+        info = embedding_service.diagnose_document(document_id)
+        return {"document_id": document_id, "diagnostic": info}
+    except Exception as e:
+        log.exception(f"Error diagnosing document {document_id}: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to diagnose document: {str(e)}")

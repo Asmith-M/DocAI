@@ -58,6 +58,14 @@ async def startup_event():
     logger.info(f"Fallback Model: {settings.OLLAMA_MODEL_FALLBACK}")
     logger.info(f"Context Length: {settings.OLLAMA_CTX}")
     logger.info(f"Max Predictions: {settings.OLLAMA_NUM_PREDICT}")
+    logger.info(f"Fast Generation: {'✅' if getattr(settings, 'FAST_GENERATION', False) else '❌'}")
+    logger.info("==========================")
+
+    # Log storage paths
+    logger.info("=== Storage Configuration ===")
+    logger.info(f"Uploads: {settings.UPLOAD_FOLDER}")
+    logger.info(f"Chroma DB: {settings.CHROMA_PERSIST_DIR}")
+    logger.info(f"HF Cache: {settings.HF_HOME}")
     logger.info("==========================")
 
     # Set offline environment variables to prevent external calls

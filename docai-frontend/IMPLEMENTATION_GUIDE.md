@@ -6,31 +6,35 @@ Your Noetic Vault application has been upgraded with stunning new UI/UX features
 
 1. **🌌 Dynamic Plexus Background** - Interactive animated grid that responds to your mouse
 2. **🪟 Frosted Glass Navbar** - Modern glassmorphism effect with backdrop blur
-3. **📊 Enhanced Processing Screen** - Multi-step progress indicator with neural network animation
-4. **🤖 Smart Chat Responses** - Instant responses for greetings and app information
+3. **- Enhanced Processing Screen** - Multi-step progress indicator with neural network animation
+4. **- Smart Chat Responses** - Instant responses for greetings and app information
 5. **⌨️ Keyboard Shortcuts** - Ctrl+K/Cmd+K to open search (already working!)
 
 ---
 
-## 🚀 Getting Started
+## - Getting Started
 
 ### Prerequisites
+
 - Node.js 18+ installed
 - npm or yarn package manager
 
 ### Installation
 
 1. **Navigate to frontend directory:**
+
    ```bash
    cd docai-frontend
    ```
 
 2. **Install dependencies:**
+
    ```bash
    npm install
    ```
 
 3. **Start development server:**
+
    ```bash
    npm run dev
    ```
@@ -44,15 +48,18 @@ Your Noetic Vault application has been upgraded with stunning new UI/UX features
 ## 🎮 Testing the New Features
 
 ### 1. Plexus Background Animation
+
 **Where to see it:** All pages (Home, Chat, Upload)
 
 **How to test:**
+
 - Move your mouse around the screen
 - Watch as glowing lines connect your cursor to nearby nodes
 - Notice the subtle pulsating effect on the nodes
 - Try switching between light and dark mode to see color adaptation
 
 **Expected behavior:**
+
 - Smooth 60fps animation
 - Lines fade in/out based on distance
 - Nodes gently drift and return to position
@@ -61,15 +68,18 @@ Your Noetic Vault application has been upgraded with stunning new UI/UX features
 ---
 
 ### 2. Frosted Glass Navbar
+
 **Where to see it:** Top of every page
 
 **How to test:**
+
 - Scroll down on any page
 - Notice the semi-transparent navbar with blur effect
 - The background content should be visible but blurred
 - Try switching dark mode - the effect adapts
 
 **Expected behavior:**
+
 - Consistent frosted glass effect across all pages
 - Smooth backdrop blur
 - Subtle border at bottom
@@ -78,9 +88,11 @@ Your Noetic Vault application has been upgraded with stunning new UI/UX features
 ---
 
 ### 3. Enhanced Processing Screen
+
 **Where to see it:** Upload page during document processing
 
 **How to test:**
+
 1. Go to `/upload` page
 2. Upload a PDF document
 3. Watch the processing screen with:
@@ -89,6 +101,7 @@ Your Noetic Vault application has been upgraded with stunning new UI/UX features
    - Each step showing status (pending/active/complete)
 
 **Expected behavior:**
+
 - Steps update in sequence:
   1. Uploading document
   2. Parsing content
@@ -101,32 +114,38 @@ Your Noetic Vault application has been upgraded with stunning new UI/UX features
 ---
 
 ### 4. Rule-Based Chat Responses
+
 **Where to see it:** Chat page
 
 **How to test:**
 
 **Test 1 - Greeting:**
+
 1. Go to `/chat` page
 2. Type: `hey` or `hello` or `hi`
 3. Press Enter
 
 **Expected response:**
+
 ```
-Hello! I'm ready to help you analyze your documents. 
+Hello! I'm ready to help you analyze your documents.
 Feel free to ask a question or use one of the Quick Actions below to get started.
 ```
 
 **Test 2 - App Information:**
+
 1. Type: `what is noetic vault`
 2. Press Enter
 
 **Expected response:**
+
 ```
-Noetic Vault is a RAG-based, multi-agent system designed to be fully offline. 
+Noetic Vault is a RAG-based, multi-agent system designed to be fully offline.
 It addresses the need for a secure and intelligent question-answering system for your documents.
 ```
 
 **Expected behavior:**
+
 - Instant response (no backend call)
 - 800ms typing delay for natural feel
 - Source panel shows purple "Internal Knowledge Base" card
@@ -135,15 +154,18 @@ It addresses the need for a secure and intelligent question-answering system for
 ---
 
 ### 5. Keyboard Shortcuts
+
 **Where to test:** Any page
 
 **How to test:**
+
 - Press `Ctrl+K` (Windows/Linux) or `Cmd+K` (macOS)
 - Command menu should open
 - Search input should be focused
 - Type to search for pages and actions
 
 **Expected behavior:**
+
 - Menu opens instantly
 - Search works immediately
 - Can navigate with arrow keys
@@ -155,6 +177,7 @@ It addresses the need for a secure and intelligent question-answering system for
 ## 🎨 Customization Options
 
 ### Plexus Animation Settings
+
 Edit `components/ui/PlexusBackground.jsx`:
 
 ```javascript
@@ -169,29 +192,28 @@ const nearestIndices = findNearestNodes(7); // Default: 7 nodes
 ```
 
 ### Processing Steps
+
 Edit `components/upload/processing-status.jsx`:
 
 ```javascript
 const steps = [
-  { label: 'Your custom step 1', threshold: 25 },
-  { label: 'Your custom step 2', threshold: 50 },
-  { label: 'Your custom step 3', threshold: 75 },
-  { label: 'Your custom step 4', threshold: 100 }
+  { label: "Your custom step 1", threshold: 25 },
+  { label: "Your custom step 2", threshold: 50 },
+  { label: "Your custom step 3", threshold: 75 },
+  { label: "Your custom step 4", threshold: 100 },
 ];
 ```
 
 ### Chat Rules
+
 Edit `components/chat/chat-container.jsx`:
 
 ```javascript
 // Add new greeting variations
-const greetings = ['hey', 'hello', 'hi', 'your-custom-greeting'];
+const greetings = ["hey", "hello", "hi", "your-custom-greeting"];
 
 // Add new identity triggers
-const identityTriggers = [
-  'what is noetic vault',
-  'your-custom-trigger'
-];
+const identityTriggers = ["what is noetic vault", "your-custom-trigger"];
 ```
 
 ---
@@ -199,28 +221,36 @@ const identityTriggers = [
 ## 🐛 Troubleshooting
 
 ### Issue: Plexus animation not showing
+
 **Solution:**
+
 - Check browser console for errors
 - Ensure Canvas API is supported
 - Try refreshing the page
 - Check if JavaScript is enabled
 
 ### Issue: Frosted glass effect not working
+
 **Solution:**
+
 - Check if browser supports `backdrop-filter`
 - Try Chrome/Edge/Firefox/Safari (latest versions)
 - Clear browser cache
 - Check CSS is loading correctly
 
 ### Issue: Processing steps not updating
+
 **Solution:**
+
 - Verify backend is sending progress updates
 - Check browser console for errors
 - Ensure WebSocket/SSE connection is active
 - Try uploading a smaller test file
 
 ### Issue: Chat rules not triggering
+
 **Solution:**
+
 - Check exact text matching (case-insensitive)
 - Verify no typos in trigger words
 - Check browser console for errors
@@ -243,44 +273,49 @@ All features are fully responsive:
 ## 🔧 Development Tips
 
 ### Hot Reload
+
 - Vite provides instant hot reload
 - Changes appear immediately without full refresh
 - Component state is preserved during updates
 
 ### Performance Monitoring
+
 - Open DevTools → Performance tab
 - Record while interacting with plexus animation
 - Should maintain 60fps consistently
 - Canvas rendering should be < 16ms per frame
 
 ### Debugging
+
 ```javascript
 // Add to PlexusBackground.jsx for FPS counter
-console.log('FPS:', Math.round(1000 / deltaTime));
+console.log("FPS:", Math.round(1000 / deltaTime));
 
 // Add to chat-container.jsx for rule debugging
-console.log('Checking rules for:', text);
-console.log('Rule matched:', ruleResponse);
+console.log("Checking rules for:", text);
+console.log("Rule matched:", ruleResponse);
 ```
 
 ---
 
-## 📚 Additional Resources
+## - Additional Resources
 
 ### Documentation
+
 - [React 18 Docs](https://react.dev)
 - [Framer Motion](https://www.framer.com/motion/)
 - [Tailwind CSS](https://tailwindcss.com)
 - [Lucide Icons](https://lucide.dev)
 
 ### Design Inspiration
+
 - [Awwwards](https://www.awwwards.com)
 - [Dribbble](https://dribbble.com)
 - [Glassmorphism](https://glassmorphism.com)
 
 ---
 
-## ✅ Verification Checklist
+## - Verification Checklist
 
 Before considering the upgrade complete, verify:
 
@@ -297,7 +332,7 @@ Before considering the upgrade complete, verify:
 
 ---
 
-## 🎯 Next Steps
+## - Next Steps
 
 1. **Test thoroughly** on different browsers and devices
 2. **Customize colors** to match your brand (if needed)
@@ -329,4 +364,4 @@ If you encounter any issues:
 
 ---
 
-**Enjoy your upgraded Noetic Vault experience! 🚀**
+**Enjoy your upgraded Noetic Vault experience! -**

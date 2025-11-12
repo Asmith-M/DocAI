@@ -1,10 +1,12 @@
 from typing import Dict, Any, List
 from loguru import logger
+from app.utils.agent_timer import log_time
 
 class VerifierAgent:
     def __init__(self):
         pass
 
+    @log_time
     def placeholder_verify(self, answer: str, sources: List[Dict[str, Any]], context_chunks: List[Dict[str, Any]]) -> Dict[str, Any]:
         """
         Placeholder verification: Perform deterministic substring checks.

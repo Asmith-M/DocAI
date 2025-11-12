@@ -1,14 +1,23 @@
-"use client"
+"use client";
 
-import { motion } from "framer-motion"
-import { Bot, Copy, ThumbsUp, ThumbsDown } from "lucide-react"
-import { CitationConfidenceBadge } from "./citation-confidence-badge"
+import { motion } from "framer-motion";
+import { Bot, Copy, ThumbsUp, ThumbsDown } from "lucide-react";
+import { CitationConfidenceBadge } from "./citation-confidence-badge";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 
-export function VerifiedAnswerCard({ content, confidence = "high", timestamp, verificationResult, onCopy, onFeedback }) {
+export function VerifiedAnswerCard({
+  content,
+  confidence = "high",
+  timestamp,
+  verificationResult,
+  onCopy,
+  onFeedback,
+}) {
   const handleCopy = () => {
-    navigator.clipboard.writeText(content)
-    onCopy?.()
-  }
+    navigator.clipboard.writeText(content);
+    onCopy?.();
+  };
 
   return (
     <motion.div
@@ -26,7 +35,9 @@ export function VerifiedAnswerCard({ content, confidence = "high", timestamp, ve
         {/* Message Bubble */}
         <div className="bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white rounded-2xl p-4">
           {/* Content */}
-          <p className="text-sm leading-relaxed mb-3">{content}</p>
+          <div className="prose prose-gray dark:prose-invert max-w-none mb-3">
+            <ReactMarkdown remarkPlugins={[remarkGfm]}>{content}</ReactMarkdown>
+          </div>
 
           {/* Confidence Badge */}
           <div className="flex items-center justify-between">
@@ -34,8 +45,11 @@ export function VerifiedAnswerCard({ content, confidence = "high", timestamp, ve
               <CitationConfidenceBadge confidence={confidence} />
               {verificationResult && (
                 <div className="text-xs px-2 py-1 rounded-full bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200">
-                  {verificationResult.confidence_level === 'high' ? 'Verified' :
-                   verificationResult.confidence_level === 'medium' ? 'Partially Verified' : 'Unverified'}
+                  {verificationResult.confidence_level === "high"
+                    ? "Verified"
+                    : verificationResult.confidence_level === "medium"
+                    ? "Partially Verified"
+                    : "Unverified"}
                 </div>
               )}
             </div>
@@ -69,15 +83,20 @@ export function VerifiedAnswerCard({ content, confidence = "high", timestamp, ve
           {/* Verification Details */}
           {verificationResult && (
             <div className="mt-2 text-xs text-gray-500 dark:text-gray-400">
-              Confidence: {(verificationResult.confidence_score * 100).toFixed(0)}% |
+              Confidence:{" "}
+              {(verificationResult.confidence_score * 100).toFixed(0)}% |
               Hallucination Risk: {verificationResult.hallucination_risk}
             </div>
           )}
 
           {/* Timestamp */}
-          {timestamp && <div className="text-xs text-gray-500 dark:text-gray-400 mt-2">{timestamp}</div>}
+          {timestamp && (
+            <div className="text-xs text-gray-500 dark:text-gray-400 mt-2">
+              {timestamp}
+            </div>
+          )}
         </div>
       </div>
     </motion.div>
-  )
+  );
 }

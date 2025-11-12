@@ -1,5 +1,6 @@
 #docai_backend/app/agents/generator_agent.py
 import asyncio
+import time
 import uuid
 import logging
 from typing import List, Dict, Any, AsyncGenerator
@@ -7,18 +8,12 @@ from loguru import logger
 from app.llm.ollama_client import get_ollama_client
 from app.core.config import settings
 
-# Check if Ollama client is available
-try:
-    client = get_ollama_client()
-    # Test client availability
-    asyncio.run(client.generate_async("test"))
-    logger.info("Ollama client initialized successfully")
-except Exception as e:
-    logger.warning(f"Ollama client not available: {e}")
-    client = None
+# Initialize client to None - will be created on first use
+client = None
 from enum import Enum, auto
 
 log = logging.getLogger(__name__)
+from app.utils.agent_timer import log_time
 
 class GeneratorAgent:
     """
@@ -35,7 +30,8 @@ class GeneratorAgent:
         concurrency_limit = getattr(settings, "GENERATOR_CONCURRENCY_LIMIT", 3)
         self.semaphore = asyncio.Semaphore(int(concurrency_limit))  # Configurable concurrency limit
 
-    async def generate(
+    @log_time
+    def generate(
         self,
         question: str,
         context_chunks: List[Dict[str, Any]],
@@ -43,41 +39,63 @@ class GeneratorAgent:
         request_id: str = None,
         language: str = "en"
     ) -> Any:
+        """
+        Flexible generate method: returns an awaitable coroutine when stream=False,
+        and an async-generator when stream=True. This keeps backwards compatibility
+        with tests and with streaming code paths.
+        """
         if not request_id:
             request_id = str(uuid.uuid4())
 
-        logger.info(f"🤖 GeneratorAgent: Starting generation for request_id {request_id}")
-        logger.info(f"📝 Question: {question}")
-        logger.info(f"📊 Context chunks: {len(context_chunks)}")
-        logger.info(f"🔄 Stream mode: {stream}")
-        logger.info(f"🎯 Current model: {self.current_model}, Using fallback: {self.using_fallback}")
-        logger.info(f"🌐 Language context: {language}")
+        logger.info(f"- GeneratorAgent: Starting generation for request_id {request_id}")
+        logger.info(f"- Question: {question}")
+        logger.info(f"- Context chunks: {len(context_chunks)}")
+        logger.info(f"- Stream mode: {stream}")
+        logger.info(f"- Current model: {self.current_model}, Using fallback: {self.using_fallback}")
+        logger.info(f"- Language context: {language}")
 
-        # Limit context chunks to top N and truncate text (~200 tokens ≈ 1000 chars)
-        max_chunks = int(getattr(settings, "GENERATOR_MAX_CONTEXT_CHUNKS", 3))
+        # Limit context chunks to top N (choose top by relevance/combined score) and truncate text
+        # Respect FAST_GENERATION settings for faster responses
+        if getattr(settings, "FAST_GENERATION", False):
+            max_chunks = int(getattr(settings, "GENERATOR_FAST_MAX_CONTEXT_CHUNKS", 1))
+        else:
+            max_chunks = int(getattr(settings, "GENERATOR_MAX_CONTEXT_CHUNKS", 3))
+        # Prefer chunks with combined_score, then relevance_score, then semantic_score
+        def _score_chunk(c):
+            return c.get('combined_score') or c.get('relevance_score') or c.get('semantic_score') or 0.0
+
+        sorted_chunks = sorted(context_chunks or [], key=_score_chunk, reverse=True)
         truncated_chunks = []
-        for chunk in context_chunks[:max_chunks]:
+        for chunk in sorted_chunks[:max_chunks]:
             text = chunk.get("text", "")
             truncated_text = text[:1000]  # Approximate truncation
             truncated_chunks.append({**chunk, "text": truncated_text})
 
-        logger.info(f"📊 Truncated to {len(truncated_chunks)} chunks")
+        logger.info(f"- Truncated to {len(truncated_chunks)} chunks")
 
         # Build prompt with language context
         prompt = self._build_prompt(question, truncated_chunks, language)
-        logger.info(f"📝 Prompt length: {len(prompt)} characters")
-        logger.info(f"📝 Final prompt:\n{prompt}")
+        logger.info(f"- Prompt length: {len(prompt)} characters")
+        logger.info(f"- Final prompt:\n{prompt}")
 
-        async with self.semaphore:
-            logger.info(f"🔒 Acquired semaphore for request_id {request_id}")
-            if stream:
-                logger.info(f"📡 Starting streaming generation for request_id {request_id}")
-                async for token in self._stream_generate_with_fallback(prompt, request_id):
-                    yield token
-            else:
-                logger.info(f"📝 Starting sync generation for request_id {request_id}")
+        # If stream=True, return an async-generator
+        if stream:
+            async def _stream_wrapper():
+                async with self.semaphore:
+                    logger.info(f"- Acquired semaphore for streaming request_id {request_id}")
+                    async for token in self._stream_generate_with_fallback(prompt, request_id):
+                        yield token
+
+            return _stream_wrapper()
+
+        # Else return an awaitable coroutine that yields the final string result
+        async def _sync_wrapper():
+            async with self.semaphore:
+                logger.info(f"- Acquired semaphore for sync request_id {request_id}")
                 result = await self._generate_sync_with_fallback(prompt, request_id)
-                yield result
+                return result
+
+        return _sync_wrapper()
 
     def _build_prompt(self, question: str, context_chunks: List[Dict[str, Any]], language: str = "en") -> str:
         """
@@ -101,7 +119,10 @@ class GeneratorAgent:
             )
 
         # Truncate each chunk for safety
-        max_chunk_size = int(getattr(settings, "GENERATOR_MAX_CHUNK_SIZE", 800))
+        if getattr(settings, "FAST_GENERATION", False):
+            max_chunk_size = int(getattr(settings, "GENERATOR_FAST_MAX_CHUNK_SIZE", 400))
+        else:
+            max_chunk_size = int(getattr(settings, "GENERATOR_MAX_CHUNK_SIZE", 800))
         truncated_chunks = []
         for chunk in context_chunks:
             text = chunk.get("text", "")
@@ -180,29 +201,44 @@ Answer:{language_instruction}
     # ------------------------
 
     async def _generate_sync(self, prompt: str, request_id: str) -> str:
+        generation_start = time.time()
         try:
-            logger.info(f"🔧 GeneratorAgent: Calling client.generate_async for request_id {request_id}")
-            logger.info(f"📝 Prompt length: {len(prompt)} characters")
+            logger.info(f"🔧 GeneratorAgent: Starting sync generation for request_id {request_id}")
+            logger.info(f"- Prompt length: {len(prompt)} characters")
+            logger.info(f"- Model: {self.current_model}")
 
             # Add timeout to prevent hanging
             import asyncio
             try:
+                sync_timeout = float(getattr(settings, "GENERATOR_SYNC_TIMEOUT", 120.0))
+                if getattr(settings, "FAST_GENERATION", False):
+                    sync_timeout = float(getattr(settings, "GENERATOR_FAST_SYNC_TIMEOUT", 30.0))
+
                 result = await asyncio.wait_for(
                     self.client.generate_async(prompt),
-                    timeout=120.0  # 120 second timeout for better reliability
+                    timeout=sync_timeout
                 )
-                logger.info(f"✅ GeneratorAgent: Completed generation for request_id {request_id}")
-                logger.info(f"📊 Result type: {type(result)}, Result keys: {result.keys() if isinstance(result, dict) else 'Not a dict'}")
+                generation_time = (time.time() - generation_start) * 1000
+                
+                logger.info("=== Generation Results ===")
+                logger.info(f"- Completed generation for request_id {request_id}")
+                logger.info(f"- Generation time: {generation_time:.0f}ms")
+                logger.info(f"- Result type: {type(result)}, Result keys: {result.keys() if isinstance(result, dict) else 'Not a dict'}")
 
                 if isinstance(result, dict):
                     response = result.get('response', '')
-                    logger.info(f"📄 Response length: {len(response)} characters")
+                    tokens = len(response.split())
+                    chars_per_sec = len(response) / (generation_time / 1000) if generation_time > 0 else 0
+                    tokens_per_sec = tokens / (generation_time / 1000) if generation_time > 0 else 0
+                    
+                    logger.info(f"- Response length: {len(response)} characters, {tokens} tokens")
+                    logger.info(f"- Generation speed: {chars_per_sec:.1f} chars/sec, {tokens_per_sec:.1f} tokens/sec")
                     return response
                 else:
                     logger.warning(f"⚠️ Unexpected result type: {type(result)}")
                     return str(result)
             except asyncio.TimeoutError:
-                logger.error(f"⏰ GeneratorAgent: Generation timed out after 60s for request_id {request_id}")
+                logger.error(f"⏰ GeneratorAgent: Generation timed out for request_id {request_id}")
                 raise Exception("Generation timed out")
             except Exception as e:
                 logger.error(f"❌ GeneratorAgent: Error during generation for request_id {request_id}: {e}")
@@ -216,6 +252,7 @@ Answer:{language_instruction}
 
     async def _generate_sync_with_fallback(self, prompt: str, request_id: str) -> str:
         """Generate text with fallback model support."""
+        @log_time
         async def operation(prompt: str, request_id: str):
             # Note: num_ctx and num_predict are not supported by the ollama Python client
             # These would need to be configured at the Ollama server level
@@ -227,8 +264,18 @@ Answer:{language_instruction}
     async def _stream_generate(self, prompt: str, request_id: str) -> AsyncGenerator[str, None]:
         try:
             # Remove temperature parameter as it's not supported by the Ollama client
+            # Per-chunk timeout
+            chunk_timeout = float(getattr(settings, "GENERATOR_STREAM_CHUNK_TIMEOUT", 30.0))
+            if getattr(settings, "FAST_GENERATION", False):
+                chunk_timeout = float(getattr(settings, "GENERATOR_FAST_STREAM_CHUNK_TIMEOUT", 15.0))
+
             async for token in self.client.generate_stream_async(prompt):
-                yield token
+                try:
+                    # yield token but ensure we don't hang per chunk (timeouts handled in client)
+                    yield token
+                except asyncio.TimeoutError:
+                    logger.warning(f"Chunk timed out for request_id {request_id}")
+                    break
             logger.info(f"GeneratorAgent: Completed streaming generation for request_id {request_id}")
         except Exception as e:
             logger.error(f"GeneratorAgent: Error during streaming generation for request_id {request_id}: {e}")
@@ -236,6 +283,7 @@ Answer:{language_instruction}
 
     async def _stream_generate_with_fallback(self, prompt: str, request_id: str) -> AsyncGenerator[str, None]:
         """Generate streaming text with fallback model support."""
+        @log_time
         async def operation(prompt: str, request_id: str):
             # Note: num_ctx and num_predict are not supported by the ollama Python client
             # These would need to be configured at the Ollama server level

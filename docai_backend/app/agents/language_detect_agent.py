@@ -10,6 +10,8 @@ try:
 except Exception as e:
     logging.getLogger(__name__).warning(f"Langdetect library not available: {e}")
 
+from app.utils.agent_timer import log_time
+
 log = logging.getLogger(__name__)
 
 class LanguageDetectAgent:
@@ -29,6 +31,7 @@ class LanguageDetectAgent:
             log.warning(f"Unsupported detection method {self.method}, using basic detection")
             self.detect_func = self._basic_detect
 
+    @log_time
     def detect_lang(self, text: str) -> str:
         """
         Detect the language of the given text.

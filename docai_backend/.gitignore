@@ -142,3 +142,7 @@ uploads/
 
 # Environment variables
 .env
+
+#LocaL storage files
+hf_offline_download/
+storage/

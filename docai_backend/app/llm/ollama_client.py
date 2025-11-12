@@ -10,7 +10,7 @@ import platform
 log = logging.getLogger(__name__)
 
 try:
-    from ollama import Client
+    from ollama import AsyncClient, Client
     HAS_OLLAMA = True
 except ImportError:
     HAS_OLLAMA = False
@@ -24,11 +24,13 @@ class OllamaClient:
         self.host = host
         self.model = model
         self.offline_mode = offline_mode
-        self.client = None
+        self.client: Optional[AsyncClient] = None
+        self.sync_client: Optional[Client] = None
 
         if HAS_OLLAMA:
             try:
-                self.client = Client(host=host)
+                self.client = AsyncClient(host=host)
+                self.sync_client = Client(host=host)
                 log.info(f"OllamaClient initialized with host={host}, model={model}, offline_mode={offline_mode}")
             except Exception as e:
                 log.error(f"Failed to initialize Ollama client: {e}")
@@ -89,11 +91,11 @@ class OllamaClient:
 
     def generate_sync(self, prompt: str, **kwargs) -> str:
         """Generate text synchronously."""
-        if not self.client:
-            raise RuntimeError("Ollama client not initialized")
+        if not self.sync_client:
+            raise RuntimeError("Ollama sync client not initialized")
 
         try:
-            response = self.client.generate(
+            response = self.sync_client.generate(
                 model=self.model,
                 prompt=prompt,
                 **kwargs
@@ -103,26 +105,23 @@ class OllamaClient:
             log.error(f"Sync generation failed: {e}")
             raise
 
-    async def generate_async(self, prompt: str, **kwargs) -> str:
+    async def generate_async(self, prompt: str, **kwargs) -> Dict[str, Any]:
         """Generate text asynchronously."""
         if not self.client:
-            raise RuntimeError("Ollama client not initialized")
+            raise RuntimeError("Ollama async client not initialized")
 
-        loop = asyncio.get_event_loop()
         try:
             # Add timeout to prevent hanging
             response = await asyncio.wait_for(
-                loop.run_in_executor(
-                    None,
-                    lambda: self.client.generate(
-                        model=self.model,
-                        prompt=prompt,
-                        **kwargs
-                    )
+                self.client.generate(
+                    model=self.model,
+                    prompt=prompt,
+                    stream=False,
+                    **kwargs
                 ),
                 timeout=60.0  # 60 second timeout
             )
-            return response.get('response', '')
+            return response
         except asyncio.TimeoutError:
             log.error(f"Async generation timed out after 60s")
             raise Exception("Generation timed out")
@@ -132,11 +131,11 @@ class OllamaClient:
 
     def generate_stream(self, prompt: str, **kwargs) -> Any:
         """Generate text with streaming (synchronous iterator)."""
-        if not self.client:
-            raise RuntimeError("Ollama client not initialized")
+        if not self.sync_client:
+            raise RuntimeError("Ollama sync client not initialized")
 
         try:
-            return self.client.generate(
+            return self.sync_client.generate(
                 model=self.model,
                 prompt=prompt,
                 stream=True,
@@ -147,48 +146,32 @@ class OllamaClient:
             raise
 
     async def generate_stream_async(self, prompt: str, **kwargs) -> AsyncGenerator[str, None]:
-        """Generate text with async streaming."""
+        """Generate text with true async streaming."""
         if not self.client:
-            raise RuntimeError("Ollama client not initialized")
+            raise RuntimeError("Ollama async client not initialized")
 
-        loop = asyncio.get_event_loop()
         try:
-            def sync_generator():
-                stream = self.client.generate(
-                    model=self.model,
-                    prompt=prompt,
-                    stream=True,
-                    **kwargs
-                )
-                for chunk in stream:
-                    yield chunk.get('response', '')
-
-            gen = sync_generator()
-            while True:
-                try:
-                    # Add timeout for each chunk
-                    chunk = await asyncio.wait_for(
-                        loop.run_in_executor(None, lambda: next(gen, None)),
-                        timeout=30.0  # 30 second timeout per chunk
-                    )
-                    if chunk is None:
-                        break
-                    yield chunk
-                except asyncio.TimeoutError:
-                    log.error(f"Streaming chunk timed out after 30s")
-                    break
-
+            async for chunk in await self.client.generate(
+                model=self.model,
+                prompt=prompt,
+                stream=True,
+                **kwargs
+            ):
+                yield chunk.get('response', '')
+        except asyncio.TimeoutError:
+            log.error(f"Streaming chunk timed out")
+            raise Exception("Streaming chunk timed out")
         except Exception as e:
             log.error(f"Async stream generation failed: {e}")
             raise
 
     def list_models(self) -> list:
         """List available models."""
-        if not self.client:
+        if not self.sync_client:
             return []
 
         try:
-            response = self.client.list()
+            response = self.sync_client.list()
             return [model['name'] for model in response.get('models', [])]
         except Exception as e:
             log.error(f"Failed to list models: {e}")
@@ -200,11 +183,11 @@ class OllamaClient:
             log.warning("Cannot pull model in offline mode")
             return False
 
-        if not self.client:
+        if not self.sync_client:
             return False
 
         try:
-            self.client.pull(model_name)
+            self.sync_client.pull(model_name)
             log.info(f"Successfully pulled model: {model_name}")
             return True
         except Exception as e:
@@ -247,7 +230,7 @@ class OllamaClient:
 # Global instance
 ollama_client = None
 
-def get_ollama_client() -> OllamaClient:
+def get_ollama_client() -> "OllamaClient":
     """Get or create the global Ollama client instance."""
     global ollama_client
     if ollama_client is None:

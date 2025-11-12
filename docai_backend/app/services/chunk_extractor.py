@@ -124,5 +124,24 @@ class ChunkExtractor:
             log.warning(f"Failed to load chunks for document {document_id}: {e}")
             return []
 
+    # Compatibility helper used by older ChunkAgent.create_chunks APIs
+    def extract_chunks_from_text(self, text: str, document_id: str, page: int, chunk_type: str = "text") -> List[Dict[str, Any]]:
+        """
+        Backwards-compatible wrapper that splits a single text blob into chunks and
+        returns chunk dicts similar to previous implementations used by ChunkAgent.
+        """
+        chunks = []
+        texts = self._split_text_into_chunks(text)
+        for idx, chunk_text in enumerate(texts):
+            chunks.append({
+                "document_id": document_id,
+                "page": page,
+                "chunk_index": idx,
+                "type": chunk_type,
+                "extraction_method": "text",
+                "text": chunk_text,
+            })
+        return chunks
+
 # Global instance
 chunk_extractor = ChunkExtractor()

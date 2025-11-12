@@ -135,12 +135,47 @@ export function SourcePanel({
                         <div className="flex items-center space-x-2 mb-1">
                           <FileText className="w-4 h-4 text-lavender-500 flex-shrink-0" />
                           <h4 className="text-sm font-medium text-gray-900 dark:text-white truncate">
-                            {source.title}
+                            {source.documentName ||
+                              source.fileName ||
+                              source.title ||
+                              "Document"}
                           </h4>
                         </div>
-                        <p className="text-xs text-gray-500 dark:text-gray-400 mb-2">
-                          Page {source.page} • {source.relevance}% relevance
-                        </p>
+                        {(() => {
+                          // Compute a friendly page label. Backend may send 0-based page indices.
+                          let pageLabel = null;
+                          if (typeof source.page === "number") {
+                            // Treat numeric pages as 0-based and display 1-based to users
+                            pageLabel = `Page ${source.page + 1}`;
+                          } else if (
+                            typeof source.page === "string" &&
+                            source.page.trim() !== ""
+                          ) {
+                            pageLabel = `Page ${source.page}`;
+                          } else if (source.location) {
+                            pageLabel = source.location;
+                          }
+
+                          // Normalize relevance: backend may return 0-1 floats or 0-100 percentages
+                          let relevanceVal = source.relevance;
+                          if (typeof relevanceVal === "number") {
+                            if (relevanceVal > 0 && relevanceVal <= 1) {
+                              relevanceVal = Math.round(relevanceVal * 100);
+                            } else {
+                              relevanceVal = Math.round(relevanceVal);
+                            }
+                          } else {
+                            relevanceVal = "N/A";
+                          }
+
+                          return (
+                            <p className="text-xs text-gray-500 dark:text-gray-400 mb-2">
+                              {pageLabel
+                                ? `${pageLabel} • ${relevanceVal}% relevance`
+                                : `Relevance: ${relevanceVal}%`}
+                            </p>
+                          );
+                        })()}
                         <p className="text-sm text-gray-600 dark:text-gray-300 line-clamp-2">
                           {source.snippet}
                         </p>

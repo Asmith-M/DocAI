@@ -69,12 +69,14 @@ docai-frontend/
 ## ▶️ How to Run Locally
 
 1. Clone the repository:
+
 ```bash
 git clone https://github.com/your-username/docai-frontend.git
 cd docai-frontend
 ```
 
 2. Install dependencies:
+
 ```bash
 npm install
 # or
@@ -84,6 +86,7 @@ pnpm install
 ```
 
 3. Start the development server:
+
 ```bash
 npm run dev
 # or
@@ -151,6 +154,7 @@ The frontend is configured to proxy API requests to `http://127.0.0.1:8000` in d
 ## 🔐 Privacy & Security
 
 DocAI is designed with privacy as a core principle:
+
 - All processing happens locally on the user's device
 - No data is sent to external servers
 - No tracking or analytics
@@ -166,7 +170,7 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 4. Push to the branch (`git push origin feature/AmazingFeature`)
 5. Open a Pull Request
 
-## 📄 License
+## - License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 

@@ -117,7 +117,12 @@ class RAGService:
 
             # Step 1: Retrieve and rank candidates
             retrieval_start = time.time()
-            candidates = ranker_agent.get_candidates(query, document_id, n_results=5)
+            # ranker_agent.get_candidates is async; call with correct parameter order (document_id, question)
+            try:
+                candidates = await ranker_agent.get_candidates(document_id, query, top_k=5, return_top=5)
+            except TypeError:
+                # Fallback if implementation is sync
+                candidates = ranker_agent.get_candidates(document_id, query, top_k=5, return_top=5)
             retrieval_time = time.time() - retrieval_start
             rag_metrics.record_retrieval_time(retrieval_time)
 
@@ -132,7 +137,9 @@ class RAGService:
             # Step 2: Generate answer using retrieved context
             generation_start = time.time()
             full_answer = ""
-            async for chunk in generator_agent.generate_answer(query, candidates, stream=stream):
+            # generator_agent.generate is the async-generator that yields tokens or a single result
+            gen = generator_agent.generate(query, candidates.get('chunks', []), stream=stream)
+            async for chunk in gen:
                 full_answer += chunk
                 yield chunk
             generation_time = time.time() - generation_start
@@ -212,7 +219,7 @@ class RAGService:
 
             # Stream the answer
             full_answer = ""
-            async for chunk in generator_agent.generate_answer(query, candidates, stream=True):
+            async for chunk in generator_agent.generate(query, candidates.get('chunks', []), stream=True):
                 full_answer += chunk
                 yield {
                     'type': 'chunk',
@@ -262,7 +269,8 @@ class RAGService:
 
             # Generate answer and cache
             full_answer = ""
-            async for chunk in generator_agent.generate_answer(query, candidates, stream=False):
+            gen = generator_agent.generate(query, candidates.get('chunks', []), stream=False)
+            async for chunk in gen:
                 full_answer += chunk
 
             # Cache the result

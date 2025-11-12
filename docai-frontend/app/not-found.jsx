@@ -1,9 +1,9 @@
-"use client"
+"use client";
 
-import { Link } from "react-router-dom"
-import { Home, ArrowLeft } from "lucide-react"
+import { Link } from "react-router-dom";
+import { Home, ArrowLeft } from "lucide-react";
 // CHANGE: Use the alias for ARIAButton import
-import { ARIAButton } from "@/components/shared/aria-button"
+import { ARIAButton } from "@/components/shared/aria-button";
 
 export default function NotFound() {
   return (
@@ -11,10 +11,15 @@ export default function NotFound() {
       <div className="text-center max-w-md">
         <div className="mb-8">
           <h1 className="text-9xl font-bold text-lavender-500 mb-4">404</h1>
-          <h2 className="text-2xl font-semibold text-gray-900 dark:text-white mb-2">Oops! Page Not Found</h2>
+          <h2 className="text-2xl font-semibold text-gray-900 dark:text-white mb-2">
+            Oops! Page Not Found
+          </h2>
           <p className="text-gray-600 dark:text-gray-300 mb-8">
-           Looks like this page pulled a classic "lost sock in the dryer" move and just disappeared! While we're sending out a digital search party, feel free to head back to our homepage or use other features to find what you're looking for. We promise the rest of our content is neatly folded and ready to be found!.....       
-            🤖
+            Looks like this page pulled a classic "lost sock in the dryer" move
+            and just disappeared! While we're sending out a digital search
+            party, feel free to head back to our homepage or use other features
+            to find what you're looking for. We promise the rest of our content
+            is neatly folded and ready to be found!..... -
           </p>
         </div>
 
@@ -36,5 +41,5 @@ export default function NotFound() {
         </div>
       </div>
     </div>
-  )
+  );
 }

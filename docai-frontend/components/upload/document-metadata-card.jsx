@@ -1,17 +1,26 @@
 //docai-frontend/components/upload/document-metadata-card.jsx
-"use client"
+"use client";
 
-import { motion } from "framer-motion"
-import { FileText, Hash, Calendar, Clock } from "lucide-react"
+import { motion } from "framer-motion";
+import { FileText, Hash, Calendar, Clock } from "lucide-react";
 
-export function DocumentMetadataCard({ filename, pages, dateCreated, fileSize, processingTime, className = "" }) {
+export function DocumentMetadataCard({
+  filename,
+  pages,
+  dateCreated,
+  fileSize,
+  processingTime,
+  className = "",
+}) {
   const formatFileSize = (bytes) => {
-    if (bytes === 0) return "0 Bytes"
-    const k = 1024
-    const sizes = ["Bytes", "KB", "MB", "GB"]
-    const i = Math.floor(Math.log(bytes) / Math.log(k))
-    return Number.parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i]
-  }
+    if (bytes === 0) return "0 Bytes";
+    const k = 1024;
+    const sizes = ["Bytes", "KB", "MB", "GB"];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return (
+      Number.parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i]
+    );
+  };
 
   const formatDate = (date) => {
     return new Date(date).toLocaleDateString("en-US", {
@@ -20,8 +29,8 @@ export function DocumentMetadataCard({ filename, pages, dateCreated, fileSize, p
       day: "numeric",
       hour: "2-digit",
       minute: "2-digit",
-    })
-  }
+    });
+  };
 
   return (
     <motion.div
@@ -42,9 +51,14 @@ export function DocumentMetadataCard({ filename, pages, dateCreated, fileSize, p
           <div className="col-span-2 md:col-span-1">
             <div className="flex items-center space-x-2 mb-1">
               <FileText className="w-4 h-4 text-gray-400" />
-              <span className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wide">File</span>
+              <span className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wide">
+                File
+              </span>
             </div>
-            <p className="text-sm font-medium text-gray-900 dark:text-white truncate" title={filename}>
+            <p
+              className="text-sm font-medium text-gray-900 dark:text-white truncate"
+              title={filename}
+            >
               {filename}
             </p>
           </div>
@@ -53,19 +67,25 @@ export function DocumentMetadataCard({ filename, pages, dateCreated, fileSize, p
           <div>
             <div className="flex items-center space-x-2 mb-1">
               <Hash className="w-4 h-4 text-gray-400" />
-              <span className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wide">Pages</span>
+              <span className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wide">
+                Pages
+              </span>
             </div>
-            <p className="text-sm font-medium text-gray-900 dark:text-white">{pages?.toLocaleString() || "N/A"}</p>
+            <p className="text-sm font-medium text-gray-900 dark:text-white">
+              {pages?.toLocaleString() || "N/A"}
+            </p>
           </div>
 
           {/* Date Created */}
           <div>
             <div className="flex items-center space-x-2 mb-1">
               <Calendar className="w-4 h-4 text-gray-400" />
-              <span className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wide">Created</span>
+              <span className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wide">
+                Created
+              </span>
             </div>
             <p className="text-sm font-medium text-gray-900 dark:text-white">
-              {dateCreated ? formatDate(dateCreated) : "Unknown"}
+              {dateCreated ? formatDate(dateCreated) : "English"}
             </p>
           </div>
 
@@ -78,7 +98,9 @@ export function DocumentMetadataCard({ filename, pages, dateCreated, fileSize, p
               </span>
             </div>
             <p className="text-sm font-medium text-gray-900 dark:text-white">
-              {processingTime ? `${processingTime}s` : formatFileSize(fileSize || 0)}
+              {processingTime
+                ? `${processingTime}s`
+                : formatFileSize(fileSize || 0)}
             </p>
           </div>
         </div>
@@ -91,7 +113,9 @@ export function DocumentMetadataCard({ filename, pages, dateCreated, fileSize, p
             transition={{ delay: 0.3, type: "spring", stiffness: 500 }}
             className="w-3 h-3 bg-green-500 rounded-full mb-1"
           />
-          <span className="text-xs text-gray-500 dark:text-gray-400">Ready</span>
+          <span className="text-xs text-gray-500 dark:text-gray-400">
+            Ready
+          </span>
         </div>
       </div>
 
@@ -113,5 +137,5 @@ export function DocumentMetadataCard({ filename, pages, dateCreated, fileSize, p
         </div>
       )}
     </motion.div>
-  )
+  );
 }

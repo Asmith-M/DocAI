@@ -136,7 +136,7 @@ def run_manual_tests():
         print("📡 Testing basic connectivity...")
         response = requests.get(f"{base_url}/api/health", timeout=5)
         if response.status_code == 200:
-            print("✅ API is reachable")
+            print("- API is reachable")
         else:
             print(f"❌ API returned status {response.status_code}")
             return False
@@ -146,21 +146,21 @@ def run_manual_tests():
         response = requests.get(f"{base_url}/api/admin/offline/status", timeout=10)
         if response.status_code == 200:
             data = response.json()
-            print("✅ Offline status endpoint working")
-            print(f"   Ollama: {'✅' if data['ollama']['healthy'] else '❌'}")
-            print(f"   Embeddings: {'✅' if data['embedding_service']['model_loaded'] else '❌'}")
-            print(f"   Chroma: {'✅' if data['chroma']['chroma_persist_dir_exists'] else '❌'}")
-            print(f"   OCR: {'✅' if any(data['ocr'].get(k, False) for k in ['pymupdf_available', 'tesseract_available', 'easyocr_available']) else '❌'}")
+            print("- Offline status endpoint working")
+            print(f"   Ollama: {'-' if data['ollama']['healthy'] else '❌'}")
+            print(f"   Embeddings: {'-' if data['embedding_service']['model_loaded'] else '❌'}")
+            print(f"   Chroma: {'-' if data['chroma']['chroma_persist_dir_exists'] else '❌'}")
+            print(f"   OCR: {'-' if any(data['ocr'].get(k, False) for k in ['pymupdf_available', 'tesseract_available', 'easyocr_available']) else '❌'}")
         else:
             print(f"❌ Offline status endpoint failed: {response.status_code}")
             return False
 
         # Test 3: Readiness check
-        print("🎯 Testing readiness endpoint...")
+        print("- Testing readiness endpoint...")
         response = requests.get(f"{base_url}/api/admin/offline/readiness", timeout=5)
         if response.status_code == 200:
             data = response.json()
-            print(f"✅ Readiness check: {'Ready' if data['ready'] else 'Not Ready'}")
+            print(f"- Readiness check: {'Ready' if data['ready'] else 'Not Ready'}")
             if not data['ready']:
                 print(f"   Issues: {', '.join(data.get('issues', []))}")
         else:

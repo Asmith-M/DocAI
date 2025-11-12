@@ -2,6 +2,7 @@ import os
 import json
 from typing import List, Dict, Any
 from loguru import logger
+from app.utils.agent_timer import log_time
 
 from app.services.chunk_extractor import ChunkExtractor
 
@@ -10,6 +11,7 @@ class ChunkAgent:
         self.chunk_extractor = ChunkExtractor()
         self.storage_path = "app/storage/chunks"
 
+    @log_time
     def create_chunks(self, document_id: str, parsed_pages: List[Dict[str, Any]], force: bool = False) -> List[Dict[str, Any]]:
         """
         Idempotent chunking and metadata storage.
@@ -29,7 +31,7 @@ class ChunkAgent:
             text = page_data.get("text", "")
             tables = page_data.get("tables", [])
 
-            # Extract text chunks
+            # Extract text chunks using compatibility wrapper
             text_chunks = self.chunk_extractor.extract_chunks(text, document_id, page_num)
 
             # Extract table chunks

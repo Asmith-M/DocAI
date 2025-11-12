@@ -2,13 +2,12 @@
 
 import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { User, Bot } from "lucide-react";
+import { User, Bot, Square } from "lucide-react";
 import { TypingIndicator } from "./typing-indicator";
 import { VerifiedAnswerCard } from "./verified-answer-card";
-// Removed unused streaming functions
-import { chatQuery } from "../../lib/api";
+import { startRagStreamFetch, streamNDJSON, cancelRagRequest } from "../../lib/api";
 
-export function ChatContainer() {
+export function ChatContainer({ isTyping, onTypingChange }) {
   const [messages, setMessages] = useState([
     {
       id: 1,
@@ -19,10 +18,9 @@ export function ChatContainer() {
       confidence: "high",
     },
   ]);
-  const [isTyping, setIsTyping] = useState(false);
   const [currentSources, setCurrentSources] = useState([]);
   const messagesEndRef = useRef(null);
-  // Removed eventSourceRef as it's no longer needed
+  const eventSourceRef = useRef(null);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -32,48 +30,17 @@ export function ChatContainer() {
     scrollToBottom();
   }, [messages, isTyping]);
 
-  // Rule-based intent router
-  const checkRuleBasedResponse = (text) => {
-    const lowerText = text.toLowerCase().trim();
-
-    // Rule 1: Greeting
-    const greetings = ["hey", "hello", "hi", "hola", "greetings"];
-    if (
-      greetings.some(
-        (greeting) =>
-          lowerText === greeting || lowerText.startsWith(greeting + " ")
-      )
-    ) {
-      return {
-        response:
-          "Hello! I'm ready to help you analyze your documents. Feel free to ask a question or use one of the Quick Actions below to get started.",
-        sources: null,
-      };
+  const stopGeneration = () => {
+    if (eventSourceRef.current) {
+      cancelRagRequest(eventSourceRef.current);
+      eventSourceRef.current = null;
+      onTypingChange(false);
+      window.dispatchEvent(
+        new CustomEvent("show-toast", {
+          detail: { type: "info", message: "Generation stopped." },
+        })
+      );
     }
-
-    // Rule 2: Application Identity
-    const identityTriggers = [
-      "what is noetic vault",
-      "tell me about noetic vault",
-      "what's noetic vault",
-      "about noetic vault",
-      "noetic vault info",
-    ];
-    if (identityTriggers.some((trigger) => lowerText.includes(trigger))) {
-      return {
-        response:
-          "Noetic Vault is a RAG-based, multi-agent system designed to be fully offline. It addresses the need for a secure and intelligent question-answering system for your documents.",
-        sources: [
-          {
-            type: "internal_knowledge",
-            documentName: "noetic_vault_blackbook.pdf",
-            location: "Pages 1-3 (Introduction)",
-          },
-        ],
-      };
-    }
-
-    return null;
   };
 
   // Listen for global chat-send events from ChatInput
@@ -87,42 +54,22 @@ export function ChatContainer() {
         ...prev,
         { id: Date.now(), type: "user", content: text, timestamp: new Date() },
       ]);
+      onTypingChange(true);
 
-      // Check for rule-based responses
-      const ruleResponse = checkRuleBasedResponse(text);
-      if (ruleResponse) {
-        setIsTyping(true);
-        // Simulate typing delay for better UX
-        setTimeout(() => {
-          setMessages((prev) => [
-            ...prev,
-            {
-              id: Date.now() + 1,
-              type: "bot",
-              content: ruleResponse.response,
-              timestamp: new Date(),
-              confidence: "high",
-              sources: ruleResponse.sources,
-            },
-          ]);
+      // Add a placeholder for the bot's response
+      const botMessageId = Date.now() + 1;
+      setMessages((prev) => [
+        ...prev,
+        {
+          id: botMessageId,
+          type: "bot",
+          content: "",
+          timestamp: new Date(),
+          sources: [],
+          verification_result: null,
+        },
+      ]);
 
-          // Dispatch sources to SourcePanel if available
-          if (ruleResponse.sources) {
-            window.dispatchEvent(
-              new CustomEvent("update-sources", {
-                detail: { sources: ruleResponse.sources },
-              })
-            );
-          }
-
-          setIsTyping(false);
-        }, 800);
-        return;
-      }
-
-      setIsTyping(true);
-
-      // --- Main API Logic ---
       try {
         const documentId = e?.detail?.documentId;
         if (!documentId) {
@@ -130,48 +77,72 @@ export function ChatContainer() {
         }
 
         const lang = e?.detail?.lang;
-        const chatResponse = await chatQuery(documentId, text, { lang });
+        const response = await startRagStreamFetch(documentId, text, { lang });
+        eventSourceRef.current = response.controller;
 
-        // Update sources for SourcePanel
-        setCurrentSources(chatResponse.sources || []);
-        window.dispatchEvent(
-          new CustomEvent("update-sources", {
-            detail: { sources: chatResponse.sources || [] },
-          })
-        );
-
-        // Add final bot message
-        setMessages((prev) => [
-          ...prev,
-          {
-            id: Date.now() + 1,
-            type: "bot",
-            content: chatResponse.answer,
-            timestamp: new Date(),
-            confidence: "high", // Assuming high confidence for a direct answer
-            sources: chatResponse.sources || [],
-          },
-        ]);
+        await streamNDJSON(response, (event) => {
+          switch (event.type) {
+            case "meta":
+              // You could use this for metadata if needed
+              break;
+            case "source":
+              setCurrentSources((prev) => [...prev, event.data]);
+              window.dispatchEvent(
+                new CustomEvent("update-sources", {
+                  detail: { sources: [event.data] },
+                })
+              );
+              break;
+            case "token":
+              setMessages((prev) =>
+                prev.map((msg) =>
+                  msg.id === botMessageId
+                    ? { ...msg, content: msg.content + event.data }
+                    : msg
+                )
+              );
+              break;
+            case "done":
+              setMessages((prev) =>
+                prev.map((msg) =>
+                  msg.id === botMessageId
+                    ? {
+                        ...msg,
+                        verification_result: event.data.verification_result,
+                      }
+                    : msg
+                )
+              );
+              onTypingChange(false);
+              eventSourceRef.current = null;
+              break;
+            default:
+              break;
+          }
+        });
       } catch (error) {
         console.error("Error in chat query:", error);
-        setMessages((prev) => [
-          ...prev,
-          {
-            id: Date.now() + 1,
-            type: "bot",
-            content: `Error: ${error.message}`,
-            timestamp: new Date(),
-            confidence: "low",
-          },
-        ]);
-      } finally {
-        // Ensure the typing indicator is always turned off
-        setIsTyping(false);
+        setMessages((prev) =>
+          prev.map((msg) =>
+            msg.id === botMessageId
+              ? {
+                  ...msg,
+                  content: `Error: ${error.message}`,
+                  confidence: "low",
+                }
+              : msg
+          )
+        );
+        onTypingChange(false);
+        eventSourceRef.current = null;
       }
     };
 
     window.addEventListener("chat-send", handler);
-    return () => window.removeEventListener("chat-send", handler);
+    return () => {
+      window.removeEventListener("chat-send", handler);
+      stopGeneration(); // Stop any ongoing generation when component unmounts
+    };
   }, []); // Empty dependency array means this runs once on mount
 
   const copyMessage = (content) => {
@@ -250,7 +221,18 @@ export function ChatContainer() {
         <div ref={messagesEndRef} />
       </div>
 
-      {/* The "Stop Generation" button has been removed as it's no longer needed */}
+      {/* Stop Generation Button */}
+      {isTyping && (
+        <div className="p-4 border-t border-gray-200 dark:border-gray-700">
+          <button
+            onClick={stopGeneration}
+            className="w-full flex items-center justify-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600"
+          >
+            <Square className="w-4 h-4" />
+            Stop Generation
+          </button>
+        </div>
+      )}
     </div>
   );
 }
