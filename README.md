@@ -10,7 +10,7 @@ It combines Retrieval-Augmented Generation (RAG), multi-agent reasoning, OCR pip
 
 ---
 
-## 🧠 Executive Summary
+## Executive Summary
 
 Noetic Vault is built around one critical question:
 
@@ -28,7 +28,7 @@ This system answers that by combining:
 
 ---
 
-## 🔍 What Noetic Vault Does
+## What Noetic Vault Does
 
 - Accepts digital and scanned PDFs (including govt documents)
 - Extracts structured text using a tiered OCR pipeline
@@ -43,7 +43,7 @@ This system answers that by combining:
 
 ---
 
-## ⚙️ System Flow
+## System Flow
 
 ```text
 User Upload (PDF)
