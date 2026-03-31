@@ -27,6 +27,10 @@ This system answers that by combining:
 | Output Layer | Explainable results | Citations, confidence, reports |
 
 ---
+## SCREENSHOTS
+<img width="751" height="336" alt="image" src="https://github.com/user-attachments/assets/a9c5bd3d-f5a4-4835-91ee-0fd3f18793bf" />
+<img width="940" height="424" alt="image" src="https://github.com/user-attachments/assets/7e692243-9668-436a-837a-10d21f92a1af" />
+
 
 ## What Noetic Vault Does
 
